@@ -1,0 +1,13 @@
+:root {
+    --primary-gradient: linear-gradient(45deg, #5833EF 0%, #F82D98 100%);
+    --primary-gradient-hover: linear-gradient(45deg, #5833EF  0%, #F82D98 80%);
+    --pink-color: #F82D98;
+    --purple-color: #5833EF;
+    --kiwi-color: #B5E42E;
+    --mauve-color: #8C5A74;
+    --dark-color: #0A0806;
+    --white-color: #FFFFFF;
+    --border-color: #2F2535;
+    --border-color-hover: #FFFFFF80;
+    --border-color-active: #F82D98;
+}
