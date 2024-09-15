@@ -6,6 +6,7 @@ import Login from './pages/Login/Login';
 import About from './pages/About/About';
 import Home from './pages/Home/Home';
 import Navbar from './components/navbar/Navbar';
+import Chat from './pages/Chat/Chat';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             <Route path='/login' element={<Login />} />
             <Route path='/home' element={<Home />} />
             <Route path='/about' element={<About />} />
+            <Route path='/chat' element={<Chat />} />
           </Routes>
         </ContentContainer>
       </MainContainer>

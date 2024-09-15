@@ -1,23 +1,26 @@
 import styled from 'styled-components';
 
 export const FooterContainer = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 150px;
-    margin-bottom: 32px;
-    padding: 0 32px; 
-    width: calc(100% - 64px); 
-    height: 140px;
-    background-color: #1D1D24;
-    border-radius: 32px;
-    box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 32px; 
+  width: calc(100% - 64px); 
+  height: 90px;
+  background-color: #1D1D24;
+  border-radius: 32px;
+  box-sizing: border-box;
+  position: relative;
+  bottom: 0;
+  margin-top: -35px;
+  margin-bottom: 32px;
 
-    @media (max-width: 825px) {
-        flex-direction: column;
-        height: auto;
-    }
+  @media (max-width: 825px) {
+    flex-direction: column;
+    height: auto;
+  }
 `;
+
 
 export const LogoContainer = styled.div`
     width: 211px;

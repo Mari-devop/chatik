@@ -23,7 +23,7 @@ const Footer = () => {
         </LogoContainer>
         <TinyText>
             <TextTiny>
-                © 2023 Eternal. All rights reserved.
+                © 2024 Eternal. All rights reserved.
             </TextTiny>
         </TinyText>
         <SocialContainer>

@@ -5,7 +5,7 @@ export const NavbarContainer = styled.div`
     align-items: center;
     justify-content: center;
     flex-direction: row;
-    position: sticky;
+    position: fixed;
     top: 0;
     width: 100%;
     z-index: 10;
@@ -22,10 +22,12 @@ export const ImageContainer = styled.div`
     left: 50%;
     transform: translateX(-50%);
     top: 34px;
+    cursor: pointer;
 
     @media (max-width: 900px) {
         left: 16px;
         transform: none;
+        width: 144px;
     }
 `;
 
@@ -84,7 +86,8 @@ export const RightContainer = styled.div`
     top: 0;
 
     @media (max-width: 900px) {
-        display: none;
+        margin-right: 46px;
+        margin-top: 13px;
     }
 `;
 
@@ -100,6 +103,7 @@ export const ButtonMenu = styled.button`
         left: auto;   
         right: 16px;  
         top: 50px;
+      
     }
 `;
 
@@ -114,11 +118,15 @@ export const ButtonLogin = styled.button`
     color: var(--white-color);
     border: none;
     cursor: pointer;
-   font-family: 'Arquitecta';
+    font-family: 'Arquitecta';
     font-weight: 700;
     font-size: 13px;
     line-height: 14px;
     letter-spacing: 0.3em;
+
+    @media (max-width: 900px) {
+        display: none;
+    }
 `;
 
 export const ButtonStart = styled.button`
@@ -139,5 +147,68 @@ export const ButtonStart = styled.button`
 
     &:hover {
         background: var(--primary-gradient-hover);
+    }
+
+    @media (max-width: 900px) {
+        display: none;
+    }
+`;
+
+export const ButtonShare = styled.button`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 120px;
+    font-family: 'Arquitecta';
+    font-weight: 700;
+    font-size: 13px;
+    line-height: 14px;
+    letter-spacing: 0.3em;
+    color: #FFFFFF;       
+    width: 157px;
+    height: 48px;
+    position: relative;
+    margin: 32px;
+    gap: 5px;
+    z-index: 1;
+    background-clip: padding-box; 
+    border: none;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: inherit;
+        padding: 2px; 
+        background: linear-gradient(45deg, #5833EF, #F82D98);
+        -webkit-mask: 
+          linear-gradient(#fff 0 0) content-box, 
+          linear-gradient(#fff 0 0);
+        mask-composite: exclude;
+        -webkit-mask-composite: xor; 
+        z-index: -1; 
+    }
+
+    @media (max-width: 900px) {
+        width: 75px;
+        height: 32px;
+        padding: 10px 16px;
+        font-size: 10px;
+    }
+`;
+
+export const IconShare = styled.img`
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+
+    @media (max-width: 900px) {
+        display: none;
     }
 `;
