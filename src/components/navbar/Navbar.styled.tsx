@@ -9,6 +9,13 @@ export const NavbarContainer = styled.div`
     top: 0;
     width: 100%;
     z-index: 10;
+    user-select: none;       
+    pointer-events: all;     
+    -webkit-touch-callout: none; 
+    -webkit-user-select: none; 
+    -webkit-user-drag: none;  
+    -moz-user-select: none;  
+    -ms-user-select: none; 
 
     @media (max-width: 900px) {
         justify-content: space-between;
@@ -32,9 +39,9 @@ export const ImageContainer = styled.div`
 `;
 
 export const Image = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 `;
 
 export const CloseIcon = styled.div`
@@ -103,7 +110,6 @@ export const ButtonMenu = styled.button`
         left: auto;   
         right: 16px;  
         top: 50px;
-      
     }
 `;
 

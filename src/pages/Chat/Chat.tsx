@@ -53,37 +53,22 @@ const Chat = () => {
         console.log("Question ID:", questionId);
         console.log("Ответы в localStorage:", responses);
 
-        if (responses && responses[questionId]) {
-            let allResponses: any[] = [];
-            Object.values(responses[questionId]).forEach((individualResponses: any) => {
-                if (Array.isArray(individualResponses)) {
-                    // allResponses = [...allResponses, ...individualResponses];
-                    
-                }
-            });
-            console.log("Найденные ответы для вопроса:", allResponses);
-            return allResponses;
-            console.log(responses[questionId])
-        }
-
-        console.log("Ответы для данного вопроса не найдены");
-        return [];
+        return responses[questionId] || [];
     };
 
     const loadResponsesFromLocalStorage = () => {
         const savedResponses = JSON.parse(localStorage.getItem('chatResponses') || '{}');
         console.log('Загруженные ответы из localStorage:', savedResponses);
 
-        const relevantResponses = filterResponses(savedResponses); 
+        const relevantResponses = filterResponses(savedResponses);
         console.log('Отфильтрованные ответы для данного вопроса:', relevantResponses);
 
-        if (relevantResponses.length > 0) {
-            setFilteredResponses(relevantResponses);
-        }
+        setFilteredResponses(relevantResponses);
     };
+
     useEffect(() => {
         if (individual) {
-            loadResponsesFromLocalStorage(); 
+            loadResponsesFromLocalStorage();
 
             const fetchResponse = async () => {
                 try {
@@ -100,42 +85,27 @@ const Chat = () => {
                         },
                     });
 
-                 
                     const storedIndividuals = JSON.parse(localStorage.getItem('individuals') || '[]');
                     const foundIndividual = storedIndividuals.find((ind: any) => ind.id === individual.id);
                     const smallImage = foundIndividual ? foundIndividual.smallImage : jobs;
 
                     const newResponse = {
                         text: response.data.response,
-                        smallImage: smallImage, 
+                        smallImage: smallImage,
                         individualId: individual.id,
-                        questionId: individual.questionId, 
+                        questionId: individual.questionId,
                     };
 
                     setResponse(newResponse.text);
 
-         
-                    const existingResponsesForQuestion = savedResponses[Number(individual.questionId)] || {};
+                    const existingResponsesForQuestion = savedResponses[individual.questionId] || [];
 
-                    const updatedResponsesForIndividual = [
-                        ...(existingResponsesForQuestion[Number(individual.id)] || []),
-                        newResponse,
-                    ];
+                    existingResponsesForQuestion.push(newResponse);
 
-                 
-                    const updatedResponses = {
-                        ...savedResponses,
-                        [Number(individual.questionId)]: {
-                            ...existingResponsesForQuestion,
-                            [Number(individual.id)]: updatedResponsesForIndividual,
-                        },
-                    };
+                    savedResponses[individual.questionId] = existingResponsesForQuestion;
+                    localStorage.setItem('chatResponses', JSON.stringify(savedResponses));
 
-                    localStorage.setItem('chatResponses', JSON.stringify(updatedResponses));
-                    console.log('Обновленные ответы в localStorage:', updatedResponses);
-
-          
-                    setFilteredResponses(filterResponses(updatedResponses));
+                    setFilteredResponses(existingResponsesForQuestion);
 
                 } catch (error) {
                     console.error('Error fetching response:', error);
@@ -145,7 +115,6 @@ const Chat = () => {
             fetchResponse();
         }
     }, [individual]);
-
 
   return (
     <ChatContainer>

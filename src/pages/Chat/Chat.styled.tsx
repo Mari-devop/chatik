@@ -1,18 +1,16 @@
 import styled from "styled-components";
 
-interface FadeOverlayProps {
-    scrolled: boolean;
-}
-
 export const ChatContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  height: calc(100vh - 80px);
-  width: 100%;
+    display: flex;
+    flex-direction: row;
+    height: calc(100vh - 80px);
+    width: 100%;
 
-    @media (max-width: 1100px) {
+    @media (max-width: 850px) {
         flex-direction: column; 
-        height: 100vh;
+        height: calc(100vh - 80px);
+        overflow: hidden;
+        align-items: center;
     }
 `;
 
@@ -26,10 +24,11 @@ export const PersonContainer = styled.div`
     z-index: 1;
     position: relative;
 
-    @media (max-width: 1100px) {
+    @media (max-width: 850px) {
         width: 100%; 
-        order: 1;
         align-items: center;
+        margin-top: 10px;
+        flex-grow: 0;
     }
 `;
 
@@ -40,6 +39,11 @@ export const PersonBox = styled.div`
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+
+    @media (max-width: 850px) {
+        width: 300px;
+        height: 300px;
+    }
 `;
 
 export const PersonShadow = styled.img`
@@ -49,16 +53,30 @@ export const PersonShadow = styled.img`
     z-index: 0;
     top: 0;
     left: 0;
+
+    @media (max-width: 850px) {
+        width: 340px;
+        height: 300px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
 `;
 
 export const PersonPhoto = styled.img`
-    width: 400px;
+    width: 300px;
     height: 400px;
     position: relative;
-    top: 50px;
-    left: 50px;
+    top: 60px;
+    left: 100px;
     border-radius: 30%;
     z-index: 1;
+
+    @media (max-width: 850px) {
+        width: 180px;
+        height: 220px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
 `;
 
 export const TextBox = styled.div`
@@ -68,7 +86,13 @@ export const TextBox = styled.div`
     text-align: center;
     margin-top: 100px;
     position: relative;
-    left: 23%;
+    left: 32%;
+
+    @media (max-width: 850px) {
+        left: 50%;
+        transform: translateX(-50%);
+        margin-top: 80px;
+    }
 `;
 
 export const Title = styled.h2`
@@ -116,18 +140,24 @@ export const DialogContainer = styled.div`
     z-index: 2;
     flex-shrink: 0;
 
-    // @media (max-width: 1500px) {
-    //     width: 700px;
-    // }
+    @media (max-width: 1200px) {
+        width: 600px;
+    }
 
-    // @media (max-width: 1250px) {
-    //     width: 600px;
-    // }
+    @media (max-width: 1100px) {
+        width: 500px;
+    }
 
-    // @media (max-width: 1100px) {
-    //     width: 100%; 
-    //     order: 2;
-    // }
+    @media (max-width: 950px) {
+        width: 400px;
+    }
+
+    @media (max-width: 850px) {
+        width: 100%; 
+        margin-right: 0px;
+        flex-grow: 1;
+        margin-top: 50px;
+    }
 `;
 
 export const RespondContainer = styled.div`
@@ -135,6 +165,10 @@ export const RespondContainer = styled.div`
     flex-direction: column;
     align-items: end;
     margin-top: 57px;
+
+    @media (max-width: 850px) {
+       margin-top: 0px;
+    }
 `;
 
 export const QuestionContainer = styled.div`
@@ -142,6 +176,10 @@ export const QuestionContainer = styled.div`
     flex-direction: column;
     margin-top: 37px;
     justify-content: center;
+
+    @media (max-width: 850px) {
+        margin-top: 0px;
+    }
 `;
 
 export const Question = styled.div`
@@ -152,7 +190,7 @@ export const Question = styled.div`
     padding: 12px;
     width: auto;
 
-    @media (max-width: 1100px) {
+    @media (max-width: 850px) {
         display: none; 
     }
 `;
@@ -165,10 +203,7 @@ export const Text = styled.h3`
     letter-spacing: -0.01em;
     color: #000000;
     margin: 0px;
-    overflow-y: auto;
     padding-right: 10px;
-
-   
 `;
 
 export const AnswerBox = styled.div`
@@ -176,19 +211,23 @@ export const AnswerBox = styled.div`
     height: 300px;
     padding-right: 16px;
 
+    @media (max-width: 850px) {
+        height: 150px;
+        padding-right: 0px;
+    }
 `;
 
 export const FadeOverlay = styled.div<{ scrolled: boolean }>`
-  position: absolute;
-  top: 96px; 
-  left: 0px;
-  right: 0;
-  height: 120px; 
-  background: linear-gradient(rgba(17, 17, 21, 0.9), transparent);
-  pointer-events: none; 
-  opacity: ${({ scrolled }) => (scrolled ? 1 : 0)};
-  transition: opacity 0.3s ease;
-  z-index: 1; 
+    position: absolute;
+    top: 96px; 
+    left: 0px;
+    right: 0;
+    height: 120px; 
+    background: linear-gradient(rgba(17, 17, 21, 0.9), transparent);
+    pointer-events: none; 
+    opacity: ${({ scrolled }) => (scrolled ? 1 : 0)};
+    transition: opacity 0.3s ease;
+    z-index: 1; 
 
     @media (max-width: 1100px) {
         display: none; 
@@ -203,15 +242,15 @@ export const Respond = styled.div`
     align-items: right;
     gap: 16px;
 
-    // @media (max-width: 1250px) {
-    //     width: 560px;
-    // }
+    @media (max-width: 850px) {
+        width: 100%;
+        margin: 15px;
+        gap: 8px;
+    }
 
-    // @media (max-width: 1100px) {
-    //     width: 90%;
-    //     margin: 20px auto;
-
-    // }
+    @media (max-width: 522px) {
+       width: 90%;
+    }
 `;
 
 export const IconBox = styled.div`
@@ -236,15 +275,21 @@ export const RespondBox = styled.div`
     border-radius: 10px;
     padding: 12px;
     width: 100%;
-    overflow: hidden;
-    height: 100px;
 
-    @media (max-width: 1500px) {
-        width: 500px;
+    @media (max-width: 1200px) {
+        width: 400px;
     }
 
     @media (max-width: 1100px) {
-        width: 100%;
+        width: 300px;
+    }
+
+    @media (max-width: 950px) {
+        width: 200px;
+    }
+
+    @media (max-width: 850px) {
+        width: 80%;
     }
 `;
 
@@ -257,15 +302,14 @@ export const TextRespond = styled.h3`
     color: #ffffff;
     margin-right: 43px;
     width: 440px;
-    overflow-y: auto;
+    
+    @media (max-width: 1200px) {
+        width: 350px;
+    }
 
-    // @media (max-width: 1500px) {
-    //     width: 400px;
-    // }
-
-    // @media (max-width: 1100px) {
-    //     width: 100%;
-    // }
+    @media (max-width: 1100px) {
+        width: 100%;
+    }
 `;
 
 export const Social = styled.div`
@@ -285,16 +329,18 @@ export const PersonAnswer = styled.div`
     flex-direction: column;
     align-items: center;
     padding: 45px;
-    height: 50px;
     background: linear-gradient(90deg, rgb(230, 214, 248) 0%, rgb(251, 213, 236) 40%);
     border-radius: 30px;
-    position: relative;
-    top: 60px;
+    position: absolute;
+    bottom: 100px;
+    left: 40px;
+    right: 40px;
+    max-height: 100%;
+    box-sizing: border-box;
     z-index: 2; 
     margin-left: 40px;
     border: none;
    
-
     &::before {
         content: '';
         position: absolute;
@@ -330,20 +376,28 @@ export const PersonAnswer = styled.div`
         height: 30px; 
         z-index: 3;
 
-        @media (max-width: 1100px) {
+        @media (max-width: 850px) {
             display: none;
         }
     }
 
-   
-
+    @media (max-width: 850px) {
+        padding: 20px;
+        margin: 0 auto;
+    }
 `;
 
 export const InputBox = styled.div`
     display: flex;
     width: 100%;
     position: relative;
-    top: 80px;
+    top: 200px;
+
+    @media (max-width: 850px) {
+        top: 130px;
+        width: 90%;
+        margin: 0 auto;
+    }
 `;
 
 export const InputWrapper = styled.div`
@@ -371,11 +425,10 @@ export const Input = styled.input`
     height: 45px;
     outline: none;
     position: relative;
-   
 `;
 
 export const Button = styled.button`
-    background: var(--primary-gradient);
+    background: #929292d4;
     cursor: pointer;
     border-radius: 120px;
     border: none;
@@ -391,8 +444,4 @@ export const Button = styled.button`
     right: 5px;
     bottom: 5px;
     z-index: 2;
-
-    @media (max-width: 1100px) {
-      bottom: 41px;
-    }
 `;

@@ -143,6 +143,11 @@ const Main = () => {
   const handleIndividualClick = async (individualId: number) => {
     if (selectedQuestion === null || selectedQuestionText === null) {
       alert('Please select a question first.');
+
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 0);
+      
       return;
     }
   

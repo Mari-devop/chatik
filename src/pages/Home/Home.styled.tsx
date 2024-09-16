@@ -12,6 +12,13 @@ export const Container = styled.div`
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
+   user-select: none;       
+    pointer-events: all;     
+    -webkit-touch-callout: none; 
+    -webkit-user-select: none; 
+    -webkit-user-drag: none;  
+    -moz-user-select: none;  
+    -ms-user-select: none; 
 `;
 
 export const MainContainer = styled.div`
