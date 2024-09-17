@@ -13,8 +13,17 @@
     --pink-color: #929292d4;
 }
 
-#google-button {
+#google-button-login,
+#google-button-signup {
     display: inline-block;
-    border-radius: 50px; 
-    overflow: hidden; 
+      background: transparent;
+      color: #444;
+      width: 300px;
+      height: auto;
+      border-radius: 120px;
+      border: thin solid #ffffff;
+      box-shadow: 1px 1px 1px grey;
+      white-space: nowrap;
+      overflow: hidden;
 }
+

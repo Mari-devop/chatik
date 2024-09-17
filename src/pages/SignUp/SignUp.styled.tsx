@@ -109,11 +109,11 @@ export const ButtonContainer = styled.div`
 `;
 
 export const ButtonGoogle = styled.button`
-    display: flex;
+    display: inline-block;
     align-items: center;
     justify-content: center;
     width: 48%;
-    height: 62px;
+    height: 82px;
     gap: 16px;
     background-color: transparent;
     border-radius: 120px;
@@ -139,7 +139,7 @@ export const ButtonGoogle = styled.button`
 
 export const Button = styled.button`
     width: 48%;
-    height: 56px;
+    height: 46px;
     background: var(--primary-gradient);
     cursor: pointer;
     border-radius: 120px;

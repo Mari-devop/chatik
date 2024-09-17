@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { login } from '../../auth/auth';
 import { dbInstance } from '../../db';
 import { useNavigate } from 'react-router-dom';
@@ -26,14 +27,28 @@ const Login = () => {
     const handleLogin = async () => {
         const response = await login(email, password);
         if (response) {
-            navigate('/home');
+            navigate('/about');
         }
     };
 
     const handleGoogleLogin = async (response: any) => {
-        const token = response.credential;
-        await dbInstance.addData('users', { email, password, token });
-        navigate('/home');
+        const googleToken = response.credential;
+    
+        try {
+            const res = await axios.post('https://your-backend-api.com/login', {
+                email,
+                password,
+                googleToken
+            });
+    
+            if (res.data.success) {
+                
+                await dbInstance.addData('users', { email, password, googleToken });
+                navigate('/about');
+            }
+        } catch (error) {
+            console.error('Login Error:', error);
+        }
     };
 
     useEffect(() => {
@@ -43,11 +58,13 @@ const Login = () => {
         });
 
         window.google.accounts.id.renderButton(
-            document.getElementById('google-button'),
+            document.getElementById('google-button-login'),
             {
                 theme: 'filled_black',
                 size: 'large',
-                text: 'continue_with',
+                text: 'sign_in',
+                
+        
             }
         );
     },[]);
@@ -80,10 +97,10 @@ const Login = () => {
                 <ButtonSecondary>Forgot password?</ButtonSecondary>
             </Row>
             <ButtonContainer>
-                <ButtonGoogle id="google-button">
-                    <img src={googleIcon} alt="google" />
-                    <span>SIGN IN WITH GOOGLE</span>
-                </ButtonGoogle>
+                <div id="google-button-login">
+                    {/* <img src={googleIcon} alt="google" />
+                    <span>SIGN IN WITH GOOGLE</span> */}
+                </div>
                 <Button onClick={handleLogin}>
                     SIGN IN
                 </Button>
