@@ -41,8 +41,7 @@ const Login = () => {
                 googleToken
             });
     
-            if (res.data.success) {
-                
+            if (res.data.token) {
                 await dbInstance.addData('users', { email, password, googleToken });
                 navigate('/about');
             }
