@@ -12,3 +12,9 @@
     --border-color-active: #F82D98;
     --pink-color: #929292d4;
 }
+
+#google-button {
+    display: inline-block;
+    border-radius: 50px; 
+    overflow: hidden; 
+}

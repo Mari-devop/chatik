@@ -1,10 +1,11 @@
 import { openDB, IDBPDatabase } from 'idb';
 
 const DB_NAME = 'MyAppDB';
-const DB_VERSION = 1;
+const DB_VERSION = 2; 
 const QUESTIONS_STORE = 'questions';
 const INDIVIDUALS_STORE = 'individuals';
 const RESPONSES_STORE = 'responses';
+const USERS_STORE = 'users';
 
 class DatabaseSingleton {
     private static instance: DatabaseSingleton | null = null;
@@ -27,18 +28,25 @@ class DatabaseSingleton {
             this.initPromise = (async () => {
                 console.log('Initializing DB...');
                 this.db = await openDB(DB_NAME, DB_VERSION, {
-                    upgrade(db) {
-                        if (!db.objectStoreNames.contains(QUESTIONS_STORE)) {
-                            db.createObjectStore(QUESTIONS_STORE, { keyPath: 'id', autoIncrement: true });
+                    upgrade(db, oldVersion) {
+                        if (oldVersion < 1) {
+                            if (!db.objectStoreNames.contains(QUESTIONS_STORE)) {
+                                db.createObjectStore(QUESTIONS_STORE, { keyPath: 'id', autoIncrement: true });
+                            }
+                            if (!db.objectStoreNames.contains(INDIVIDUALS_STORE)) {
+                                db.createObjectStore(INDIVIDUALS_STORE, { keyPath: 'id', autoIncrement: true });
+                            }
+                            if (!db.objectStoreNames.contains(RESPONSES_STORE)) {
+                                const store = db.createObjectStore(RESPONSES_STORE, { keyPath: 'id', autoIncrement: true });
+                                store.createIndex('questionId', 'questionId');
+                                store.createIndex('individualId', 'individualId');
+                            }
                         }
-                        if (!db.objectStoreNames.contains(INDIVIDUALS_STORE)) {
-                            db.createObjectStore(INDIVIDUALS_STORE, { keyPath: 'id', autoIncrement: true });
-                        }
-                        if (!db.objectStoreNames.contains(RESPONSES_STORE)) {
-                            const store = db.createObjectStore(RESPONSES_STORE, { keyPath: 'id', autoIncrement: true });
-                            store.createIndex('questionId', 'questionId');
-                            store.createIndex('individualId', 'individualId');
-                            console.log('Response store created');
+                        if (oldVersion < 2) {
+                            if (!db.objectStoreNames.contains(USERS_STORE)) {
+                                db.createObjectStore(USERS_STORE, { keyPath: 'id', autoIncrement: true });
+                                console.log('Users store created');
+                            }
                         }
                     },
                 });

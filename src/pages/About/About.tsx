@@ -1,12 +1,20 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Row, Title, Button, Text, Container, ButtonContainer, BoxContainer} from '../About/About.styled';
 
 
 const About = () => {
     const[isChecked, setIsChecked] = useState(false);
+    const navigate = useNavigate();
 
     const handleCheckbox = () => {
         setIsChecked(!isChecked);
+    };
+
+    const handleContinue = () => {
+        if (isChecked) {
+            navigate('/');
+        }
     }
 
     return (
@@ -29,7 +37,7 @@ const About = () => {
                     <label htmlFor='text'>I have read the above statement</label>
                 </Row>
                 <ButtonContainer>
-                    <Button disabled={!isChecked}>
+                    <Button onClick={handleContinue} disabled={!isChecked}>
                         CONTINUE
                     </Button>
                 </ButtonContainer>

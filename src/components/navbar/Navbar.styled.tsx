@@ -130,6 +130,11 @@ export const ButtonLogin = styled.button`
     line-height: 14px;
     letter-spacing: 0.3em;
 
+    a {
+        text-decoration: none;
+        color: #fffffF; 
+    }
+
     @media (max-width: 900px) {
         display: none;
     }
@@ -157,6 +162,11 @@ export const ButtonStart = styled.button`
 
     @media (max-width: 900px) {
         display: none;
+    }
+
+    a {
+        text-decoration: none;
+        color: #fffffF; 
     }
 `;
 

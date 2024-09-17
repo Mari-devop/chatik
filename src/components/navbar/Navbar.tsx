@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { 
     NavbarContainer, 
@@ -24,8 +25,12 @@ export const Navbar = () => {
     const navigate = useNavigate();
 
     const handleLogoClick = () => {
-        navigate('/home');
+        navigate('/');
     };
+
+    const handleCloseClick = () => {
+        navigate('/');
+    }
 
   return (
     <div>
@@ -40,14 +45,14 @@ export const Navbar = () => {
             {(  location.pathname === '/login' || 
                 location.pathname === '/signup' || 
                 location.pathname === '/about') && (
-                <CloseIcon />
+                <CloseIcon onClick={handleCloseClick} />
             )}
-            {location.pathname === '/home' && (
+            {location.pathname === '/' && (
               <Box>
                 <ButtonMenu><Icon src={menu} alt="menu" /></ButtonMenu>
                 <RightContainer>
-                    <ButtonLogin>LOGIN</ButtonLogin>
-                    <ButtonStart>GET STARTED</ButtonStart>
+                    <ButtonLogin><Link to="/login">LOGIN</Link></ButtonLogin>
+                    <ButtonStart><Link to="/signup">GET STARTED</Link></ButtonStart>
                 </RightContainer>
               </Box>
             )}
