@@ -33,7 +33,7 @@ const SignUp = () => {
     const googleToken = response.credential;
 
     try {
-      const res = await axios.post("https://your-backend-api.com/register", {
+      const res = await axios.post("https://eternalai.fly.dev/user/register", {
         email,
         password,
         googleToken,

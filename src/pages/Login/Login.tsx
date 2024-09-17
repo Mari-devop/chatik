@@ -35,7 +35,7 @@ const Login = () => {
         const googleToken = response.credential;
     
         try {
-            const res = await axios.post('https://your-backend-api.com/login', {
+            const res = await axios.post('https://eternalai.fly.dev/user/login', {
                 email,
                 password,
                 googleToken
