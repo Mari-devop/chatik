@@ -404,14 +404,15 @@ export const InputWrapper = styled.div`
     position: relative;
     width: 100%;
     border-radius: 120px;
-    background: linear-gradient(45deg, #5833EF, #F82D98); 
+    // background: linear-gradient(45deg, #5833EF, #F82D98); 
+    background: linear-gradient(45deg, rgba(4,4,16,1) 0%, rgba(15,3,6,1) 100%);
     padding: 1px;
     display: flex; 
     align-items: center;
 `;
 
 export const Input = styled.input`
-    background: linear-gradient(45deg, rgba(4,4,16,1) 0%, rgba(15,3,6,1) 100%);
+    background: linear-gradient(45deg, rgba(4,4,16,1) 0%, #929292d4 100%);
     border: none;
     border-radius: 120px;
     padding-left: 32px;
