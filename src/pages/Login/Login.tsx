@@ -93,13 +93,12 @@ const Login: React.FC<LoginProps> = ({ setIsLoginOpen, setIsSignupOpen }) => {
 
   
   const googleLogin = useGoogleLogin({
-
-    flow: "implicit",
+    flow: "auth-code",
     scope: "openid email profile",
     onSuccess: async (tokenResponse) => {
       try {
-        //@ts-ignore
-        const googleIdToken = tokenResponse.id_token;
+      
+        const googleIdToken = tokenResponse.code;
 
         const res = await axios.post("https://eternalai.fly.dev/user/login", {
           googleToken: googleIdToken,
