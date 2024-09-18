@@ -106,6 +106,7 @@ const SignUp: React.FC<SignupProps> = ({ setIsSignupOpen, setIsLoginOpen }) => {
             googleToken,
           });
           navigate("/about");
+          setIsSignupOpen(false);
         }
       } catch (error) {
         console.error("Google Registration Error:", error);

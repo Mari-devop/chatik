@@ -126,6 +126,7 @@ const Login: React.FC<LoginProps> = ({ setIsLoginOpen, setIsSignupOpen }) => {
             name: userName
           });
           navigate("/about");
+          setIsLoginOpen(false);
         }
       } catch (error) {
         console.error("Google Login Error:", error);
