@@ -108,38 +108,9 @@ export const ButtonContainer = styled.div`
     }
 `;
 
-export const ButtonGoogle = styled.button`
-    display: inline-block;
-    align-items: center;
-    justify-content: center;
-    width: 48%;
-    height: 82px;
-    gap: 16px;
-    background-color: transparent;
-    border-radius: 120px;
-    cursor: pointer;
-    border: 1px solid var(--white-color);
-   
-        span {
-            font-family: 'Arquitecta';
-            font-weight: 700;
-            font-size: 13px;
-            line-height: 14px;
-            letter-spacing: 0.3em;
-            color: var(--white-color);   
-        }
-    @media (max-width: 676px) {
-        gap: 8px;
-        padding: 8px;
-    }
-    @media (max-width: 500px) {
-        width: 100%;
-    }
-`;
-
 export const Button = styled.button`
     width: 48%;
-    height: 46px;
+    height: 56px;
     background: var(--primary-gradient);
     cursor: pointer;
     border-radius: 120px;
@@ -201,14 +172,16 @@ export const Text = styled.p`
 
 export const LinkStyled = styled(Link)`
     text-decoration: none;
-    color: var(--pink-color);
     font-family: 'Avenir';
     font-weight: 800;
     font-size: 18px;
     line-height: 27px;
     letter-spacing: -0.01em;
-    color: var(--pink-color);
     cursor: pointer;
     padding: 0;
     margin-bottom: 0;
+
+    span {
+        color: #F82D98;
+    }
 `;

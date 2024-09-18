@@ -30,6 +30,7 @@ export const ImageContainer = styled.div`
     transform: translateX(-50%);
     top: 34px;
     cursor: pointer;
+    z-index: 1000;
 
     @media (max-width: 900px) {
         left: 16px;

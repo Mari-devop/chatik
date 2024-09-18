@@ -85,6 +85,20 @@ class DatabaseSingleton {
         }
         return null;
     }
+
+    public async deleteData(storeName: string, key: any) {
+        console.log(`Deleting data from store: ${storeName}`);
+        try {
+            const db = await this.initDB();
+            const tx = db!.transaction(storeName, 'readwrite');
+            const store = tx.objectStore(storeName);
+            await store.delete(key); 
+            await tx.done;
+            console.log('Data deleted successfully from:', storeName);
+        } catch (error) {
+            console.error('Error deleting data:', error);
+        }
+    } 
 }
 
 export const dbInstance = DatabaseSingleton.getInstance();

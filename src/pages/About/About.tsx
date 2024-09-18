@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Row, Title, Button, Text, Container, ButtonContainer, BoxContainer} from '../About/About.styled';
 
-
 const About = () => {
     const[isChecked, setIsChecked] = useState(false);
     const navigate = useNavigate();

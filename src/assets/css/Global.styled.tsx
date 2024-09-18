@@ -26,7 +26,7 @@ export const AvenirH2 = styled.h2`
 `;
 
 export const AvenirH3 = styled.h3`
-   font-family: 'Avenir';
+    font-family: 'Avenir';
     font-weight: 500;
     font-size: 32px;
     line-height: 48px;
