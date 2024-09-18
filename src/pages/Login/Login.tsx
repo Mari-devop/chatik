@@ -114,10 +114,11 @@ const Login: React.FC<LoginProps> = ({ setIsLoginOpen, setIsSignupOpen }) => {
           name: userName
         });
 
-        if (res.data.token) {
+        const { token } = res.data
+        if (token) {
           await dbInstance.addData("users", {
             email: res.data.email,
-            googleAccessToken,
+            token,
             name: userName
           });
           navigate("/about");
