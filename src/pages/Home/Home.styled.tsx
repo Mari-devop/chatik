@@ -19,6 +19,7 @@ export const Container = styled.div`
   -webkit-user-drag: none;
   -moz-user-select: none;
   -ms-user-select: none;
+  width: 100%;
 `;
 
 export const MainContainer = styled.div`
@@ -227,6 +228,7 @@ export const Image1 = styled.img`
     right: -80px;
     bottom: 20px;
   }
+
 `;
 
 export const Image2 = styled.img`
@@ -250,6 +252,10 @@ export const Image2 = styled.img`
     right: -40px;
     bottom: 20px;
   }
+
+  @media (max-width: 375px) {
+    right: -70px;
+  }
 `;
 
 export const Image3 = styled.img`
@@ -269,6 +275,10 @@ export const Image3 = styled.img`
     width: 251px;
     height: 251px;
     bottom: 20px;
+  }
+
+  @media (max-width: 375px) {
+    right: 10px;
   }
 `;
 
@@ -291,6 +301,10 @@ export const Image4 = styled.img`
     height: 168px;
     left: -100px;
     bottom: 20px;
+  }
+
+  @media (max-width: 375px) {
+    left: -90px;
   }
 `;
 

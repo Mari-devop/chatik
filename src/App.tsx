@@ -10,6 +10,7 @@ import Navbar from './components/navbar/Navbar';
 import Chat from './pages/Chat/Chat';
 import Menu from './components/menu/Menu';
 import Token from './pages/Token/Token';
+import AccountDetails from './pages/AccountDetails/AccountDetails';
 
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false); 
@@ -27,6 +28,7 @@ function App() {
               <Route path='/about' element={<About />} />
               <Route path='/chat' element={<Chat />} />
               <Route path='/token' element={<Token />} />
+              <Route path='/accountDetails' element={<AccountDetails />} />
             </Routes>
             {isMenuOpen && <Menu setIsMenuOpen={setIsMenuOpen} />}
             {isLoginOpen && <Login setIsLoginOpen={setIsLoginOpen} setIsSignupOpen={setIsSignupOpen}/>}

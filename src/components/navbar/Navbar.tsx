@@ -5,7 +5,6 @@ import {
   NavbarContainer,
   ImageContainer,
   Image,
-  CloseIcon,
   ButtonMenu,
   ButtonLogin,
   ButtonStart,

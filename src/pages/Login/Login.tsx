@@ -13,13 +13,20 @@ import {
   Text,
   TextCenter,
 } from "../SignUp/SignUp.styled";
-import { ButtonSecondary, UserContainer, CustomGoogleButton } from "./Login.styled";
+import {
+  ButtonSecondary,
+  UserContainer,
+  CustomGoogleButton,
+} from "./Login.styled";
 import { Navbar } from "../../components/menu/Menu.styled";
-import { ImageContainer, Image, CloseIcon } from "../../components/navbar/Navbar.styled";
+import {
+  ImageContainer,
+  Image,
+  CloseIcon,
+} from "../../components/navbar/Navbar.styled";
 import { AvenirH2 } from "../../assets/css/Global.styled";
 import googleIcon from "../../assets/images/Group.png";
 import logo from "../../assets/images/logo.png";
-import SignUp from "../SignUp/SignUp";
 
 interface LoginProps {
   setIsLoginOpen: (value: boolean) => void;
@@ -87,7 +94,7 @@ const Login: React.FC<LoginProps> = ({ setIsLoginOpen, setIsSignupOpen }) => {
     onSuccess: async (tokenResponse) => {
       try {
         const googleToken = tokenResponse.access_token;
-        
+
         const res = await axios.post("https://eternalai.fly.dev/user/login", {
           googleToken,
         });
@@ -113,61 +120,66 @@ const Login: React.FC<LoginProps> = ({ setIsLoginOpen, setIsSignupOpen }) => {
     return () => {
       document.body.style.overflow = "auto";
     };
-  },[])
+  }, []);
 
   return (
     <>
-    <UserContainer>
-      <Navbar>
-        <CloseIcon onClick={handleCloseClick} />
-        <ImageContainer>
-          <Image src={logo} alt="logo" onClick={handleLogoClick} />
-        </ImageContainer>
-      </Navbar>
-      <BoxContainer>
-        <AvenirH2>Login</AvenirH2>
-        <Row>
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            placeholder="justin@gmail.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </Row>
-        <Row>
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            placeholder="********"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </Row>
-        <Row>
-          <ButtonSecondary>Forgot password?</ButtonSecondary>
-        </Row>
-        <ButtonContainer>
-        <CustomGoogleButton onClick={() => googleLogin()}>
-            <img src={googleIcon} alt="google" />
-            SIGN IN WITH GOOGLE
-          </CustomGoogleButton>
-          <Button onClick={handleLogin}>SIGN IN</Button>
-        </ButtonContainer>
-        <Divider />
-        <TextCenter>
-        <Text>
+      <UserContainer>
+        <Navbar>
+          <CloseIcon onClick={handleCloseClick} />
+          <ImageContainer>
+            <Image src={logo} alt="logo" onClick={handleLogoClick} />
+          </ImageContainer>
+        </Navbar>
+        <BoxContainer>
+          <AvenirH2>Login</AvenirH2>
+          <Row>
+            <label htmlFor="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              placeholder="justin@gmail.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </Row>
+          <Row>
+            <label htmlFor="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              placeholder="********"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </Row>
+          <Row>
+            <ButtonSecondary>Forgot password?</ButtonSecondary>
+          </Row>
+          <ButtonContainer>
+            <CustomGoogleButton onClick={() => googleLogin()}>
+              <img src={googleIcon} alt="google" />
+              SIGN IN WITH GOOGLE
+            </CustomGoogleButton>
+            <Button onClick={handleLogin}>SIGN IN</Button>
+          </ButtonContainer>
+          <Divider />
+          <TextCenter>
+            <Text>
               Don’t have an account?{" "}
-              <span onClick={() => {
-                setIsLoginOpen(false);
-                setIsSignupOpen(true)
-              }} style={{ cursor: 'pointer', color: '#F82D98' }}>Sign up</span>
+              <span
+                onClick={() => {
+                  setIsLoginOpen(false);
+                  setIsSignupOpen(true);
+                }}
+                style={{ cursor: "pointer", color: "#F82D98" }}
+              >
+                Sign up
+              </span>
             </Text>
-        </TextCenter>
-      </BoxContainer>
-    </UserContainer>
+          </TextCenter>
+        </BoxContainer>
+      </UserContainer>
     </>
   );
 };

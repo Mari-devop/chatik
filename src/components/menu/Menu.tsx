@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link,  useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { dbInstance } from "../../db";
 import {
   MenuContainer,
@@ -11,6 +11,9 @@ import {
   CloseIcon,
   ButtonSignOut,
   Navbar,
+  ButtonStart,  
+  ButtonLogin,
+  RightContainer
 } from "./Menu.styled";
 import facebook from "../../assets/images/menu/facebook.png";
 import instagram from "../../assets/images/menu/instagram.png";
@@ -27,17 +30,19 @@ interface User {
   id: number;
   email: string;
   password: string;
-  token?: string; 
+  token?: string;
 }
 
 const Menu: React.FC<MenuProps> = ({ setIsMenuOpen }) => {
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isSignupOpen, setIsSignupOpen] = useState(false);
   const navigate = useNavigate();
 
   const checkAuthentication = async () => {
     const users = await dbInstance.getData("users");
-    const userWithToken = users.find((user: User) => user.token); 
-    setIsAuthenticated(!!userWithToken); 
+    const userWithToken = users.find((user: User) => user.token);
+    setIsAuthenticated(!!userWithToken);
   };
 
   const handleCloseClick = () => {
@@ -49,17 +54,25 @@ const Menu: React.FC<MenuProps> = ({ setIsMenuOpen }) => {
   };
 
   const handleLinkClick = () => {
-    setIsMenuOpen(false); 
+    setIsMenuOpen(false);
+  };
+
+  const handleLoginClick = () => {
+    setIsLoginOpen(!isLoginOpen);
+  };
+
+  const handleSignupClick = () => {
+    setIsSignupOpen(!isSignupOpen);
   };
 
   const handleSignOut = async () => {
     try {
-      const users = await dbInstance.getData('users');
+      const users = await dbInstance.getData("users");
       const currentUser = users.find((user: User) => user.token);
       if (currentUser) {
-        await dbInstance.deleteData('users', currentUser.id); 
-        setIsMenuOpen(false); 
-        navigate("/"); 
+        await dbInstance.deleteData("users", currentUser.id);
+        setIsMenuOpen(false);
+        navigate("/");
       } else {
         console.error("No user with token found for sign out");
       }
@@ -68,33 +81,37 @@ const Menu: React.FC<MenuProps> = ({ setIsMenuOpen }) => {
     }
   };
 
-useEffect(() => {
-  checkAuthentication();
-  document.body.style.overflow = "hidden";
-  return () => {
-    document.body.style.overflow = "auto";
-  };
-},[])
-  
+  useEffect(() => {
+    checkAuthentication();
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, []);
+
   return (
     <MenuContainer>
       <Navbar>
         {isAuthenticated ? (
           <>
-          <CloseIcon onClick={handleCloseClick} />
-          <ImageContainer>
-            <Image src={logo} alt="logo" onClick={handleLogoClick} />
-          </ImageContainer>
-          <ButtonSignOut onClick={handleSignOut}>SIGN OUT</ButtonSignOut>
+            <CloseIcon onClick={handleCloseClick} />
+            <ImageContainer>
+              <Image src={logo} alt="logo" onClick={handleLogoClick} />
+            </ImageContainer>
+            <ButtonSignOut onClick={handleSignOut}>SIGN OUT</ButtonSignOut>
           </>
         ) : (
           <>
-          <ImageContainer>
-            <Image src={logo} alt="logo" onClick={handleLogoClick} />
-          </ImageContainer>
+            <CloseIcon onClick={handleCloseClick} />
+            <ImageContainer>
+              <Image src={logo} alt="logo" onClick={handleLogoClick} />
+            </ImageContainer>
+            <RightContainer>
+              <ButtonLogin onClick={handleLoginClick}>LOGIN</ButtonLogin>
+              <ButtonStart onClick={handleSignupClick}>GET STARTED</ButtonStart>
+            </RightContainer>
           </>
         )}
-        
       </Navbar>
 
       <Content>
@@ -110,7 +127,11 @@ useEffect(() => {
           <span>How it works</span>
         </Row>
         <Row>
-          <span>My account</span>
+          {isAuthenticated ? (
+            <span>My account</span>
+          ) : (
+            <span style={{ display: "none" }}></span>
+          )}
         </Row>
         <Divider />
         <SocialContainer>

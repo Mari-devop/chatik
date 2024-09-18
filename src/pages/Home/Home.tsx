@@ -46,7 +46,6 @@ import conversation from "../../assets/images/main-page/conversation.png";
 import bigshadow from "../../assets/images/main-page/bigbrightshadow.png";
 import brightpinkshadow from "../../assets/images/main-page/pink-shadow.png";
 import pinkshadow from "../../assets/images/main-page/bright-pinkshadow.png";
-import { constants } from "fs";
 
 const Main = () => {
   const [questions, setQuestions] = useState<Question[]>([]);
