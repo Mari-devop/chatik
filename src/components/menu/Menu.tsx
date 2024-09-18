@@ -59,7 +59,7 @@ const Menu: React.FC<MenuProps> = ({ setIsMenuOpen }) => {
       if (currentUser) {
         await dbInstance.deleteData('users', currentUser.id); 
         setIsMenuOpen(false); 
-        navigate("/login"); 
+        navigate("/"); 
       } else {
         console.error("No user with token found for sign out");
       }
