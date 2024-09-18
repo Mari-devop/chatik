@@ -98,6 +98,7 @@ const Login: React.FC<LoginProps> = ({ setIsLoginOpen, setIsSignupOpen }) => {
     onSuccess: async (tokenResponse) => {
       try {
         const googleAccessToken = tokenResponse.access_token;
+        console.log(googleAccessToken)
         const profileResponse = await axios.get(
           `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${googleAccessToken}`
         );
