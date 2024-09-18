@@ -156,9 +156,6 @@ export const ButtonLogin = styled.button`
     text-decoration: none;
     color: #ffffff;
   }
-
-  @media (max-width: 900px) {
-  }
 `;
 
 export const RightContainer = styled.div`
@@ -170,7 +167,7 @@ export const RightContainer = styled.div`
 
   @media (max-width: 900px) {
     top: auto;
-    bottom: 0;
+    bottom: 10px;
     left: 50%; 
     transform: translateX(-50%); 
     flex-direction: column; 
