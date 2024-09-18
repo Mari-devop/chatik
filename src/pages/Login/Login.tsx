@@ -116,7 +116,7 @@ const Login: React.FC<LoginProps> = ({ setIsLoginOpen, setIsSignupOpen }) => {
 
         const token = res.data.token;
         console.log(`"Token": ${token}`);
-        console.log(`Data: ${data}`);
+        console.log(`Data: ${res.data}`);
 
         if (token) {
           console.log('HERE');
