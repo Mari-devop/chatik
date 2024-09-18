@@ -114,8 +114,12 @@ const Login: React.FC<LoginProps> = ({ setIsLoginOpen, setIsSignupOpen }) => {
           name: userName
         });
 
-        const { token } = res.data
+        const token = res.data.token;
+        console.log(`"Token": ${token}`);
+        console.log(`Data: ${data}`);
+
         if (token) {
+          console.log('HERE');
           await dbInstance.addData("users", {
             email: res.data.email,
             token,
