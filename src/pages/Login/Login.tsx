@@ -97,20 +97,27 @@ const Login: React.FC<LoginProps> = ({ setIsLoginOpen, setIsSignupOpen }) => {
     scope: "openid email profile",
     onSuccess: async (tokenResponse) => {
       try {
-      
-        const googleIdToken = tokenResponse.access_token;
-        console.log(googleIdToken);
+        const googleAccessToken = tokenResponse.access_token;
+        const profileResponse = await axios.get(
+          `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${googleAccessToken}`
+        );
+  
+        const userProfile = profileResponse.data;
+        const userName = userProfile.name; 
+        console.log("User Name:", userName);
 
         const res = await axios.post("https://eternalai.fly.dev/user/login", {
-          googleToken: googleIdToken,
+          googleToken: googleAccessToken,
           email,
-          password
+          password,
+          name: userName
         });
 
         if (res.data.token) {
           await dbInstance.addData("users", {
             email: res.data.email,
-            googleIdToken,
+            googleAccessToken,
+            name: userName
           });
           navigate("/about");
         }
