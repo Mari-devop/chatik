@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { dbInstance } from './db';
 import SignUp from './pages/SignUp/SignUp';
 import { MainContainer, ContentContainer } from './assets/css/Global.styled';
 import Login from './pages/Login/Login';
@@ -16,6 +17,21 @@ function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false); 
   const [isLoginOpen, setIsLoginOpen] = useState(false); 
   const [isSignupOpen, setIsSignupOpen] = useState(false); 
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const checkAuthentication = async () => {
+    const users = await dbInstance.getData("users");
+    const userWithToken = users.find((user: any) => user.token);
+    if (userWithToken) {
+      setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
+    }
+  };
+
+  useEffect(() => {
+    checkAuthentication();
+  }, []);
 
   return (
     <GoogleOAuthProvider clientId="297917996967-5i0m39clbr19umnqtclsg7gken22896e.apps.googleusercontent.com">
@@ -31,7 +47,7 @@ function App() {
               <Route path='/accountDetails' element={<AccountDetails />} />
             </Routes>
             {isMenuOpen && <Menu setIsMenuOpen={setIsMenuOpen} />}
-            {isLoginOpen && <Login setIsLoginOpen={setIsLoginOpen} setIsSignupOpen={setIsSignupOpen}/>}
+            {isLoginOpen && <Login setIsLoginOpen={setIsLoginOpen} setIsSignupOpen={setIsSignupOpen} checkAuthentication={checkAuthentication} />}
             {isSignupOpen && <SignUp setIsSignupOpen={setIsSignupOpen} setIsLoginOpen={setIsLoginOpen}/>}
           </ContentContainer>
         </MainContainer>

@@ -16,6 +16,7 @@ import {
 } from "./SignUp.styled";
 import { UserContainer, CustomGoogleButton } from "../Login/Login.styled";
 import { Navbar } from "../../components/menu/Menu.styled";
+import ModalSuccess from "../../components/ModalSuccess/ModalSuccess";
 import {
   ImageContainer,
   Image,
@@ -27,66 +28,42 @@ import googleIcon from "../../assets/images/Group.png";
 
 interface SignupProps {
   setIsSignupOpen: (value: boolean) => void;
-  setIsLoginOpen: (value: boolean) => void; 
+  setIsLoginOpen: (value: boolean) => void;
 }
 
 const SignUp: React.FC<SignupProps> = ({ setIsSignupOpen, setIsLoginOpen }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modalType, setModalType] = useState<"success" | "failure">("success");
+  const [modalMessage, setModalMessage] = useState("");
   const navigate = useNavigate();
 
   const handleCloseClick = () => {
     setIsSignupOpen(false);
-    setIsLoginOpen(false); 
+    setIsLoginOpen(false);
   };
 
   const handleLogoClick = () => {
     setIsSignupOpen(false);
-    setIsLoginOpen(false); 
+    setIsLoginOpen(false);
   };
 
   const handleRegister = async () => {
-    const response = await register(email, password);
-    if (response) {
-      navigate("/about");
+    try {
+      const response = await register(email, password);
+      if (response && response.token) {
+        setModalType("success");
+        setModalMessage("Registration Successful! Please, check your email box to verify email!");
+        setIsModalVisible(true);
+        setTimeout(() => navigate("/about"), 3000);
+      }
+    } catch (error) {
+      setModalType("failure");
+      setModalMessage("Registration Failed. Please try again.");
+      setIsModalVisible(true);
     }
   };
-
-  // const handleGoogleRegister = async (response: any) => {
-  //   const googleToken = response.credential;
-
-  //   try {
-  //     const res = await axios.post("https://eternalai.fly.dev/user/register", {
-  //       email,
-  //       password,
-  //       googleToken,
-  //     });
-
-  //     if (res.data.token) {
-  //       await dbInstance.addData("users", { email, password, googleToken });
-  //       navigate("/about");
-  //     }
-  //   } catch (error) {
-  //     console.error("Registration Error:", error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   window.google.accounts.id.initialize({
-  //     client_id:
-  //       "297917996967-5i0m39clbr19umnqtclsg7gken22896e.apps.googleusercontent.com",
-  //     callback: handleGoogleRegister,
-  //   });
-
-  //   window.google.accounts.id.renderButton(
-  //     document.getElementById("google-button-signup"),
-  //     {
-  //       theme: "filled_black",
-  //       size: "large",
-  //       text: "sign_up_with_google",
-  //     }
-  //   );
-  // }, []);
 
   const googleSignUp = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
@@ -105,16 +82,22 @@ const SignUp: React.FC<SignupProps> = ({ setIsSignupOpen, setIsLoginOpen }) => {
             email: res.data.email,
             googleToken,
           });
+          setModalType("success");
+          setModalMessage("Google Registration Successful! Please, check your email box to verify email!");
+          setIsModalVisible(true);
           setIsSignupOpen(false);
-          navigate("/about");
-          
+          setTimeout(() => navigate("/about"), 3000);
         }
       } catch (error) {
-        console.error("Google Registration Error:", error);
+        setModalType("failure");
+        setModalMessage("Google Registration Failed. Please try again.");
+        setIsModalVisible(true);
       }
     },
     onError: (error) => {
-      console.error("Google Sign-Up Failed:", error);
+      setModalType("failure");
+      setModalMessage("Google Registration Failed. Please try again.");
+      setIsModalVisible(true);
     },
   });
 
@@ -127,6 +110,11 @@ const SignUp: React.FC<SignupProps> = ({ setIsSignupOpen, setIsLoginOpen }) => {
 
   return (
     <>
+      <ModalSuccess
+        isVisible={isModalVisible}
+        modalType={modalType}
+        message={modalMessage}
+      />
       <UserContainer>
         <Navbar>
           <CloseIcon onClick={handleCloseClick} />

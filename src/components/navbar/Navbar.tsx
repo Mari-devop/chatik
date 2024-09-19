@@ -103,7 +103,7 @@ export const Navbar = () => {
         )}
       </NavbarContainer>
       {isMenuOpen && <Menu setIsMenuOpen={setIsMenuOpen} />}
-      {isLoginOpen && <Login setIsLoginOpen={setIsLoginOpen} setIsSignupOpen={setIsSignupOpen}/>}
+      {isLoginOpen && <Login setIsLoginOpen={setIsLoginOpen} setIsSignupOpen={setIsSignupOpen} checkAuthentication={checkAuthentication}/>}
       {isSignupOpen && <SignUp setIsSignupOpen={setIsSignupOpen} setIsLoginOpen={setIsLoginOpen}/>}
     </div>
   );
