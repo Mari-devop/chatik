@@ -46,7 +46,7 @@ function App() {
                 element={<Token setIsLoginOpen={setIsLoginOpen} />}
               />
               <Route path="/accountDetails" element={<AccountDetails />} />
-              <Route path="/password" element={<NewPassword setIsLoginOpen={setIsLoginOpen} setEmailForLogin={setEmailForLogin}/>} />
+              <Route path="/password" element={<NewPassword setIsLoginOpen={setIsLoginOpen} setEmailForLogin={setEmailForLogin} />} />
             </Routes>
             {isMenuOpen && (
               <Menu

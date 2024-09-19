@@ -55,11 +55,6 @@ const Login: React.FC<LoginProps> = ({ setIsLoginOpen, setIsSignupOpen, checkAut
     setIsSignupOpen(false);
   };
 
-  const handleResetPasswordClick = () => {
-    setIsLoginOpen(false);
-    navigate("/password"); 
-  };
-
   const handleLogin = async () => {
     try {
       const response = await login(email, password);
@@ -135,6 +130,24 @@ const Login: React.FC<LoginProps> = ({ setIsLoginOpen, setIsSignupOpen, checkAut
     };
   }, []);
 
+  const handleForgotPassword = async () => {
+    try {
+      const response = await axios.post(
+        "https://eternalai.fly.dev/user/forgotten-pass", 
+        { email }
+      );
+      if (response.status === 200) {
+        setModalType("success");
+        setModalMessage("An email has been sent to reset your password.");
+        setIsModalVisible(true);
+      }
+    } catch (error) {
+      setModalType("failure");
+      setModalMessage("Failed to send reset email. Please try again.");
+      setIsModalVisible(true);
+    }
+  }
+
   return (
     <>
       <ModalSuccess
@@ -172,7 +185,7 @@ const Login: React.FC<LoginProps> = ({ setIsLoginOpen, setIsSignupOpen, checkAut
             />
           </Row>
           <Row>
-            <ButtonSecondary onClick={handleResetPasswordClick}>Forgot password?</ButtonSecondary>
+            <ButtonSecondary onClick={handleForgotPassword}>Forgot password?</ButtonSecondary>
           </Row>
           <ButtonContainer>
             <CustomGoogleButton onClick={() => googleLogin()}>

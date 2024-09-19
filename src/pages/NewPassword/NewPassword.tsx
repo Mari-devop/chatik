@@ -8,8 +8,8 @@ import { Row } from "../SignUp/SignUp.styled";
 import ModalSuccess from "../../components/ModalSuccess/ModalSuccess";
 
 interface PasswordProps {
-setIsLoginOpen: (value: boolean) => void;
-setEmailForLogin: (value: string) => void; 
+    setIsLoginOpen: (value: boolean) => void;
+    setEmailForLogin: (value: string) => void; 
 }
 
 const NewPassword: React.FC<PasswordProps > = ({ setIsLoginOpen, setEmailForLogin }) => {
@@ -19,22 +19,18 @@ const NewPassword: React.FC<PasswordProps > = ({ setIsLoginOpen, setEmailForLogi
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [modalType, setModalType] = useState<"success" | "failure">("success");
-
- 
   const resetToken = new URLSearchParams(window.location.search).get("token");
 
   const handleSubmit = async () => {
     try {
       const response = await axios.post(
-        `https://eternalai.fly.dev/user/reset-password?token=${resetToken}`,
-        { password }
+       `https://eternalai.fly.dev/user/reset-pass`,
+        { token: resetToken, newPassword: password }
       );
       if (response.status === 200) {
-        const { email } = response.data;
         setModalType("success");
         setModalMessage("Password updated successfully!");
         setIsModalVisible(true);
-        setEmailForLogin(email);
         setIsLoginOpen(true);
       }
     } catch (error) {
