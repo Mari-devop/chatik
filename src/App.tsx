@@ -46,7 +46,7 @@ function App() {
               <Route path='/verify-email' element={<Token />} />
               <Route path='/accountDetails' element={<AccountDetails />} />
             </Routes>
-            {isMenuOpen && <Menu setIsMenuOpen={setIsMenuOpen} />}
+            {isMenuOpen && <Menu setIsMenuOpen={setIsMenuOpen} checkAuthentication={checkAuthentication} />}
             {isLoginOpen && <Login setIsLoginOpen={setIsLoginOpen} setIsSignupOpen={setIsSignupOpen} checkAuthentication={checkAuthentication} />}
             {isSignupOpen && <SignUp setIsSignupOpen={setIsSignupOpen} setIsLoginOpen={setIsLoginOpen}/>}
           </ContentContainer>

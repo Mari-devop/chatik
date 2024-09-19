@@ -61,7 +61,6 @@ const Login: React.FC<LoginProps> = ({ setIsLoginOpen, setIsSignupOpen, checkAut
         setModalMessage('Login Successful!');
         setIsModalVisible(true);
         checkAuthentication();
-        setTimeout(() => navigate("/about"), 3000);
       }
     } catch (error) {
       setModalType('failure');

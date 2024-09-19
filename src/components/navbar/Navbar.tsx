@@ -32,11 +32,7 @@ export const Navbar = () => {
   const checkAuthentication = async () => {
     const users = await dbInstance.getData("users");
     const userWithToken = users.find((user: any) => user.token);
-    if (userWithToken) {
-      setIsAuthenticated(true);
-    } else {
-      setIsAuthenticated(false);
-    }
+    setIsAuthenticated(!!userWithToken);
   };
 
   useEffect(() => {
@@ -102,7 +98,7 @@ export const Navbar = () => {
           </Box>
         )}
       </NavbarContainer>
-      {isMenuOpen && <Menu setIsMenuOpen={setIsMenuOpen} />}
+      {isMenuOpen && <Menu setIsMenuOpen={setIsMenuOpen} checkAuthentication={checkAuthentication} />}
       {isLoginOpen && <Login setIsLoginOpen={setIsLoginOpen} setIsSignupOpen={setIsSignupOpen} checkAuthentication={checkAuthentication}/>}
       {isSignupOpen && <SignUp setIsSignupOpen={setIsSignupOpen} setIsLoginOpen={setIsLoginOpen}/>}
     </div>

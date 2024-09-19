@@ -24,6 +24,7 @@ import { ImageContainer, Image } from "../navbar/Navbar.styled";
 
 interface MenuProps {
   setIsMenuOpen: (value: boolean) => void;
+  checkAuthentication: () => Promise<void>; 
 }
 
 interface User {
@@ -33,17 +34,11 @@ interface User {
   token?: string;
 }
 
-const Menu: React.FC<MenuProps> = ({ setIsMenuOpen }) => {
+const Menu: React.FC<MenuProps> = ({ setIsMenuOpen, checkAuthentication  }) => {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isSignupOpen, setIsSignupOpen] = useState(false);
   const navigate = useNavigate();
-
-  const checkAuthentication = async () => {
-    const users = await dbInstance.getData("users");
-    const userWithToken = users.find((user: User) => user.token);
-    setIsAuthenticated(!!userWithToken);
-  };
 
   const handleCloseClick = () => {
     setIsMenuOpen(false);
@@ -72,6 +67,7 @@ const Menu: React.FC<MenuProps> = ({ setIsMenuOpen }) => {
       if (currentUser) {
         await dbInstance.deleteData("users", currentUser.id);
         setIsMenuOpen(false);
+        await checkAuthentication(); 
         navigate("/");
       } else {
         console.error("No user with token found for sign out");
