@@ -105,7 +105,7 @@ const Login: React.FC<LoginProps> = ({ setIsLoginOpen, setIsSignupOpen, checkAut
           setIsModalVisible(true);
           checkAuthentication();
           setIsLoginOpen(false);
-          setTimeout(() => navigate("/about"), 3000);
+          navigate("/about");
         }
       } catch (error) {
         setModalType("failure");

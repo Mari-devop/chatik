@@ -75,21 +75,36 @@ const SignUp: React.FC<SignupProps> = ({ setIsSignupOpen, setIsLoginOpen }) => {
   };
 
   const googleSignUp = useGoogleLogin({
+    flow: "implicit",
+    scope: "openid email profile",
     onSuccess: async (tokenResponse) => {
       try {
-        const googleToken = tokenResponse.access_token;
+        const googleAccessToken = tokenResponse.access_token;
+
+        const profileResponse = await axios.get(
+          `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${googleAccessToken}`
+        );
+
+        const userProfile = profileResponse.data;
+        const userName = userProfile.name;
 
         const res = await axios.post(
           "https://eternalai.fly.dev/user/register",
           {
-            googleToken,
+          googleToken: googleAccessToken,
+          email,
+          password,
+          name: userName,
           }
         );
+        const token = res.data.token;
 
-        if (res.data.token) {
+        if (token) {
+          console.log("HERE");
           await dbInstance.addData("users", {
             email: res.data.email,
-            googleToken,
+            token,
+            name: userName,
           });
           setModalType("success");
           setModalMessage(
@@ -97,7 +112,7 @@ const SignUp: React.FC<SignupProps> = ({ setIsSignupOpen, setIsLoginOpen }) => {
           );
           setIsModalVisible(true);
           setIsSignupOpen(false);
-          setTimeout(() => navigate("/about"), 3000);
+          navigate("/about");
         }
       } catch (error) {
         setModalType("failure");
