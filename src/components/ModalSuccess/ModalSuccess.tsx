@@ -14,12 +14,12 @@ const slideDown = keyframes`
 
 const ModalContainer = styled.div<{ type: 'success' | 'failure' }>`
   position: fixed;
-  top: 0;
-  left: 50%;
+  top: 50%;
+transform: translate(-50%, -50%);
   transform: translateX(-50%);
   padding: 16px;
   border-radius: 4px;
-  z-index: 1000;
+  z-index: 10000;
   width: 100%;
   max-width: 400px;
   text-align: center;
