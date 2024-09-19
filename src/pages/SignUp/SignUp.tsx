@@ -117,7 +117,7 @@ const SignUp: React.FC<SignupProps> = ({ setIsSignupOpen, setIsLoginOpen, checkA
             "Google Registration Successful! Please, check your email box to verify email!"
           );
           setIsModalVisible(true);
-          checkAuthentication();
+          setIsAuthenticated(true); 
           setIsSignupOpen(false);
           navigate("/about");
         }

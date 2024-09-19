@@ -97,7 +97,6 @@ const Login: React.FC<LoginProps> = ({ setIsLoginOpen, setIsSignupOpen, checkAut
         const token = res.data.token;
 
         if (token) {
-          console.log("HERE");
           await dbInstance.addData("users", {
             email: res.data.email,
             token,
@@ -105,8 +104,8 @@ const Login: React.FC<LoginProps> = ({ setIsLoginOpen, setIsSignupOpen, checkAut
           });
           setModalType("success");
           setModalMessage("Google Login Successful!");
+          setIsAuthenticated(true);
           setIsModalVisible(true);
-          checkAuthentication();
           setIsLoginOpen(false);
           navigate("/");
         }
