@@ -12,12 +12,14 @@ import Chat from "./pages/Chat/Chat";
 import Menu from "./components/menu/Menu";
 import Token from "./pages/Token/Token";
 import AccountDetails from "./pages/AccountDetails/AccountDetails";
+import NewPassword from "./pages/NewPassword/NewPassword";
 
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isSignupOpen, setIsSignupOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [emailForLogin, setEmailForLogin] = useState(""); 
 
   const checkAuthentication = async (): Promise<boolean> => {
     const users = await dbInstance.getData("users");
@@ -44,6 +46,7 @@ function App() {
                 element={<Token setIsLoginOpen={setIsLoginOpen} />}
               />
               <Route path="/accountDetails" element={<AccountDetails />} />
+              <Route path="/password" element={<NewPassword setIsLoginOpen={setIsLoginOpen} setEmailForLogin={setEmailForLogin}/>} />
             </Routes>
             {isMenuOpen && (
               <Menu

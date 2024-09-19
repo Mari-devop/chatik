@@ -34,10 +34,11 @@ interface LoginProps {
   setIsSignupOpen: (value: boolean) => void;
   checkAuthentication: () => Promise<boolean>;
   setIsAuthenticated: (value: boolean) => void;
+  emailFromReset?: string;
 }
 
-const Login: React.FC<LoginProps> = ({ setIsLoginOpen, setIsSignupOpen, checkAuthentication, setIsAuthenticated  }) => {
-  const [email, setEmail] = useState("");
+const Login: React.FC<LoginProps> = ({ setIsLoginOpen, setIsSignupOpen, checkAuthentication, setIsAuthenticated, emailFromReset  }) => {
+  const [email, setEmail] = useState(emailFromReset || ""); 
   const [password, setPassword] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalType, setModalType] = useState<"success" | "failure">("success");
@@ -52,6 +53,11 @@ const Login: React.FC<LoginProps> = ({ setIsLoginOpen, setIsSignupOpen, checkAut
   const handleLogoClick = () => {
     setIsLoginOpen(false);
     setIsSignupOpen(false);
+  };
+
+  const handleResetPasswordClick = () => {
+    setIsLoginOpen(false);
+    navigate("/password"); 
   };
 
   const handleLogin = async () => {
@@ -166,7 +172,7 @@ const Login: React.FC<LoginProps> = ({ setIsLoginOpen, setIsSignupOpen, checkAut
             />
           </Row>
           <Row>
-            <ButtonSecondary>Forgot password?</ButtonSecondary>
+            <ButtonSecondary onClick={handleResetPasswordClick}>Forgot password?</ButtonSecondary>
           </Row>
           <ButtonContainer>
             <CustomGoogleButton onClick={() => googleLogin()}>
