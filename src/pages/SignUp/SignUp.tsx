@@ -29,9 +29,11 @@ import googleIcon from "../../assets/images/Group.png";
 interface SignupProps {
   setIsSignupOpen: (value: boolean) => void;
   setIsLoginOpen: (value: boolean) => void;
+  checkAuthentication: () => Promise<boolean>;
+  setIsAuthenticated: (value: boolean) => void;
 }
 
-const SignUp: React.FC<SignupProps> = ({ setIsSignupOpen, setIsLoginOpen }) => {
+const SignUp: React.FC<SignupProps> = ({ setIsSignupOpen, setIsLoginOpen, checkAuthentication, setIsAuthenticated }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -53,10 +55,14 @@ const SignUp: React.FC<SignupProps> = ({ setIsSignupOpen, setIsLoginOpen }) => {
     try {
       const response = await register(email, password);
       if (response && response.token) {
+        await dbInstance.addData("users", { email: response.email, token: response.token });
+        setIsAuthenticated(true); 
+        setIsSignupOpen(false);
         setModalType("success");
         setModalMessage("Registration Successful! ");
         setIsModalVisible(true);
-        setTimeout(() => navigate("/about"), 3000);
+        checkAuthentication();
+        navigate("/about")
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -111,6 +117,7 @@ const SignUp: React.FC<SignupProps> = ({ setIsSignupOpen, setIsLoginOpen }) => {
             "Google Registration Successful! Please, check your email box to verify email!"
           );
           setIsModalVisible(true);
+          checkAuthentication();
           setIsSignupOpen(false);
           navigate("/about");
         }

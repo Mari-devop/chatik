@@ -24,7 +24,8 @@ import { ImageContainer, Image } from "../navbar/Navbar.styled";
 
 interface MenuProps {
   setIsMenuOpen: (value: boolean) => void;
-  checkAuthentication: () => Promise<void>; 
+  checkAuthentication: () => Promise<boolean>;
+  setIsAuthenticated: (value: boolean) => void; 
 }
 
 interface User {
@@ -34,9 +35,9 @@ interface User {
   token?: string;
 }
 
-const Menu: React.FC<MenuProps> = ({ setIsMenuOpen, checkAuthentication  }) => {
+const Menu: React.FC<MenuProps> = ({ setIsMenuOpen, checkAuthentication, setIsAuthenticated  }) => {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticatedState] = useState(false);
   const [isSignupOpen, setIsSignupOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -68,6 +69,7 @@ const Menu: React.FC<MenuProps> = ({ setIsMenuOpen, checkAuthentication  }) => {
         await dbInstance.deleteData("users", currentUser.id);
         setIsMenuOpen(false);
         await checkAuthentication(); 
+        setIsAuthenticated(false);
         navigate("/");
       } else {
         console.error("No user with token found for sign out");
@@ -78,12 +80,17 @@ const Menu: React.FC<MenuProps> = ({ setIsMenuOpen, checkAuthentication  }) => {
   };
 
   useEffect(() => {
-    checkAuthentication();
+  const checkAuthStatus = async () => {
+    const isAuth = await checkAuthentication();
+    setIsAuthenticatedState(isAuth);
+  }
+
+  checkAuthStatus();
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = "auto";
     };
-  }, []);
+  }, [checkAuthentication]);
 
   return (
     <MenuContainer>

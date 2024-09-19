@@ -1,34 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { GoogleOAuthProvider } from '@react-oauth/google';
-import { dbInstance } from './db';
-import SignUp from './pages/SignUp/SignUp';
-import { MainContainer, ContentContainer } from './assets/css/Global.styled';
-import Login from './pages/Login/Login';
-import About from './pages/About/About';
-import Home from './pages/Home/Home';
-import Navbar from './components/navbar/Navbar';
-import Chat from './pages/Chat/Chat';
-import Menu from './components/menu/Menu';
-import Token from './pages/Token/Token';
-import AccountDetails from './pages/AccountDetails/AccountDetails';
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { dbInstance } from "./db";
+import SignUp from "./pages/SignUp/SignUp";
+import { MainContainer, ContentContainer } from "./assets/css/Global.styled";
+import Login from "./pages/Login/Login";
+import About from "./pages/About/About";
+import Home from "./pages/Home/Home";
+import Navbar from "./components/navbar/Navbar";
+import Chat from "./pages/Chat/Chat";
+import Menu from "./components/menu/Menu";
+import Token from "./pages/Token/Token";
+import AccountDetails from "./pages/AccountDetails/AccountDetails";
 
 function App() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false); 
-  const [isLoginOpen, setIsLoginOpen] = useState(false); 
-  const [isSignupOpen, setIsSignupOpen] = useState(false); 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isSignupOpen, setIsSignupOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const checkAuthentication = async () => {
+  const checkAuthentication = async (): Promise<boolean> => {
     const users = await dbInstance.getData("users");
     const userWithToken = users.find((user: any) => user.token);
-    if (userWithToken) {
-      setIsAuthenticated(true);
-    } else {
-      setIsAuthenticated(false);
-    }
+    setIsAuthenticated(!!userWithToken); 
+    return !!userWithToken;
   };
-
   useEffect(() => {
     checkAuthentication();
   }, []);
@@ -37,18 +33,41 @@ function App() {
     <GoogleOAuthProvider clientId="297917996967-5i0m39clbr19umnqtclsg7gken22896e.apps.googleusercontent.com">
       <Router>
         <MainContainer>
-          <Navbar />
+          <Navbar isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />
           <ContentContainer>
             <Routes>
-              <Route path='/' element={<Home />} />
-              <Route path='/about' element={<About />} />
-              <Route path='/chat' element={<Chat />} />
-              <Route path='/verify-email' element={<Token setIsLoginOpen={setIsLoginOpen} />} />
-              <Route path='/accountDetails' element={<AccountDetails />} />
+              <Route path="/" element={<Home />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/chat" element={<Chat />} />
+              <Route
+                path="/verify-email"
+                element={<Token setIsLoginOpen={setIsLoginOpen} />}
+              />
+              <Route path="/accountDetails" element={<AccountDetails />} />
             </Routes>
-            {isMenuOpen && <Menu setIsMenuOpen={setIsMenuOpen} checkAuthentication={checkAuthentication} />}
-            {isLoginOpen && <Login setIsLoginOpen={setIsLoginOpen} setIsSignupOpen={setIsSignupOpen} checkAuthentication={checkAuthentication} />}
-            {isSignupOpen && <SignUp setIsSignupOpen={setIsSignupOpen} setIsLoginOpen={setIsLoginOpen}/>}
+            {isMenuOpen && (
+              <Menu
+                setIsMenuOpen={setIsMenuOpen}
+                checkAuthentication={checkAuthentication}
+                setIsAuthenticated={setIsAuthenticated}
+              />
+            )}
+            {isLoginOpen && (
+              <Login
+                setIsLoginOpen={setIsLoginOpen}
+                setIsSignupOpen={setIsSignupOpen}
+                checkAuthentication={checkAuthentication}
+                setIsAuthenticated={setIsAuthenticated}
+              />
+            )}
+            {isSignupOpen && (
+              <SignUp
+                setIsSignupOpen={setIsSignupOpen}
+                setIsLoginOpen={setIsLoginOpen}
+                checkAuthentication={checkAuthentication}
+                setIsAuthenticated={setIsAuthenticated}
+              />
+            )}
           </ContentContainer>
         </MainContainer>
       </Router>

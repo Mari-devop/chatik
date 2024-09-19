@@ -32,10 +32,11 @@ import logo from "../../assets/images/logo.png";
 interface LoginProps {
   setIsLoginOpen: (value: boolean) => void;
   setIsSignupOpen: (value: boolean) => void;
-  checkAuthentication: () => Promise<void>; 
+  checkAuthentication: () => Promise<boolean>;
+  setIsAuthenticated: (value: boolean) => void;
 }
 
-const Login: React.FC<LoginProps> = ({ setIsLoginOpen, setIsSignupOpen, checkAuthentication }) => {
+const Login: React.FC<LoginProps> = ({ setIsLoginOpen, setIsSignupOpen, checkAuthentication, setIsAuthenticated  }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -56,12 +57,14 @@ const Login: React.FC<LoginProps> = ({ setIsLoginOpen, setIsSignupOpen, checkAut
   const handleLogin = async () => {
     try {
       const response = await login(email, password);
-      if (response && response.token) {
+      if (response && response.status === 200 && response.token) {
         setModalType('success');
         setModalMessage('Login Successful!');
-        checkAuthentication();
+        await dbInstance.addData("users", { email: response.email, token: response.token });
+        setIsAuthenticated(true);
         setIsModalVisible(true);
         setIsLoginOpen(false);
+        navigate("/");
       }
     } catch (error) {
       setModalType('failure');
@@ -105,7 +108,7 @@ const Login: React.FC<LoginProps> = ({ setIsLoginOpen, setIsSignupOpen, checkAut
           setIsModalVisible(true);
           checkAuthentication();
           setIsLoginOpen(false);
-          navigate("/about");
+          navigate("/");
         }
       } catch (error) {
         setModalType("failure");

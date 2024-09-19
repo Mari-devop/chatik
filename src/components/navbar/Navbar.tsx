@@ -21,22 +21,30 @@ import logo from "../../assets/images/logo.png";
 import menu from "../../assets/images/main-page/menu.png";
 import share from "../../assets/images/share 1.png";
 
-export const Navbar = () => {
+interface NavbarProps {
+  isAuthenticated: boolean;
+  setIsAuthenticated: (value: boolean) => void;  
+}
+
+export const Navbar = ({ isAuthenticated, setIsAuthenticated }: NavbarProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isSignupOpen, setIsSignupOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
-  const checkAuthentication = async () => {
+  const checkAuthentication = async (): Promise<boolean> => {
     const users = await dbInstance.getData("users");
     const userWithToken = users.find((user: any) => user.token);
-    setIsAuthenticated(!!userWithToken);
+    return !!userWithToken; 
   };
 
   useEffect(() => {
-    checkAuthentication();
+    const updateAuthStatus = async () => {
+      const isAuth = await checkAuthentication();
+      setIsAuthenticated(isAuth);
+    };
+    updateAuthStatus();
   }, []);
 
   const handleLogoClick = () => {
@@ -98,9 +106,29 @@ export const Navbar = () => {
           </Box>
         )}
       </NavbarContainer>
-      {isMenuOpen && <Menu setIsMenuOpen={setIsMenuOpen} checkAuthentication={checkAuthentication} />}
-      {isLoginOpen && <Login setIsLoginOpen={setIsLoginOpen} setIsSignupOpen={setIsSignupOpen} checkAuthentication={checkAuthentication}/>}
-      {isSignupOpen && <SignUp setIsSignupOpen={setIsSignupOpen} setIsLoginOpen={setIsLoginOpen}/>}
+      {isMenuOpen && (
+        <Menu
+          setIsMenuOpen={setIsMenuOpen}
+          checkAuthentication={checkAuthentication}
+          setIsAuthenticated={setIsAuthenticated} 
+        />
+      )}
+      {isLoginOpen && (
+        <Login
+          setIsLoginOpen={setIsLoginOpen}
+          setIsSignupOpen={setIsSignupOpen}
+          checkAuthentication={checkAuthentication}
+          setIsAuthenticated={setIsAuthenticated} 
+        />
+      )}
+      {isSignupOpen && (
+        <SignUp
+          setIsSignupOpen={setIsSignupOpen}
+          setIsLoginOpen={setIsLoginOpen}
+          checkAuthentication={checkAuthentication}
+          setIsAuthenticated={setIsAuthenticated} 
+        />
+      )}
     </div>
   );
 };
