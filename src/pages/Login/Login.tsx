@@ -91,7 +91,6 @@ const Login: React.FC<LoginProps> = ({ setIsLoginOpen, setIsSignupOpen }) => {
   //   );
   // }, []);
 
-  
   const googleLogin = useGoogleLogin({
     flow: "implicit",
     scope: "openid email profile",
@@ -125,8 +124,8 @@ const Login: React.FC<LoginProps> = ({ setIsLoginOpen, setIsSignupOpen }) => {
             token,
             name: userName
           });
-          navigate("/about");
           setIsLoginOpen(false);
+          navigate("/about");
         }
       } catch (error) {
         console.error("Google Login Error:", error);
