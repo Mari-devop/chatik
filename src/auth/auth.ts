@@ -1,9 +1,8 @@
 import axios, { AxiosError } from "axios";
 import { dbInstance } from "../db";
-import { useNavigate } from 'react-router-dom';
 
 export const register = async (email: string, password: string) => {
-    try {
+    // try {
         const response = await axios.post('https://eternalai.fly.dev/user/register', {
             email,
             password,
@@ -17,21 +16,21 @@ export const register = async (email: string, password: string) => {
         await dbInstance.addData('users', { email, password, token });
         return response.data;
 
-    } catch (error: unknown) {
-        if(axios.isAxiosError(error)) {
-            if(error.response && error.response.status === 401) {
-                window.location.href = '/';
-            } else {
-                console.error('Registration Error:', error);
-            }
-        } else {
-            console.error('Registration Error:', error);
-        } 
-    }
+    // } catch (error: unknown) {
+    //     if(axios.isAxiosError(error)) {
+    //         if(error.response && error.response.status === 401) {
+    //             window.location.href = '/';
+    //         } else {
+    //             console.error('Registration Error:', error);
+    //         }
+    //     } else {
+    //         console.error('Registration Error:', error);
+    //     } 
+    // }
 };
 
 export const login = async (email: string, password: string) => {
-    try {
+    // try {
         const response = await axios.post('https://eternalai.fly.dev/user/login', {
             email,
             password,
@@ -45,15 +44,15 @@ export const login = async (email: string, password: string) => {
         await dbInstance.addData('users', { email, password, token });
         return response.data;
 
-    } catch (error) {
-        if(axios.isAxiosError(error)) {
-            if(error.response && error.response.status === 401) {
-                window.location.href = '/';
-            } else {
-                console.error('Registration Error:', error);
-            }
-        } else {
-            console.error('Registration Error:', error);
-        } 
-    }
+    // } catch (error) {
+    //     if(axios.isAxiosError(error)) {
+    //         if(error.response && error.response.status === 401) {
+    //             window.location.href = '/';
+    //         } else {
+    //             console.error('Registration Error:', error);
+    //         }
+    //     } else {
+    //         console.error('Registration Error:', error);
+    //     } 
+    // }
 };

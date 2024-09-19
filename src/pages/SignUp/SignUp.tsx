@@ -54,14 +54,23 @@ const SignUp: React.FC<SignupProps> = ({ setIsSignupOpen, setIsLoginOpen }) => {
       const response = await register(email, password);
       if (response && response.token) {
         setModalType("success");
-        setModalMessage("Registration Successful! Please, check your email box to verify email!");
+        setModalMessage("Registration Successful! ");
         setIsModalVisible(true);
         setTimeout(() => navigate("/about"), 3000);
       }
     } catch (error) {
-      setModalType("failure");
-      setModalMessage("Registration Failed. Please try again.");
-      setIsModalVisible(true);
+      if (axios.isAxiosError(error)) {
+        if (error.response && error.response.status === 401) {
+          setModalType("failure");
+          setModalMessage("Please, check your email box to verify email!");
+          setIsModalVisible(true);
+        } else {
+          setModalType("failure");
+          setModalMessage("Error to sign up. Check your credentials!");
+          setIsModalVisible(true);
+        }
+      }
+      
     }
   };
 
@@ -83,7 +92,9 @@ const SignUp: React.FC<SignupProps> = ({ setIsSignupOpen, setIsLoginOpen }) => {
             googleToken,
           });
           setModalType("success");
-          setModalMessage("Google Registration Successful! Please, check your email box to verify email!");
+          setModalMessage(
+            "Google Registration Successful! Please, check your email box to verify email!"
+          );
           setIsModalVisible(true);
           setIsSignupOpen(false);
           setTimeout(() => navigate("/about"), 3000);

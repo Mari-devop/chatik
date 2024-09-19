@@ -43,7 +43,7 @@ function App() {
               <Route path='/' element={<Home />} />
               <Route path='/about' element={<About />} />
               <Route path='/chat' element={<Chat />} />
-              <Route path='/verify-email' element={<Token />} />
+              <Route path='/verify-email' element={<Token setIsLoginOpen={setIsLoginOpen} />} />
               <Route path='/accountDetails' element={<AccountDetails />} />
             </Routes>
             {isMenuOpen && <Menu setIsMenuOpen={setIsMenuOpen} checkAuthentication={checkAuthentication} />}
