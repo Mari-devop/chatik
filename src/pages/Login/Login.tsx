@@ -57,7 +57,7 @@ const Login: React.FC<LoginProps> = ({ setIsLoginOpen, setIsSignupOpen, checkAut
   const handleLogin = async () => {
     try {
       const response = await login(email, password);
-      if (response && response.status === 200 && response.token) {
+      if (response && response.token) {
         setModalType('success');
         setModalMessage('Login Successful!');
         await dbInstance.addData("users", { email: response.email, token: response.token });

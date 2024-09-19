@@ -49,7 +49,7 @@ const Token: React.FC<TokenProps> = ({ setIsLoginOpen }) => {
   return (
     <Container>
       <BoxContainer>
-        <Text>Please, enter your token here</Text>
+        <Text>Click "Verify" to get access to your account</Text>
         <TextArea value={token} readOnly></TextArea>
         <Button onClick={verify}>VERIFY</Button>
       </BoxContainer>
