@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { Container, BoxContainer } from "../About/About.styled";
 import { TextArea, Button, Text } from "../Token/Token.styled";
@@ -31,6 +30,8 @@ const Token: React.FC<TokenProps> = ({ setIsLoginOpen }) => {
           token,
         }
       );
+
+      const { email } = response.data;
 
       if (response.status === 200) {
         setModalType("success");

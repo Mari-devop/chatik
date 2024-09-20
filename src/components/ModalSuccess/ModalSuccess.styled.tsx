@@ -32,7 +32,7 @@ export const ModalContainer = styled.div<{ type: 'success' | 'failure' }>`
     padding: 1px;
     background: ${({ type }) =>
       type === 'success'
-        ? `linear-gradient(45deg, #5833ef, #f82d98)`
+        ? `linear-gradient(45deg, #5833ef, #B5E42E)`
         : `linear-gradient(45deg, rgba(250, 0, 80, 1), rgba(250, 120, 120, 1))`};
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: destination-out;
