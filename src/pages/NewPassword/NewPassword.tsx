@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import { Container, BoxContainer } from "../About/About.styled";
 import { Button } from "./NewPassword.styled";
 import { AvenirH2 } from "../../assets/css/Global.styled";
@@ -18,6 +17,7 @@ const NewPassword: React.FC<PasswordProps> = ({
   setIsLoginOpen,
   setEmailForLogin,
 }) => {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false); 
@@ -35,19 +35,20 @@ const NewPassword: React.FC<PasswordProps> = ({
         { token: resetToken, password: newPassword }
       );
       if (response.status === 200) {
-        // setModalType("success");
-        // setModalMessage("Password updated successfully!");
-        // setIsModalVisible(true);
-        // setTimeout(() => {
-        //   setIsModalVisible(false);
-        //   setIsLoginOpen(true); 
-        // }, 5000);
-        setIsLoginOpen(true); 
+        setModalType("success");
+        setModalMessage("Password updated successfully!");
+        setIsModalVisible(true);
+
+        setTimeout(() => {
+          setIsModalVisible(false);
+          setIsLoginOpen(true); 
+        }, 5000);
       }
     } catch (error) {
       setModalType("failure");
       setModalMessage("Password update failed. Please try again.");
       setIsModalVisible(true);
+      
       setTimeout(() => {
         setIsModalVisible(false);
       }, 5000);

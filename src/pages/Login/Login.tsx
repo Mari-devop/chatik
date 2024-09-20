@@ -48,7 +48,7 @@ const Login: React.FC<LoginProps> = ({
   const [isEmailValid, setIsEmailValid] = useState(true);
   const [password, setPassword] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [modalType, setModalType] = useState<"success" | "failure">("failure");
+  const [modalType, setModalType] = useState<"success" | "failure">("success");
   const [modalMessage, setModalMessage] = useState("");
   const navigate = useNavigate();
 
@@ -75,32 +75,34 @@ const Login: React.FC<LoginProps> = ({
         });
         setIsAuthenticated(true);
         setIsModalVisible(true);
-        setTimeout(() => {
-          setIsModalVisible(false);
-          setIsLoginOpen(false);
-          navigate("/");
-        }, 5000);
+
+        setIsLoginOpen(false);
+        navigate("/");
       }
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response && error.response.status === 401) {
+    } catch (error: any) {
+      console.log("Error details:", error);
+
+      if (error.response) {
+        if (error.response.status === 401) {
           setModalType("failure");
           setModalMessage("Invalid email or password");
-          setIsModalVisible(true);
-          setIsAuthenticated(false);
-          setTimeout(() => {
-            setIsModalVisible(false);
-          }, 5000);
+        } else if (error.response.status === 500) {
+          setModalType("failure");
+          setModalMessage("Server error. Please try again later.");
         } else {
           setModalType("failure");
           setModalMessage("Login Failed. Please try again.");
-          setIsModalVisible(true);
-          setIsAuthenticated(false);
-          setTimeout(() => {
-            setIsModalVisible(false);
-          }, 5000);
         }
+      } else {
+        setModalType("failure");
+        setModalMessage("Network error. Please check your connection.");
       }
+
+      setIsModalVisible(true);
+      console.log("Modal should now be visible");
+      setIsAuthenticated(false);
+
+     
     }
   };
 
@@ -163,18 +165,18 @@ const Login: React.FC<LoginProps> = ({
   useEffect(() => {
     const getEmailFromDB = async () => {
       const users = await dbInstance.getData("users");
-      if(users && users.length > 0) {
+      if (users && users.length > 0) {
         const lastRegisteredUser = users[users.length - 1];
         setEmail(lastRegisteredUser.email);
-      } 
+      }
     };
     getEmailFromDB();
-  },[])
-  
+  }, []);
+
   const handleForgotPassword = async () => {
     if (!email) {
-      setIsEmailValid(false); 
-      return; 
+      setIsEmailValid(false);
+      return;
     }
     try {
       const response = await axios.post(
@@ -190,20 +192,29 @@ const Login: React.FC<LoginProps> = ({
       if (error.response.status === 401) {
         setModalType("failure");
         setModalMessage("Email not found. Sign up first.");
-        setIsModalVisible(true);
+     
+      } else if (error.response.status === 500) {
+        setModalType("failure");
+        setModalMessage("Email or password is invalid");
+     
       } else {
         setModalType("failure");
         setModalMessage("Failed to send reset email. Please try again.");
-        setIsModalVisible(true);
+       
       }
+      setIsModalVisible(true);
     }
   };
 
   useEffect(() => {
     if (email) {
-      setIsEmailValid(true); 
+      setIsEmailValid(true);
     }
   }, [email]);
+
+  useEffect(() => {
+    console.log("Modal visibility state:", isModalVisible);
+  }, [isModalVisible]);
 
   return (
     <>
@@ -211,7 +222,7 @@ const Login: React.FC<LoginProps> = ({
         isVisible={isModalVisible}
         modalType={modalType}
         message={modalMessage}
-        onClose={() => setIsModalVisible(false)} 
+        onClose={() => setIsModalVisible(false)}
       />
       <UserContainer>
         <Navbar>
@@ -231,7 +242,7 @@ const Login: React.FC<LoginProps> = ({
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               style={{
-                borderColor: !isEmailValid ? "red" : "", 
+                borderColor: !isEmailValid ? "red" : "",
               }}
             />
           </Row>
