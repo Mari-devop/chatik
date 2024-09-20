@@ -25,7 +25,7 @@ const NewPassword: React.FC<PasswordProps > = ({ setIsLoginOpen, setEmailForLogi
     try {
       const response = await axios.post(
        `https://eternalai.fly.dev/user/reset-pass`,
-        { token: resetToken, newPassword: password }
+        { token: resetToken, password: newPassword }
       );
       if (response.status === 200) {
         setModalType("success");
@@ -49,6 +49,11 @@ const NewPassword: React.FC<PasswordProps > = ({ setIsLoginOpen, setEmailForLogi
 
   return (
     <Container>
+       <ModalSuccess
+        isVisible={isModalVisible}
+        modalType={modalType}
+        message={modalMessage}
+      />
       <BoxContainer>
         <AvenirH2>Change your password</AvenirH2>
         <Row>
@@ -73,11 +78,6 @@ const NewPassword: React.FC<PasswordProps > = ({ setIsLoginOpen, setEmailForLogi
         </Row>
         <Button disabled={isButtonDisabled} onClick={handleSubmit}>SUBMIT</Button>
       </BoxContainer>
-      <ModalSuccess
-        isVisible={isModalVisible}
-        modalType={modalType}
-        message={modalMessage}
-      />
     </Container>
   );
 };
