@@ -141,10 +141,16 @@ const Login: React.FC<LoginProps> = ({ setIsLoginOpen, setIsSignupOpen, checkAut
         setModalMessage("An email has been sent to reset your password.");
         setIsModalVisible(true);
       }
-    } catch (error) {
-      setModalType("failure");
-      setModalMessage("Failed to send reset email. Please try again.");
-      setIsModalVisible(true);
+    } catch (error: any) {
+      if (error.response.status === 401) {
+        setModalType("failure");
+        setModalMessage("Email not found. Sign up first.");
+        setIsModalVisible(true);
+      } else {
+        setModalType("failure");
+        setModalMessage("Failed to send reset email. Please try again.");
+        setIsModalVisible(true);
+      }
     }
   }
 
