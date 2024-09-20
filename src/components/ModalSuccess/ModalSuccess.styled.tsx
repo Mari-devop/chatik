@@ -4,7 +4,6 @@ export const ModalContainer = styled.div<{ type: 'success' | 'failure' }>`
   position: fixed;
   top: 25px;
   left: 50%;
-  transform: translate-Y(-50%);
   transform: translateX(-50%);
   padding: 16px;
   border-radius: 4px;
