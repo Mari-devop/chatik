@@ -54,18 +54,20 @@ const Token: React.FC<TokenProps> = ({ setIsLoginOpen }) => {
   };
 
   return (
-    <Container>
+    <>
       <ModalSuccess
         isVisible={isModalVisible}
         modalType={modalType}
         message={modalMessage}
       />
-      <BoxContainer>
-        <Text>Click "Verify" to get access to your account</Text>
-        <TextArea value={token} readOnly></TextArea>
-        <Button onClick={verify}>VERIFY</Button>
-      </BoxContainer>
-    </Container>
+      <Container>
+        <BoxContainer>
+          <Text>Click "Verify" to get access to your account</Text>
+          <TextArea value={token} readOnly></TextArea>
+          <Button onClick={verify}>VERIFY</Button>
+        </BoxContainer>
+      </Container>
+    </>
   );
 };
 
