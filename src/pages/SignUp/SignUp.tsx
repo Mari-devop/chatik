@@ -67,7 +67,7 @@ const SignUp: React.FC<SignupProps> = ({ setIsSignupOpen, setIsLoginOpen, checkA
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response && error.response.status === 401) {
-          setModalType("failure");
+          setModalType("success");
           setModalMessage("Please, check your email box to verify email!");
           setIsModalVisible(true);
         } else {
