@@ -54,7 +54,7 @@ const SignUp: React.FC<SignupProps> = ({ setIsSignupOpen, setIsLoginOpen, checkA
   const handleRegister = async () => {
     try {
       const response = await register(email, password);
-      if (response && response.token) {
+      if (response && response.token && response.status === 200) {
         await dbInstance.addData("users", { email: response.email, token: response.token });
         setIsAuthenticated(true); 
         setIsSignupOpen(false);

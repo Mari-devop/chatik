@@ -37,8 +37,14 @@ interface LoginProps {
   emailFromReset?: string;
 }
 
-const Login: React.FC<LoginProps> = ({ setIsLoginOpen, setIsSignupOpen, checkAuthentication, setIsAuthenticated, emailFromReset  }) => {
-  const [email, setEmail] = useState(emailFromReset || ""); 
+const Login: React.FC<LoginProps> = ({
+  setIsLoginOpen,
+  setIsSignupOpen,
+  checkAuthentication,
+  setIsAuthenticated,
+  emailFromReset,
+}) => {
+  const [email, setEmail] = useState(emailFromReset || "");
   const [password, setPassword] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalType, setModalType] = useState<"success" | "failure">("success");
@@ -58,19 +64,30 @@ const Login: React.FC<LoginProps> = ({ setIsLoginOpen, setIsSignupOpen, checkAut
   const handleLogin = async () => {
     try {
       const response = await login(email, password);
-      if (response && response.token) {
-        setModalType('success');
-        setModalMessage('Login Successful!');
-        await dbInstance.addData("users", { email: response.email, token: response.token });
+      if (response && response.token && response.status === 200) {
+        setModalType("success");
+        setModalMessage("Login Successful!");
+        await dbInstance.addData("users", {
+          email: response.email,
+          token: response.token,
+        });
         setIsAuthenticated(true);
         setIsModalVisible(true);
         setIsLoginOpen(false);
         navigate("/");
       }
     } catch (error) {
-      setModalType('failure');
-      setModalMessage('Login Failed. Please try again.');
-      setIsModalVisible(true);
+      if (axios.isAxiosError(error)) {
+        if (error.response && error.response.status === 401) {
+          setModalType("failure");
+          setModalMessage("Invalid email or password");
+          setIsModalVisible(true);
+        } else {
+          setModalType("failure");
+          setModalMessage("Login Failed. Please try again.");
+          setIsModalVisible(true);
+        }
+      }
     }
   };
 
@@ -133,7 +150,7 @@ const Login: React.FC<LoginProps> = ({ setIsLoginOpen, setIsSignupOpen, checkAut
   const handleForgotPassword = async () => {
     try {
       const response = await axios.post(
-        "https://eternalai.fly.dev/user/forgotten-pass", 
+        "https://eternalai.fly.dev/user/forgotten-pass",
         { email }
       );
       if (response.status === 200) {
@@ -152,7 +169,7 @@ const Login: React.FC<LoginProps> = ({ setIsLoginOpen, setIsSignupOpen, checkAut
         setIsModalVisible(true);
       }
     }
-  }
+  };
 
   return (
     <>
@@ -191,7 +208,9 @@ const Login: React.FC<LoginProps> = ({ setIsLoginOpen, setIsSignupOpen, checkAut
             />
           </Row>
           <Row>
-            <ButtonSecondary onClick={handleForgotPassword}>Forgot password?</ButtonSecondary>
+            <ButtonSecondary onClick={handleForgotPassword}>
+              Forgot password?
+            </ButtonSecondary>
           </Row>
           <ButtonContainer>
             <CustomGoogleButton onClick={() => googleLogin()}>
