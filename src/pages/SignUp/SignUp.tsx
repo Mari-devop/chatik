@@ -147,6 +147,7 @@ const SignUp: React.FC<SignupProps> = ({ setIsSignupOpen, setIsLoginOpen, checkA
         isVisible={isModalVisible}
         modalType={modalType}
         message={modalMessage}
+        onClose={() => setIsModalVisible(false)} 
       />
       <UserContainer>
         <Navbar>

@@ -45,9 +45,10 @@ const Login: React.FC<LoginProps> = ({
   emailFromReset,
 }) => {
   const [email, setEmail] = useState(emailFromReset || "");
+  const [isEmailValid, setIsEmailValid] = useState(true);
   const [password, setPassword] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [modalType, setModalType] = useState<"success" | "failure">("success");
+  const [modalType, setModalType] = useState<"success" | "failure">("failure");
   const [modalMessage, setModalMessage] = useState("");
   const navigate = useNavigate();
 
@@ -64,7 +65,8 @@ const Login: React.FC<LoginProps> = ({
   const handleLogin = async () => {
     try {
       const response = await login(email, password);
-      if (response && response.token && response.status === 200) {
+
+      if (response && response.token) {
         setModalType("success");
         setModalMessage("Login Successful!");
         await dbInstance.addData("users", {
@@ -73,8 +75,11 @@ const Login: React.FC<LoginProps> = ({
         });
         setIsAuthenticated(true);
         setIsModalVisible(true);
-        setIsLoginOpen(false);
-        navigate("/");
+        setTimeout(() => {
+          setIsModalVisible(false);
+          setIsLoginOpen(false);
+          navigate("/");
+        }, 5000);
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -82,10 +87,18 @@ const Login: React.FC<LoginProps> = ({
           setModalType("failure");
           setModalMessage("Invalid email or password");
           setIsModalVisible(true);
+          setIsAuthenticated(false);
+          setTimeout(() => {
+            setIsModalVisible(false);
+          }, 5000);
         } else {
           setModalType("failure");
           setModalMessage("Login Failed. Please try again.");
           setIsModalVisible(true);
+          setIsAuthenticated(false);
+          setTimeout(() => {
+            setIsModalVisible(false);
+          }, 5000);
         }
       }
     }
@@ -147,7 +160,22 @@ const Login: React.FC<LoginProps> = ({
     };
   }, []);
 
+  useEffect(() => {
+    const getEmailFromDB = async () => {
+      const users = await dbInstance.getData("users");
+      if(users && users.length > 0) {
+        const lastRegisteredUser = users[users.length - 1];
+        setEmail(lastRegisteredUser.email);
+      } 
+    };
+    getEmailFromDB();
+  },[])
+  
   const handleForgotPassword = async () => {
+    if (!email) {
+      setIsEmailValid(false); 
+      return; 
+    }
     try {
       const response = await axios.post(
         "https://eternalai.fly.dev/user/forgotten-pass",
@@ -171,12 +199,19 @@ const Login: React.FC<LoginProps> = ({
     }
   };
 
+  useEffect(() => {
+    if (email) {
+      setIsEmailValid(true); 
+    }
+  }, [email]);
+
   return (
     <>
       <ModalSuccess
         isVisible={isModalVisible}
         modalType={modalType}
         message={modalMessage}
+        onClose={() => setIsModalVisible(false)} 
       />
       <UserContainer>
         <Navbar>
@@ -195,6 +230,9 @@ const Login: React.FC<LoginProps> = ({
               placeholder="justin@gmail.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              style={{
+                borderColor: !isEmailValid ? "red" : "", 
+              }}
             />
           </Row>
           <Row>
