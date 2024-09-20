@@ -13,18 +13,19 @@ import Menu from "./components/menu/Menu";
 import Token from "./pages/Token/Token";
 import AccountDetails from "./pages/AccountDetails/AccountDetails";
 import NewPassword from "./pages/NewPassword/NewPassword";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isSignupOpen, setIsSignupOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [emailForLogin, setEmailForLogin] = useState(""); 
+  const [emailForLogin, setEmailForLogin] = useState("");
 
   const checkAuthentication = async (): Promise<boolean> => {
     const users = await dbInstance.getData("users");
     const userWithToken = users.find((user: any) => user.token);
-    setIsAuthenticated(!!userWithToken); 
+    setIsAuthenticated(!!userWithToken);
     return !!userWithToken;
   };
   useEffect(() => {
@@ -35,7 +36,10 @@ function App() {
     <GoogleOAuthProvider clientId="297917996967-5i0m39clbr19umnqtclsg7gken22896e.apps.googleusercontent.com">
       <Router>
         <MainContainer>
-          <Navbar isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />
+          <Navbar
+            isAuthenticated={isAuthenticated}
+            setIsAuthenticated={setIsAuthenticated}
+          />
           <ContentContainer>
             <Routes>
               <Route path="/" element={<Home />} />
@@ -45,8 +49,23 @@ function App() {
                 path="/verify-email"
                 element={<Token setIsLoginOpen={setIsLoginOpen} />}
               />
-              <Route path="/accountDetails" element={<AccountDetails />} />
-              <Route path="/password" element={<NewPassword setIsLoginOpen={setIsLoginOpen} setEmailForLogin={setEmailForLogin} />} />
+              <Route
+                path="/accountDetails"
+                element={
+                  <ProtectedRoute isAuthenticated={isAuthenticated}>
+                    <AccountDetails />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/password"
+                element={
+                  <NewPassword
+                    setIsLoginOpen={setIsLoginOpen}
+                    setEmailForLogin={setEmailForLogin}
+                  />
+                }
+              />
             </Routes>
             {isMenuOpen && (
               <Menu

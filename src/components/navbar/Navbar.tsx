@@ -23,10 +23,13 @@ import share from "../../assets/images/share 1.png";
 
 interface NavbarProps {
   isAuthenticated: boolean;
-  setIsAuthenticated: (value: boolean) => void;  
+  setIsAuthenticated: (value: boolean) => void;
 }
 
-export const Navbar = ({ isAuthenticated, setIsAuthenticated }: NavbarProps) => {
+export const Navbar = ({
+  isAuthenticated,
+  setIsAuthenticated,
+}: NavbarProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isSignupOpen, setIsSignupOpen] = useState(false);
@@ -36,7 +39,7 @@ export const Navbar = ({ isAuthenticated, setIsAuthenticated }: NavbarProps) => 
   const checkAuthentication = async (): Promise<boolean> => {
     const users = await dbInstance.getData("users");
     const userWithToken = users.find((user: any) => user.token);
-    return !!userWithToken; 
+    return !!userWithToken;
   };
 
   useEffect(() => {
@@ -65,7 +68,13 @@ export const Navbar = ({ isAuthenticated, setIsAuthenticated }: NavbarProps) => 
 
   return (
     <div>
-      <NavbarContainer>
+      <NavbarContainer
+        style={
+          location.pathname === "/accountDetails"
+            ? { position: "sticky", top: 0, width: "100%", zIndex: 1000 }
+            : {}
+        }
+      >
         <ImageContainer>
           <Image src={logo} alt="logo" onClick={handleLogoClick} />
         </ImageContainer>
@@ -105,12 +114,18 @@ export const Navbar = ({ isAuthenticated, setIsAuthenticated }: NavbarProps) => 
             </RightContainer>
           </Box>
         )}
+        {location.pathname === "/accountDetails" && (
+          <ButtonMenu onClick={handleMenuClick}>
+            
+            <Icon src={menu} alt="menu" />
+          </ButtonMenu>
+        )}
       </NavbarContainer>
       {isMenuOpen && (
         <Menu
           setIsMenuOpen={setIsMenuOpen}
           checkAuthentication={checkAuthentication}
-          setIsAuthenticated={setIsAuthenticated} 
+          setIsAuthenticated={setIsAuthenticated}
         />
       )}
       {isLoginOpen && (
@@ -118,7 +133,7 @@ export const Navbar = ({ isAuthenticated, setIsAuthenticated }: NavbarProps) => 
           setIsLoginOpen={setIsLoginOpen}
           setIsSignupOpen={setIsSignupOpen}
           checkAuthentication={checkAuthentication}
-          setIsAuthenticated={setIsAuthenticated} 
+          setIsAuthenticated={setIsAuthenticated}
         />
       )}
       {isSignupOpen && (
@@ -126,7 +141,7 @@ export const Navbar = ({ isAuthenticated, setIsAuthenticated }: NavbarProps) => 
           setIsSignupOpen={setIsSignupOpen}
           setIsLoginOpen={setIsLoginOpen}
           checkAuthentication={checkAuthentication}
-          setIsAuthenticated={setIsAuthenticated} 
+          setIsAuthenticated={setIsAuthenticated}
         />
       )}
     </div>

@@ -21,6 +21,7 @@ import discord from "../../assets/images/menu/discord-mark-white 1.png";
 import twitter from "../../assets/images/menu/twitter.png";
 import logo from "../../assets/images/logo.png";
 import { ImageContainer, Image } from "../navbar/Navbar.styled";
+import AccountDetails from "../../pages/AccountDetails/AccountDetails";
 
 interface MenuProps {
   setIsMenuOpen: (value: boolean) => void;
@@ -59,6 +60,10 @@ const Menu: React.FC<MenuProps> = ({ setIsMenuOpen, checkAuthentication, setIsAu
 
   const handleSignupClick = () => {
     setIsSignupOpen(!isSignupOpen);
+  };
+
+  const handleAccountClick = () => {
+    setIsMenuOpen(false);
   };
 
   const handleSignOut = async () => {
@@ -131,7 +136,9 @@ const Menu: React.FC<MenuProps> = ({ setIsMenuOpen, checkAuthentication, setIsAu
         </Row>
         <Row>
           {isAuthenticated ? (
-            <span>My account</span>
+            <Link to="/accountDetails" onClick={handleAccountClick}>
+              <span>My account</span>
+            </Link>
           ) : (
             <span style={{ display: "none" }}></span>
           )}
