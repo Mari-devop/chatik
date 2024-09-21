@@ -13,6 +13,7 @@ import {
   RightContainer,
   ButtonShare,
   IconShare,
+  CloseIcon,
 } from "./Navbar.styled";
 import Menu from "../menu/Menu";
 import Login from "../../pages/Login/Login";
@@ -116,9 +117,11 @@ export const Navbar = ({
         )}
         {location.pathname === "/accountDetails" && (
           <ButtonMenu onClick={handleMenuClick}>
-            
             <Icon src={menu} alt="menu" />
           </ButtonMenu>
+        )}
+        {location.pathname === "/paywall" && (
+          <CloseIcon onClick={handleLogoClick} />
         )}
       </NavbarContainer>
       {isMenuOpen && (

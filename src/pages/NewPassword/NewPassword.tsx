@@ -5,8 +5,8 @@ import { Button } from "./NewPassword.styled";
 import { AvenirH2 } from "../../assets/css/Global.styled";
 import { Row } from "../SignUp/SignUp.styled";
 import ModalSuccess from "../../components/ModalSuccess/ModalSuccess";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 interface PasswordProps {
   setIsLoginOpen: (value: boolean) => void;
@@ -20,7 +20,7 @@ const NewPassword: React.FC<PasswordProps> = ({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false); 
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isNewPasswordVisible, setIsNewPasswordVisible] = useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -41,19 +41,20 @@ const NewPassword: React.FC<PasswordProps> = ({
 
         setTimeout(() => {
           setIsModalVisible(false);
-          setIsLoginOpen(true); 
+          setIsLoginOpen(true);
         }, 5000);
       }
     } catch (error) {
       setModalType("failure");
       setModalMessage("Password update failed. Please try again.");
       setIsModalVisible(true);
-      
+
       setTimeout(() => {
         setIsModalVisible(false);
       }, 5000);
     }
   };
+
   useEffect(() => {
     if (password === newPassword && password !== "" && newPassword !== "") {
       setIsButtonDisabled(false);
@@ -77,18 +78,18 @@ const NewPassword: React.FC<PasswordProps> = ({
           <Row>
             <label htmlFor="password">Password</label>
             <input
-               type={isPasswordVisible ? "text" : "password"}
+              type={isPasswordVisible ? "text" : "password"}
               id="password"
               placeholder="********"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-           <FontAwesomeIcon
+            <FontAwesomeIcon
               icon={isPasswordVisible ? faEye : faEyeSlash}
               onClick={() => setIsPasswordVisible(!isPasswordVisible)}
               style={{
                 position: "absolute",
-                color: 'white',
+                color: "white",
                 cursor: "pointer",
                 bottom: "305px",
                 right: "100px",
@@ -96,10 +97,7 @@ const NewPassword: React.FC<PasswordProps> = ({
             />
           </Row>
           <Row>
-            <label htmlFor="newPassword">
-              Confirm password 
-              
-            </label>
+            <label htmlFor="newPassword">Confirm password</label>
             <input
               type={isNewPasswordVisible ? "text" : "password"}
               id="password"
@@ -112,13 +110,12 @@ const NewPassword: React.FC<PasswordProps> = ({
               onClick={() => setIsNewPasswordVisible(!isNewPasswordVisible)}
               style={{
                 position: "absolute",
-                color: 'white',
+                color: "white",
                 cursor: "pointer",
                 bottom: "180px",
                 right: "100px",
               }}
             />
-             
           </Row>
           <Button disabled={isButtonDisabled} onClick={handleSubmit}>
             SUBMIT

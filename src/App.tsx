@@ -14,6 +14,8 @@ import Token from "./pages/Token/Token";
 import AccountDetails from "./pages/AccountDetails/AccountDetails";
 import NewPassword from "./pages/NewPassword/NewPassword";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+import Paywall from "./pages/Paywall/Paywall";
+import HowItWorks from "./pages/HowItWorks/HowItWorks";
 
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -45,6 +47,8 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
               <Route path="/chat" element={<Chat />} />
+              <Route path="/paywall" element={<Paywall />} />
+              <Route path="/how" element={<HowItWorks />} />
               <Route
                 path="/verify-email"
                 element={<Token setIsLoginOpen={setIsLoginOpen} />}

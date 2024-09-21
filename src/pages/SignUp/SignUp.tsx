@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useGoogleLogin } from "@react-oauth/google";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { register } from "../../auth/auth";
-import { useNavigate } from "react-router-dom";
 import { dbInstance } from "../../db";
+import { SignupProps } from "./types";
 import {
   BoxContainer,
   Row,
@@ -12,30 +14,24 @@ import {
   Divider,
   Text,
   TextCenter,
-  LinkStyled,
 } from "./SignUp.styled";
-import { UserContainer, CustomGoogleButton } from "../Login/Login.styled";
-import { Navbar } from "../../components/menu/Menu.styled";
-import ModalSuccess from "../../components/ModalSuccess/ModalSuccess";
 import {
   ImageContainer,
   Image,
   CloseIcon,
 } from "../../components/navbar/Navbar.styled";
 import { AvenirH2, TextMedium } from "../../assets/css/Global.styled";
+import { UserContainer, CustomGoogleButton } from "../Login/Login.styled";
+import { Navbar } from "../../components/menu/Menu.styled";
+import ModalSuccess from "../../components/ModalSuccess/ModalSuccess";
 import logo from "../../assets/images/logo.png";
 import googleIcon from "../../assets/images/Group.png";
-
-interface SignupProps {
-  setIsSignupOpen: (value: boolean) => void;
-  setIsLoginOpen: (value: boolean) => void;
-  checkAuthentication: () => Promise<boolean>;
-  setIsAuthenticated: (value: boolean) => void;
-}
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 const SignUp: React.FC<SignupProps> = ({ setIsSignupOpen, setIsLoginOpen, checkAuthentication, setIsAuthenticated }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalType, setModalType] = useState<"success" | "failure">("success");
   const [modalMessage, setModalMessage] = useState("");
@@ -109,7 +105,6 @@ const SignUp: React.FC<SignupProps> = ({ setIsSignupOpen, setIsLoginOpen, checkA
           console.log("HERE");
           await dbInstance.addData("users", {
             email: res.data.email,
-            token,
             name: userName,
           });
           setModalType("success");
@@ -172,11 +167,22 @@ const SignUp: React.FC<SignupProps> = ({ setIsSignupOpen, setIsLoginOpen, checkA
           <Row>
             <label htmlFor="password">Password</label>
             <input
-              type="password"
+              type={isPasswordVisible ? "text" : "password"}
               id="password"
               placeholder="********"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+            />
+            <FontAwesomeIcon
+              icon={isPasswordVisible ? faEye : faEyeSlash}
+              onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+              style={{
+                position: "absolute",
+                color: "white",
+                cursor: "pointer",
+                bottom: "260px",
+                right: "100px",
+              }}
             />
           </Row>
           <ButtonContainer>

@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useGoogleLogin } from "@react-oauth/google";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { login } from "../../auth/auth";
 import { dbInstance } from "../../db";
-import { useNavigate } from "react-router-dom";
+import { LoginProps } from "./types";
+import { AvenirH2 } from "../../assets/css/Global.styled";
 import {
   BoxContainer,
   Row,
@@ -18,24 +21,16 @@ import {
   UserContainer,
   CustomGoogleButton,
 } from "./Login.styled";
-import { Navbar } from "../../components/menu/Menu.styled";
-import ModalSuccess from "../../components/ModalSuccess/ModalSuccess";
 import {
   ImageContainer,
   Image,
   CloseIcon,
 } from "../../components/navbar/Navbar.styled";
-import { AvenirH2 } from "../../assets/css/Global.styled";
+import { Navbar } from "../../components/menu/Menu.styled";
+import ModalSuccess from "../../components/ModalSuccess/ModalSuccess";
 import googleIcon from "../../assets/images/Group.png";
 import logo from "../../assets/images/logo.png";
-
-interface LoginProps {
-  setIsLoginOpen: (value: boolean) => void;
-  setIsSignupOpen: (value: boolean) => void;
-  checkAuthentication: () => Promise<boolean>;
-  setIsAuthenticated: (value: boolean) => void;
-  emailFromReset?: string;
-}
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 const Login: React.FC<LoginProps> = ({
   setIsLoginOpen,
@@ -47,6 +42,7 @@ const Login: React.FC<LoginProps> = ({
   const [email, setEmail] = useState(emailFromReset || "");
   const [isEmailValid, setIsEmailValid] = useState(true);
   const [password, setPassword] = useState("");
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalType, setModalType] = useState<"success" | "failure">("success");
   const [modalMessage, setModalMessage] = useState("");
@@ -97,12 +93,9 @@ const Login: React.FC<LoginProps> = ({
         setModalType("failure");
         setModalMessage("Network error. Please check your connection.");
       }
-
       setIsModalVisible(true);
       console.log("Modal should now be visible");
       setIsAuthenticated(false);
-
-     
     }
   };
 
@@ -132,7 +125,6 @@ const Login: React.FC<LoginProps> = ({
         if (token) {
           await dbInstance.addData("users", {
             email: res.data.email,
-            token,
             name: userName,
           });
           setModalType("success");
@@ -192,15 +184,12 @@ const Login: React.FC<LoginProps> = ({
       if (error.response.status === 401) {
         setModalType("failure");
         setModalMessage("Email not found. Sign up first.");
-     
       } else if (error.response.status === 500) {
         setModalType("failure");
         setModalMessage("Email or password is invalid");
-     
       } else {
         setModalType("failure");
         setModalMessage("Failed to send reset email. Please try again.");
-       
       }
       setIsModalVisible(true);
     }
@@ -249,11 +238,22 @@ const Login: React.FC<LoginProps> = ({
           <Row>
             <label htmlFor="password">Password</label>
             <input
-              type="password"
+              type={isPasswordVisible ? "text" : "password"}
               id="password"
               placeholder="********"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+            />
+            <FontAwesomeIcon
+              icon={isPasswordVisible ? faEye : faEyeSlash}
+              onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+              style={{
+                position: "absolute",
+                color: "white",
+                cursor: "pointer",
+                bottom: "305px",
+                right: "100px",
+              }}
             />
           </Row>
           <Row>

@@ -18,6 +18,7 @@ export const FirstBox = styled.div`
   border-radius: 32px;
   padding: 48px;
   margin-top: 100px;
+  margin-bottom: 48px;
   z-index: 1;
 
   &::before {
@@ -61,7 +62,7 @@ export const SecondBox = styled.div`
   position: relative;
   border-radius: 32px;
   padding: 48px;
-  margin-top: 24px;
+  margin-top: 0px;
   margin-bottom: 80px;
   z-index: 1;
 
@@ -234,7 +235,7 @@ export const MaskedInput = styled(InputMask)`
   line-height: 27px;
   letter-spacing: -0.01em;
   color: var(--white-color);
-  
+  z-index: 9999;
   &:focus {
     outline: none;
   }
@@ -243,16 +244,19 @@ export const MaskedInput = styled(InputMask)`
 export const CardNumberInput = styled(MaskedInput)`
   width: 200px;
   outline: none;
+  z-index: 9999;
 `;
 
 export const ExpiryInput = styled(MaskedInput)`
   width: 80px;
   outline: none;
+  z-index: 9999;
 `;
 
 export const CvcInput = styled(MaskedInput)`
   width: 60px;
   outline: none;
+  z-index: 9999;
 `;
 
 export const SaveButton = styled.button`
@@ -262,6 +266,7 @@ export const SaveButton = styled.button`
   padding: 10px 20px;
   border-radius: 30px;
   cursor: pointer;
+  z-index: 9999;
   margin-left: 10px;
   font-family: "Arquitecta";
   font-weight: 700;

@@ -404,7 +404,7 @@ export const Image9 = styled.img`
 `;
 
 export const Image10 = styled.img`
-  z-index: -1;
+  z-index: 0;
   position: absolute;
   bottom: 0px;
   width: 800px;

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { dbInstance } from "../../db";
+import { MenuProps, User } from "./types";
 import {
   MenuContainer,
   Row,
@@ -11,9 +12,9 @@ import {
   CloseIcon,
   ButtonSignOut,
   Navbar,
-  ButtonStart,  
+  ButtonStart,
   ButtonLogin,
-  RightContainer
+  RightContainer,
 } from "./Menu.styled";
 import facebook from "../../assets/images/menu/facebook.png";
 import instagram from "../../assets/images/menu/instagram.png";
@@ -21,22 +22,12 @@ import discord from "../../assets/images/menu/discord-mark-white 1.png";
 import twitter from "../../assets/images/menu/twitter.png";
 import logo from "../../assets/images/logo.png";
 import { ImageContainer, Image } from "../navbar/Navbar.styled";
-import AccountDetails from "../../pages/AccountDetails/AccountDetails";
 
-interface MenuProps {
-  setIsMenuOpen: (value: boolean) => void;
-  checkAuthentication: () => Promise<boolean>;
-  setIsAuthenticated: (value: boolean) => void; 
-}
-
-interface User {
-  id: number;
-  email: string;
-  password: string;
-  token?: string;
-}
-
-const Menu: React.FC<MenuProps> = ({ setIsMenuOpen, checkAuthentication, setIsAuthenticated  }) => {
+const Menu: React.FC<MenuProps> = ({
+  setIsMenuOpen,
+  checkAuthentication,
+  setIsAuthenticated,
+}) => {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticatedState] = useState(false);
   const [isSignupOpen, setIsSignupOpen] = useState(false);
@@ -73,7 +64,7 @@ const Menu: React.FC<MenuProps> = ({ setIsMenuOpen, checkAuthentication, setIsAu
       if (currentUser) {
         await dbInstance.deleteData("users", currentUser.id);
         setIsMenuOpen(false);
-        await checkAuthentication(); 
+        await checkAuthentication();
         setIsAuthenticated(false);
         navigate("/");
       } else {
@@ -84,13 +75,21 @@ const Menu: React.FC<MenuProps> = ({ setIsMenuOpen, checkAuthentication, setIsAu
     }
   };
 
-  useEffect(() => {
-  const checkAuthStatus = async () => {
-    const isAuth = await checkAuthentication();
-    setIsAuthenticatedState(isAuth);
-  }
+  const handlePrisingClick = () => {
+    setIsMenuOpen(false);
+  };
 
-  checkAuthStatus();
+  const handleHowClick = () => {
+    setIsMenuOpen(false);
+  };
+
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      const isAuth = await checkAuthentication();
+      setIsAuthenticatedState(isAuth);
+    };
+
+    checkAuthStatus();
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = "auto";
@@ -129,10 +128,14 @@ const Menu: React.FC<MenuProps> = ({ setIsMenuOpen, checkAuthentication, setIsAu
           </Link>
         </Row>
         <Row>
-          <span>Pricing</span>
+          <Link to="/paywall" onClick={handlePrisingClick}>
+            <span>Pricing</span>
+          </Link>
         </Row>
         <Row>
+        <Link to="/how" onClick={handleHowClick}>
           <span>How it works</span>
+          </Link>
         </Row>
         <Row>
           {isAuthenticated ? (
