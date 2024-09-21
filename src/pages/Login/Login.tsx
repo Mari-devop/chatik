@@ -125,6 +125,7 @@ const Login: React.FC<LoginProps> = ({
         if (token) {
           await dbInstance.addData("users", {
             email: res.data.email,
+            token,
             name: userName,
           });
           setModalType("success");

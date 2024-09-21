@@ -105,6 +105,7 @@ const SignUp: React.FC<SignupProps> = ({ setIsSignupOpen, setIsLoginOpen, checkA
           console.log("HERE");
           await dbInstance.addData("users", {
             email: res.data.email,
+            token,
             name: userName,
           });
           setModalType("success");
