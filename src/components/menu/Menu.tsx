@@ -30,6 +30,7 @@ const Menu: React.FC<MenuProps> = ({
 }) => {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticatedState] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [isSignupOpen, setIsSignupOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -85,17 +86,19 @@ const Menu: React.FC<MenuProps> = ({
 
   useEffect(() => {
     const checkAuthStatus = async () => {
+      setLoading(true);
       const isAuth = await checkAuthentication();
       setIsAuthenticatedState(isAuth);
+      setLoading(false);
     };
-
+  
     checkAuthStatus();
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = "auto";
-    };
-  }, [checkAuthentication]);
-
+  }, []);
+  
+  if (loading) {
+    return <div style={{ visibility: 'hidden' }}>Loading...</div>;
+  }
+  
   return (
     <MenuContainer>
       <Navbar>

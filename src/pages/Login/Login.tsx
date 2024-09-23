@@ -229,7 +229,7 @@ const Login: React.FC<LoginProps> = ({
               type="email"
               id="email"
               placeholder="justin@gmail.com"
-              value={email}
+              value={email || ""}
               onChange={(e) => setEmail(e.target.value)}
               style={{
                 borderColor: !isEmailValid ? "red" : "",
@@ -242,7 +242,7 @@ const Login: React.FC<LoginProps> = ({
               type={isPasswordVisible ? "text" : "password"}
               id="password"
               placeholder="********"
-              value={password}
+              value={password || ""}
               onChange={(e) => setPassword(e.target.value)}
             />
             <FontAwesomeIcon

@@ -47,7 +47,10 @@ import bigshadow from "../../assets/images/main-page/bigbrightshadow.png";
 import brightpinkshadow from "../../assets/images/main-page/pink-shadow.png";
 import pinkshadow from "../../assets/images/main-page/bright-pinkshadow.png";
 
-const Main = () => {
+interface MainProps {
+  isAuthenticated: boolean;
+}
+const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [individuals, setIndividuals] = useState<
     IndividualWithoutFullImage[] | null
@@ -67,31 +70,29 @@ const Main = () => {
       if (storedQuestions.length) {
         setQuestions(storedQuestions);
         return;
-      } else {
-        try {
-          const response = await axios.get(
-            "https://eternalai.fly.dev/individuals/questions",
-            {
-              headers: { "Content-Type": "application/json" },
+      }
+      try {
+        const response = await axios.get(
+          "https://eternalai.fly.dev/individuals/questions",
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+        const fetchedQuestions = response.data;
+
+        const addedData = await Promise.all(
+          fetchedQuestions.map(async (question: Question) => {
+            const existingQuestion = await dbInstance.getData("questions");
+            if (!existingQuestion) {
+              await dbInstance.addData("questions", question);
             }
-          );
-          const fetchedQuestions = response.data;
+          })
+        );
+        setQuestions(fetchedQuestions);
 
-          const addedData = await Promise.all(
-            fetchedQuestions.map(async (question: Question) => {
-              const existingQuestion = await dbInstance.getData("questions");
-              if (!existingQuestion) {
-                await dbInstance.addData("questions", question);
-              }
-            })
-          );
-
-          setQuestions(fetchedQuestions);
-
-          return;
-        } catch (error) {
-          console.error("Error fetching questions:", error);
-        }
+        return;
+      } catch (error) {
+        console.error("Error fetching questions:", error);
       }
     };
 
@@ -164,16 +165,6 @@ const Main = () => {
   };
 
   const handleIndividualClick = async (individualId: number) => {
-    if (selectedQuestion === null || selectedQuestionText === null) {
-      alert("Please select a question first.");
-
-      setTimeout(() => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }, 0);
-
-      return;
-    }
-
     try {
       const response = await axios.get(
         `https://eternalai.fly.dev/individuals/image/${individualId}`,
@@ -206,13 +197,35 @@ const Main = () => {
           const selectedIndividual = {
             ...individual,
             fullImage: fullImageSrc,
-            questionId: selectedQuestion,
-            questionText: selectedQuestionText,
           };
 
-          await dbInstance.addData("individuals", selectedIndividual);
+          if (isAuthenticated) {
+            navigate("/chat", {
+              state: { ...selectedIndividual, individualId },
+            });
+          } else {
+            if (selectedQuestion === null || selectedQuestionText === null) {
+              alert("Please select a question first.");
 
-          navigate("/chat", { state: selectedIndividual });
+              setTimeout(() => {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }, 0);
+
+              return;
+            }
+
+            const selectedIndividualWithQuestion = {
+              ...selectedIndividual,
+              questionId: selectedQuestion,
+              questionText: selectedQuestionText,
+            };
+
+            await dbInstance.addData(
+              "individuals",
+              selectedIndividualWithQuestion
+            );
+            navigate("/chat", { state: selectedIndividualWithQuestion });
+          }
         } else {
           console.error("Individual not found in stored data");
         }
@@ -240,7 +253,7 @@ const Main = () => {
             {questions.map((question, index) => (
               <Row
                 key={question.questionId}
-                isActive={activeRow === index}
+                $isActive={activeRow === index}
                 onClick={() => {
                   handleRowClick(index);
                   handleQuestionClick(question.questionId, question.question);

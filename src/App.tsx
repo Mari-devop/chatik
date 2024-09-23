@@ -44,9 +44,9 @@ function App() {
           />
           <ContentContainer>
             <Routes>
-              <Route path="/" element={<Home />} />
+              <Route path="/" element={<Home isAuthenticated={isAuthenticated} />} />
               <Route path="/about" element={<About />} />
-              <Route path="/chat" element={<Chat />} />
+              <Route path="/chat" element={<Chat isAuthenticated={isAuthenticated} />} />
               <Route path="/paywall" element={<Paywall />} />
               <Route path="/how" element={<HowItWorks />} />
               <Route

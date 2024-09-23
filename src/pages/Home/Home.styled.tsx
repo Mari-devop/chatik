@@ -113,7 +113,7 @@ export const TextRow = styled.p`
   }
 `;
 
-export const Row = styled.div<RowProps>`
+export const Row = styled.div<{ $isActive: boolean }>`
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -152,8 +152,8 @@ export const Row = styled.div<RowProps>`
     bottom: -2px;
   }
 
-  ${({ isActive }) =>
-    isActive &&
+  ${({ $isActive }) =>
+    $isActive &&
     `
     background: linear-gradient(45deg, #F82D98, #5833EF);
     &::before {
@@ -178,6 +178,7 @@ export const Row = styled.div<RowProps>`
   }
   z-index: 15;
 `;
+
 
 export const PhotoContainer = styled.div`
   display: flex;
