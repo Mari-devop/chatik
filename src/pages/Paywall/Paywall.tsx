@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import axios from "axios";
+import { dbInstance } from "../../db";
 import {
   Container,
   MainContainer,
@@ -75,6 +77,35 @@ const Paywall = () => {
   const handlePaymentSubmit = () => {
     setIsPaymentConfirmed(true);
   };
+
+  const handleShareClick = async () => {
+    try {
+      const users: any = await dbInstance.getData("users");
+      const userToken = users?.[0]?.token;
+
+      if (!userToken) {
+        return;
+      }
+
+      const shareLink = `${window.location.origin}/?token=${userToken}`;
+      console.log("Share link:", shareLink);
+
+      const whatsappLink = `https://wa.me/?text=${encodeURIComponent(shareLink)}`;
+      window.open(whatsappLink);
+      const twitterLink =`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareLink)}`;
+      window.open(twitterLink);
+      const instagramLink = `https://www.instagram.com/?url=${encodeURIComponent(shareLink)}`;
+      window.open(instagramLink);
+      const telegramLink = `https://t.me/share/url?url=${encodeURIComponent(shareLink)}`;
+      window.open(telegramLink);
+      
+
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <Container>
       <MainContainer>
@@ -108,7 +139,7 @@ const Paywall = () => {
                       Get <span style={{ color: "#F82D98" }}>3 free</span>{" "}
                       questions when you share on social media
                     </TextMedium>
-                    <Button>SHARE</Button>
+                    <Button onClick={handleShareClick}>SHARE</Button>
                   </FirstBox>
                   <SecondBox>
                     <Boxik>

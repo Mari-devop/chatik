@@ -60,8 +60,6 @@ export const PersonShadow = styled.img`
   @media (max-width: 850px) {
     width: 340px;
     height: 300px;
-    left: 50%;
-    transform: translateX(-50%);
   }
 `;
 
@@ -108,7 +106,7 @@ export const Title = styled.h2`
   color: #ffffff;
   text-transform: uppercase;
 
-  @media (max-width: 900px) {
+  @media (max-width: 850px) {
     font-size: 14px;
     line-height: 15px;
     letter-spacing: 0.15em;
@@ -174,17 +172,6 @@ export const RespondContainer = styled.div`
   }
 `;
 
-export const QuestionContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin-top: 37px;
-  justify-content: center;
-
-  @media (max-width: 850px) {
-    margin-top: 0px;
-  }
-`;
-
 export const Question = styled.div`
   display: flex;
   flex-direction: column;
@@ -211,7 +198,8 @@ export const Text = styled.h3`
 
 export const AnswerBox = styled.div`
   overflow-y: auto;
-  height: 300px;
+  overflow-x: hidden;
+  height: 400px;
   padding-right: 16px;
 
   @media (max-width: 850px) {
@@ -220,7 +208,7 @@ export const AnswerBox = styled.div`
   }
 `;
 
-export const FadeOverlay = styled.div<{ scrolled: boolean }>`
+export const FadeOverlay = styled.div<{ $scrolled: boolean }>`
   position: absolute;
   top: 96px;
   left: 0px;
@@ -228,12 +216,18 @@ export const FadeOverlay = styled.div<{ scrolled: boolean }>`
   height: 120px;
   background: linear-gradient(rgba(17, 17, 21, 0.9), transparent);
   pointer-events: none;
-  opacity: ${({ scrolled }) => (scrolled ? 1 : 0)};
+  opacity: ${({ $scrolled }) => ($scrolled ? 1 : 0)};
   transition: opacity 0.3s ease;
   z-index: 1;
+  width: 100%;
 
-  @media (max-width: 1100px) {
-    display: none;
+  @media (max-width: 900px) {
+    height: 50px;
+  }
+
+  @media (max-width: 850px) {
+    top: 0px;
+    height: 80px;
   }
 `;
 
@@ -331,6 +325,25 @@ export const IconSocial = styled.img`
   height: 24px;
 `;
 
+export const QuestionContainer = styled.div`
+  display: flex;
+  position: fixed;
+  bottom: 80px;
+  flex-direction: column;
+  z-index: 9;
+  width: auto;
+  margin-right: 30px;
+
+  @media (max-width: 850px) {
+    bottom: 80px;
+    width: 85%;
+    right: 20px;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+  }
+`;
+
 export const PersonAnswer = styled.div`
   display: flex;
   flex-direction: column;
@@ -342,15 +355,12 @@ export const PersonAnswer = styled.div`
     rgb(251, 213, 236) 40%
   );
   border-radius: 30px;
-  position: absolute;
-  bottom: 100px;
-  left: 40px;
-  right: 40px;
   max-height: 100%;
   box-sizing: border-box;
   z-index: 2;
-  margin-left: 40px;
+  margin-right: 40px;
   border: none;
+  width: 100%;
 
   &::before {
     content: "";
@@ -399,14 +409,17 @@ export const PersonAnswer = styled.div`
 
 export const InputBox = styled.div`
   display: flex;
-  width: 100%;
-  position: relative;
-  top: 200px;
+  position: fixed;
+  bottom: 0;
+  width: 70%;
+  right: 10px;
+  padding: 20px;
+  box-sizing: border-box;
+  z-index: 10;
 
   @media (max-width: 850px) {
-    top: 130px;
-    width: 90%;
-    margin: 0 auto;
+    width: 100%;
+    right: 0;
   }
 `;
 
@@ -455,8 +468,12 @@ export const Button = styled.button<DisabledProps>`
   color: #ffffff;
   width: 137px;
   height: 39px;
-  position: absolute;
-  right: 5px;
-  bottom: 5px;
+  position: fixed;
+  right: 33px;
+  bottom: 25px;
   z-index: 2;
+
+  @media (max-width: 850px) {
+    right: 24px;
+  }
 `;

@@ -33,6 +33,7 @@ import {
   Button,
 } from "./Chat.styled";
 import ModalSuccess from "../../components/ModalSuccess/ModalSuccess";
+import LoadingDots from "../../components/LoadingDots/LoadingDots";
 import shadow from "../../assets/images/chat/shadow.png";
 import voice from "../../assets/images/chat/Frame 143725185.png";
 import share from "../../assets/images/chat/Frame 143725072.png";
@@ -59,6 +60,19 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
     setScrolled(top > 0);
   };
 
+  useEffect(() => {
+    const scrollContainer = document.getElementById("scrollContainer");
+    if (scrollContainer) {
+      scrollContainer.addEventListener("scroll", handleScroll);
+    }
+
+    return () => {
+      if (scrollContainer) {
+        scrollContainer.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, []);
+  
   const filterResponses = useCallback(
     (responses: any) => {
       const questionId = Number(individual?.questionId);
@@ -71,10 +85,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
 
   const loadResponsesFromIndexedDB = useCallback(async () => {
     const savedResponses = await dbInstance.getData("responses");
-    console.log(
-      "Retrieved responses:",
-      JSON.stringify(savedResponses, null, 2)
-    );
+
     const relevantResponses = filterResponses(savedResponses);
     setFilteredResponses(relevantResponses);
   }, [filterResponses]);
@@ -242,7 +253,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
               <Text>{message || individual?.questionText}</Text>
             </Question>
             <AnswerBox id="scrollContainer">
-              <FadeOverlay scrolled={scrolled} />
+            <FadeOverlay $scrolled={scrolled} />
               {filteredResponses.length > 0
                 ? filteredResponses.map((resp, index) => (
                     <Respond key={index}>
@@ -287,7 +298,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
           </RespondContainer>
           <QuestionContainer>
             <PersonAnswer>
-              <Text>{response || "Typing..."}</Text>
+              <Text>{response || <LoadingDots />}</Text>
             </PersonAnswer>
           </QuestionContainer>
           <InputBox>

@@ -22,6 +22,8 @@ import discord from "../../assets/images/menu/discord-mark-white 1.png";
 import twitter from "../../assets/images/menu/twitter.png";
 import logo from "../../assets/images/logo.png";
 import { ImageContainer, Image } from "../navbar/Navbar.styled";
+import Login from "../../pages/Login/Login";
+import SignUp from "../../pages/SignUp/SignUp";
 
 const Menu: React.FC<MenuProps> = ({
   setIsMenuOpen,
@@ -100,6 +102,7 @@ const Menu: React.FC<MenuProps> = ({
   }
   
   return (
+    <>
     <MenuContainer>
       <Navbar>
         {isAuthenticated ? (
@@ -158,6 +161,23 @@ const Menu: React.FC<MenuProps> = ({
         </SocialContainer>
       </Content>
     </MenuContainer>
+    {isLoginOpen && (
+        <Login
+          setIsLoginOpen={setIsLoginOpen}
+          setIsSignupOpen={setIsSignupOpen}
+          checkAuthentication={checkAuthentication}
+          setIsAuthenticated={setIsAuthenticated}
+        />
+      )}
+      {isSignupOpen && (
+        <SignUp
+          setIsSignupOpen={setIsSignupOpen}
+          setIsLoginOpen={setIsLoginOpen}
+          checkAuthentication={checkAuthentication}
+          setIsAuthenticated={setIsAuthenticated}
+        />
+      )}
+    </>
   );
 };
 

@@ -64,6 +64,16 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
   const gridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const shareToken = queryParams.get("token");
+  
+    if (shareToken) {
+      dbInstance.addData("shareTokens", { token: shareToken });
+      console.log(`Share token saved: ${shareToken}`);
+    }
+  }, []);
+
+  useEffect(() => {
     const fetchQuestions = async () => {
       const storedQuestions = await dbInstance.getData("questions");
 
