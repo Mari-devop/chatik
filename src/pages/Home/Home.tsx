@@ -68,7 +68,7 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
     const shareToken = queryParams.get("token");
   
     if (shareToken) {
-      dbInstance.addData("users", { token: shareToken });
+      dbInstance.addData("users", { shareToken: shareToken });
       console.log(`Share token saved: ${shareToken}`);
     }
   }, []);
