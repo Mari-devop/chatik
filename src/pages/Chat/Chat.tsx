@@ -83,6 +83,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
 
   const fetchResponse = useCallback(async () => {
     if (!individual || hasFetchedResponse.current) return;
+    if (!individual.questionId) return;
 
     hasFetchedResponse.current = true;
 
