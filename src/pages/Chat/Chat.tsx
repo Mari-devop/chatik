@@ -46,10 +46,13 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
   const [scrolled, setScrolled] = useState(false);
   const [currentQuestionId, setCurrentQuestionId] = useState<number>(0);
   const [response, setResponse] = useState<string | null>(null);
+  const [currentResponse, setCurrentResponse] = useState<string | null>(null);
   const [filteredResponses, setFilteredResponses] = useState<any[]>([]);
   const [message, setMessage] = useState<string>("");
   const [chatHistory, setChatHistory] = useState<any[]>([]);
+  const [questionVisible, setQuestionVisible] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const individual = location.state;
@@ -72,7 +75,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
       }
     };
   }, []);
-  
+
   const filterResponses = useCallback(
     (responses: any) => {
       const questionId = Number(individual?.questionId);
@@ -99,6 +102,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
     hasFetchedResponse.current = true;
 
     try {
+      setIsLoading(true); 
       const body = {
         questionId: individual.questionId,
         characterId: individual.id,
@@ -122,6 +126,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
       };
 
       setResponse(newResponse.text);
+      setIsLoading(false);
 
       if (
         !isAuthenticated ||
@@ -148,14 +153,21 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
         }
       }
     } catch (error) {
+      setIsLoading(false);
       console.error("Error fetching response:", error);
     }
   }, [individual, isAuthenticated]);
 
   const handleSendMessage = async () => {
-    if (!message.trim()) return;
+    if (!message.trim() || isLoading) return;
 
     try {
+      if (currentResponse) {
+        setChatHistory((prev) => [
+          ...prev,
+          { text: currentResponse, isUser: false },
+        ]);
+      }
       const users = await dbInstance.getData("users");
       const userToken = users?.[0]?.token;
 
@@ -163,6 +175,8 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
         console.error("Token is missing or user is not authenticated");
         return;
       }
+
+      setIsLoading(true);
 
       const body = {
         characterId: individual.id,
@@ -182,18 +196,13 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
 
       setChatHistory((prev) => [...prev, { text: message, isUser: true }]);
 
-      setResponse(response.data.response);
-
-      setTimeout(() => {
-        setChatHistory((prev) => [
-          ...prev,
-          { text: response.data.response, isUser: false },
-        ]);
-        setResponse(null); 
-      }, 3000);
+      setCurrentResponse(response.data.response);
 
       setMessage("");
+      setQuestionVisible(false);
+      setIsLoading(false);
     } catch (error: any) {
+      setIsLoading(false);
       console.error("Error sending message:", error);
 
       if (
@@ -207,7 +216,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
         setTimeout(() => {
           setShowModal(false);
           navigate("/paywall");
-        }, 5000);
+        }, 3000);
       } else if (error.response?.status === 401) {
         console.error("Unauthorized - Redirect to login or re-authenticate");
       }
@@ -218,6 +227,15 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
     if (e.key === "Enter" && isAuthenticated) {
       handleSendMessage();
     }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMessage(e.target.value);
+    setQuestionVisible(false);
+  };
+
+  const handleInputFocus = () => {
+    setQuestionVisible(false);
   };
 
   useEffect(() => {
@@ -249,11 +267,14 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
         </PersonContainer>
         <DialogContainer>
           <RespondContainer>
-            <Question>
-              <Text>{message || individual?.questionText}</Text>
-            </Question>
+            {questionVisible && individual?.questionText && (
+              <Question>
+                <Text>{individual?.questionText}</Text>
+              </Question>
+            )}
+
             <AnswerBox id="scrollContainer">
-            <FadeOverlay $scrolled={scrolled} />
+              <FadeOverlay $scrolled={scrolled} />
               {filteredResponses.length > 0
                 ? filteredResponses.map((resp, index) => (
                     <Respond key={index}>
@@ -274,7 +295,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
                     </Respond>
                   ))
                 : null}
-              {chatHistory.length > 0 ? (
+              {chatHistory.length > 0 &&
                 chatHistory.map((chat, index) => (
                   <Respond key={index}>
                     <IconBox>
@@ -290,15 +311,12 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
                       </Social>
                     </RespondBox>
                   </Respond>
-                ))
-              ) : (
-                <TextRespond>No responses yet</TextRespond>
-              )}
+                ))}
             </AnswerBox>
           </RespondContainer>
           <QuestionContainer>
             <PersonAnswer>
-              <Text>{response || <LoadingDots />}</Text>
+              <Text>{currentResponse || <LoadingDots />}</Text>
             </PersonAnswer>
           </QuestionContainer>
           <InputBox>
@@ -307,7 +325,8 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
                 placeholder="Enter your message..."
                 disabled={!isAuthenticated}
                 value={message}
-                onChange={(e) => setMessage(e.target.value)}
+                onChange={handleInputChange}
+                onFocus={handleInputFocus}
                 onKeyDown={handleKeyDown}
               />
             </InputWrapper>

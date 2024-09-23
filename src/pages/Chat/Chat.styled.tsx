@@ -254,7 +254,7 @@ export const IconBox = styled.div`
   background: #a995f763;
   border-radius: 50%;
   width: 50px;
-  height: 50px;
+  height: 45px;
 `;
 
 export const Icon = styled.img`
@@ -361,6 +361,7 @@ export const PersonAnswer = styled.div`
   margin-right: 40px;
   border: none;
   width: 100%;
+  min-width: 650px; 
 
   &::before {
     content: "";
