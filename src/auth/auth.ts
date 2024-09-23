@@ -2,7 +2,7 @@ import axios from "axios";
 import { dbInstance } from "../db";
 
 export const register = async (email: string, password: string) => {
-    const shareTokens = await dbInstance.getData("shareTokens");
+    const shareTokens = await dbInstance.getData("users");
     const shareToken = shareTokens?.[0]?.token;
     const requestBody = {
         email,
