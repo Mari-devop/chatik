@@ -28,7 +28,12 @@ import logo from "../../assets/images/logo.png";
 import googleIcon from "../../assets/images/Group.png";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
-const SignUp: React.FC<SignupProps> = ({ setIsSignupOpen, setIsLoginOpen, checkAuthentication, setIsAuthenticated }) => {
+const SignUp: React.FC<SignupProps> = ({
+  setIsSignupOpen,
+  setIsLoginOpen,
+  checkAuthentication,
+  setIsAuthenticated,
+}) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -49,17 +54,19 @@ const SignUp: React.FC<SignupProps> = ({ setIsSignupOpen, setIsLoginOpen, checkA
 
   const handleRegister = async () => {
     try {
-
       const response = await register(email, password);
       if (response && response.token && response.status === 200) {
-        await dbInstance.addData("users", { email: response.email, token: response.token });
-        setIsAuthenticated(true); 
+        await dbInstance.addData("users", {
+          email: response.email,
+          token: response.token,
+        });
+        setIsAuthenticated(true);
         setIsSignupOpen(false);
         setModalType("success");
         setModalMessage("Registration Successful! ");
         setIsModalVisible(true);
         checkAuthentication();
-        navigate("/about")
+        navigate("/about");
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -73,7 +80,6 @@ const SignUp: React.FC<SignupProps> = ({ setIsSignupOpen, setIsLoginOpen, checkA
           setIsModalVisible(true);
         }
       }
-      
     }
   };
 
@@ -91,19 +97,20 @@ const SignUp: React.FC<SignupProps> = ({ setIsSignupOpen, setIsLoginOpen, checkA
         const userProfile = profileResponse.data;
         const userName = userProfile.name;
 
+        const users = await dbInstance.getData("users");
+        const shareToken = users?.[0]?.shareToken;
+
         const res = await axios.post(
           "https://eternalai.fly.dev/user/register",
           {
-          googleToken: googleAccessToken,
-          email,
-          password,
-          name: userName,
+            googleToken: googleAccessToken,
+            name: userName,
+            shareToken,
           }
         );
         const token = res.data.token;
 
         if (token) {
-          console.log("HERE");
           await dbInstance.addData("users", {
             email: res.data.email,
             token,
@@ -114,7 +121,7 @@ const SignUp: React.FC<SignupProps> = ({ setIsSignupOpen, setIsLoginOpen, checkA
             "Google Registration Successful! Please, check your email box to verify email!"
           );
           setIsModalVisible(true);
-          setIsAuthenticated(true); 
+          setIsAuthenticated(true);
           setIsSignupOpen(false);
           navigate("/about");
         }
@@ -144,7 +151,7 @@ const SignUp: React.FC<SignupProps> = ({ setIsSignupOpen, setIsLoginOpen, checkA
         isVisible={isModalVisible}
         modalType={modalType}
         message={modalMessage}
-        onClose={() => setIsModalVisible(false)} 
+        onClose={() => setIsModalVisible(false)}
       />
       <UserContainer>
         <Navbar>
