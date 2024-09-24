@@ -169,6 +169,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
         ]);
       }
       const users = await dbInstance.getData("users");
+      console.log('Users from IndexedDB:', users);
       const userToken = users?.[0]?.token;
 
       if (!userToken) {
