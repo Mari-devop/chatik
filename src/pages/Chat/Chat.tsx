@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
-import { useLocation } from "react-router-dom";
 import { dbInstance } from "../../db";
 import {
   ChatContainer,
@@ -43,19 +42,60 @@ interface ChatProps {
 }
 
 const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const individual = location.state;
+  const {
+    individualId,
+    response: initialResponse,
+  } = location.state;
+  console.log("Received state from /Home:", location.state);
   const [scrolled, setScrolled] = useState(false);
-  const [currentQuestionId, setCurrentQuestionId] = useState<number>(0);
-  const [response, setResponse] = useState<string | null>(null);
-  const [currentResponse, setCurrentResponse] = useState<string | null>(null);
-  const [filteredResponses, setFilteredResponses] = useState<any[]>([]);
+  const [filteredResponses, setFilteredResponses] = useState<any[]>(
+    location.state.filteredResponses || []
+  );
+  const [currentResponse, setCurrentResponse] = useState<string | null>(
+    initialResponse
+  );
   const [message, setMessage] = useState<string>("");
   const [chatHistory, setChatHistory] = useState<any[]>([]);
   const [questionVisible, setQuestionVisible] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const location = useLocation();
-  const navigate = useNavigate();
-  const individual = location.state;
+
+  useEffect(() => {
+    console.log("Received state from /Home:", location.state);
+    const { filteredResponses } = location.state;
+    console.log("filteredResponses on /chat:", filteredResponses);
+
+    if (!filteredResponses || filteredResponses.length === 0) {
+      console.warn("No filtered responses available");
+    }
+  }, [location.state]);
+
+  const fetchSmallImageForResponse = async (individualId: number) => {
+    const individuals = await dbInstance.getData("individuals");
+    const individual = individuals.find((ind: any) => ind.id === individualId);
+    return individual?.smallImage || shadow;
+  };
+
+  useEffect(() => {
+    const loadImagesForResponses = async () => {
+      const updatedResponses = await Promise.all(
+        filteredResponses.map(async (resp: any) => {
+          const smallImage = await fetchSmallImageForResponse(
+            resp.individualId
+          );
+          return { ...resp, smallImage };
+        })
+      );
+      setFilteredResponses(updatedResponses);
+    };
+
+    if (filteredResponses.length > 0) {
+      loadImagesForResponses();
+    }
+  }, [filteredResponses]);
 
   const handleScroll = (e: Event) => {
     const target = e.target as HTMLElement;
@@ -76,102 +116,13 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
     };
   }, []);
 
-  const filterResponses = useCallback(
-    (responses: any) => {
-      const questionId = Number(individual?.questionId);
-      const filterQId = responses.filter((resp: any) => resp[questionId]);
-      setCurrentQuestionId(questionId);
-      return filterQId;
-    },
-    [individual]
-  );
-
-  const loadResponsesFromIndexedDB = useCallback(async () => {
-    const savedResponses = await dbInstance.getData("responses");
-
-    const relevantResponses = filterResponses(savedResponses);
-    setFilteredResponses(relevantResponses);
-  }, [filterResponses]);
-
-  const hasFetchedResponse = useRef(false);
-
-  const fetchResponse = useCallback(async () => {
-    if (!individual || hasFetchedResponse.current) return;
-    if (!individual.questionId) return;
-
-    hasFetchedResponse.current = true;
-
-    try {
-      setIsLoading(true); 
-      const body = {
-        questionId: individual.questionId,
-        characterId: individual.id,
-      };
-
-      const response = await axios.post(
-        "https://eternalai.fly.dev/api/freeChat",
-        body,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      const newResponse = {
-        text: response.data.response,
-        smallImage: individual.smallImage || "",
-        individualId: individual.id,
-        questionId: individual.questionId,
-      };
-
-      setResponse(newResponse.text);
-      setIsLoading(false);
-
-      if (
-        !isAuthenticated ||
-        (isAuthenticated && individual?.questionId && individual?.id)
-      ) {
-        const responsesFromDB = await dbInstance.getData("responses");
-
-        let existingResponses = responsesFromDB[individual.questionId];
-
-        if (!Array.isArray(existingResponses)) {
-          existingResponses = [];
-        }
-
-        const isDuplicate = existingResponses.some(
-          (resp: any) => resp.text === newResponse.text
-        );
-
-        if (!isDuplicate) {
-          existingResponses.push(newResponse);
-
-          await dbInstance.addData("responses", {
-            [individual.questionId]: existingResponses,
-          });
-        }
-      }
-    } catch (error) {
-      setIsLoading(false);
-      console.error("Error fetching response:", error);
-    }
-  }, [individual, isAuthenticated]);
-
   const handleSendMessage = async () => {
     if (!message.trim() || isLoading) return;
 
     try {
-      if (currentResponse) {
-        setChatHistory((prev) => [
-          ...prev,
-          { text: currentResponse, isUser: false },
-        ]);
-      }
       const users = await dbInstance.getData("users");
-      console.log('Users from IndexedDB:', users);
-      const lastUser = users[users.length - 1]; 
-      const userToken = lastUser?.token; 
+      const lastUser = users[users.length - 1];
+      const userToken = lastUser?.token;
 
       if (!userToken) {
         console.error("Token is missing or user is not authenticated");
@@ -179,9 +130,17 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
       }
 
       setIsLoading(true);
+      if (currentResponse && currentResponse.trim() !== "") {
+        setChatHistory((prev) => [
+          ...prev,
+          { text: currentResponse, isUser: false }, 
+        ]);
+      }
+
+      setChatHistory((prev) => [...prev, { text: message, isUser: true }]);
 
       const body = {
-        characterId: individual.id,
+        characterId: individualId,
         message: message,
       };
 
@@ -196,7 +155,6 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
         }
       );
 
-      setChatHistory((prev) => [...prev, { text: message, isUser: true }]);
       setCurrentResponse(response.data.response);
       setMessage("");
       setQuestionVisible(false);
@@ -212,16 +170,54 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
         )
       ) {
         setShowModal(true);
-
         setTimeout(() => {
           setShowModal(false);
           navigate("/paywall");
         }, 3000);
-      } else if (error.response?.status === 401) {
-        console.error("Unauthorized - Redirect to login or re-authenticate");
       }
     }
   };
+
+  const fetchChatHistory = useCallback(async () => {
+    if (!individualId) return;
+
+    try {
+      const users = await dbInstance.getData("users");
+      const lastUser = users[users.length - 1];
+      const userToken = lastUser?.token;
+
+      if (!userToken) {
+        console.error("Token is missing or user is not authenticated");
+        return;
+      }
+
+      const response = await axios.get(
+        `https://eternalai.fly.dev/api/chatHistory/${individualId}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
+      );
+      const chatData = response.data.chatHistory;
+
+      const parsedChatHistory = chatData.map((entry: any) => ({
+        isUser: entry.sender === "user",
+        text: entry.content,
+      }));
+
+      setChatHistory(parsedChatHistory);
+    } catch (error) {
+      console.error("Error fetching chat history:", error);
+    }
+  }, [individualId]);
+
+  useEffect(() => {
+    if (individual) {
+      fetchChatHistory();
+    }
+  }, [individual, fetchChatHistory]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && isAuthenticated) {
@@ -237,13 +233,6 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
   const handleInputFocus = () => {
     setQuestionVisible(false);
   };
-
-  useEffect(() => {
-    if (individual) {
-      loadResponsesFromIndexedDB();
-      fetchResponse();
-    }
-  }, [individual, loadResponsesFromIndexedDB, fetchResponse]);
 
   return (
     <>
@@ -267,34 +256,31 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
         </PersonContainer>
         <DialogContainer>
           <RespondContainer>
-            {questionVisible && individual?.questionText && (
-              <Question>
+          <Question $isVisible={questionVisible && !!individual?.questionText}>
                 <Text>{individual?.questionText}</Text>
               </Question>
-            )}
+          
 
             <AnswerBox id="scrollContainer">
               <FadeOverlay $scrolled={scrolled} />
-              {filteredResponses.length > 0
-                ? filteredResponses.map((resp, index) => (
-                    <Respond key={index}>
-                      <IconBox>
-                        <Icon
-                          src={resp[currentQuestionId][0]?.smallImage || shadow}
-                        />
-                      </IconBox>
-                      <RespondBox>
-                        <TextRespond>
-                          {resp[currentQuestionId][0]?.text}
-                        </TextRespond>
-                        <Social>
-                          <IconSocial src={voice} />
-                          <IconSocial src={share} />
-                        </Social>
-                      </RespondBox>
-                    </Respond>
-                  ))
-                : null}
+              {filteredResponses.length > 0 &&
+                filteredResponses.map((resp: any, index: number) => (
+                  <Respond key={index}>
+                    <IconBox>
+                      <Icon src={resp?.smallImage || shadow} />
+                    </IconBox>
+                    <RespondBox>
+                      <TextRespond>
+                        {resp?.text || "No response available"}
+                      </TextRespond>
+                      <Social>
+                        <IconSocial src={voice} />
+                        <IconSocial src={share} />
+                      </Social>
+                    </RespondBox>
+                  </Respond>
+                ))}
+
               {chatHistory.length > 0 &&
                 chatHistory.map((chat, index) => (
                   <Respond key={index}>

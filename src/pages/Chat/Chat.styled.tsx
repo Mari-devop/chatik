@@ -43,7 +43,7 @@ export const PersonBox = styled.div`
   flex-direction: column;
   align-items: flex-start;
 
-  @media (max-width: 850px) {
+  @media (max-width: 980px) {
     width: 300px;
     height: 300px;
   }
@@ -57,7 +57,7 @@ export const PersonShadow = styled.img`
   top: 0;
   left: 0;
 
-  @media (max-width: 850px) {
+  @media (max-width: 980px) {
     width: 340px;
     height: 300px;
   }
@@ -72,7 +72,7 @@ export const PersonPhoto = styled.img`
   border-radius: 30%;
   z-index: 1;
 
-  @media (max-width: 850px) {
+  @media (max-width: 980px) {
     width: 180px;
     height: 220px;
     left: 50%;
@@ -89,7 +89,7 @@ export const TextBox = styled.div`
   position: relative;
   left: 32%;
 
-  @media (max-width: 850px) {
+  @media (max-width: 980px) {
     left: 50%;
     transform: translateX(-50%);
     margin-top: 80px;
@@ -172,18 +172,22 @@ export const RespondContainer = styled.div`
   }
 `;
 
-export const Question = styled.div`
+export const Question = styled.div<{ $isVisible: boolean }>`
   display: flex;
   flex-direction: column;
   background: #ffffff;
   border-radius: 10px;
   padding: 12px;
   width: auto;
+  min-height: 20px; 
+  visibility: ${({ $isVisible }) => ($isVisible ? "visible" : "hidden")}; 
+  transition: visibility 0.3s ease;
 
   @media (max-width: 850px) {
     display: none;
   }
 `;
+
 
 export const Text = styled.h3`
   font-family: "Avenir";
@@ -285,10 +289,6 @@ export const RespondBox = styled.div`
     width: 300px;
   }
 
-  @media (max-width: 950px) {
-    width: 200px;
-  }
-
   @media (max-width: 850px) {
     width: 80%;
   }
@@ -332,12 +332,12 @@ export const QuestionContainer = styled.div`
   flex-direction: column;
   z-index: 9;
   width: auto;
-  margin-right: 30px;
+  margin-right: 20px;
 
   @media (max-width: 850px) {
-    bottom: 80px;
+    bottom: 65px;
     width: 85%;
-    right: 20px;
+    right: 50px;
     justify-content: center;
     align-items: center;
     margin: 0 auto;
@@ -358,10 +358,9 @@ export const PersonAnswer = styled.div`
   max-height: 100%;
   box-sizing: border-box;
   z-index: 2;
-  margin-right: 40px;
   border: none;
   width: 100%;
-  min-width: 650px; 
+  min-width: 700px;
 
   &::before {
     content: "";
@@ -378,6 +377,14 @@ export const PersonAnswer = styled.div`
     mask-composite: exclude;
     -webkit-mask-composite: xor;
     z-index: 1;
+
+    @media (max-width: 1100px) {
+      padding: 4px; 
+    }
+
+    @media (max-width: 850px) {
+      padding: 2px; 
+    }
   }
 
   &::after {
@@ -402,9 +409,21 @@ export const PersonAnswer = styled.div`
     }
   }
 
+  @media (max-width: 1200px) {
+    min-width: 580px;
+  }
+
+  @media (max-width: 1100px) {
+    min-width: 500px;
+  }
+
+  @media (max-width: 950px) {
+    min-width: 400px;
+  }
+
   @media (max-width: 850px) {
-    padding: 20px;
-    margin: 0 auto;
+    padding: 30px;
+    margin: 0;
   }
 `;
 
@@ -413,15 +432,22 @@ export const InputBox = styled.div`
   position: fixed;
   bottom: 0;
   width: 70%;
-  right: 10px;
+  right: 35px;
   padding: 20px;
   box-sizing: border-box;
   z-index: 10;
 
-  @media (max-width: 850px) {
-    width: 100%;
-    right: 0;
+  @media (max-width: 1100px) {
+    padding: 20px 0px;
+    width: 60%;
   }
+  @media (max-width: 850px) {
+    width: 90%;
+    margin: 0 auto;
+    padding: 10px 0px;
+  }
+
+  
 `;
 
 export const InputWrapper = styled.div`
@@ -453,6 +479,10 @@ export const Input = styled.input<DisabledProps>`
   outline: none;
   position: relative;
   cursor: ${({ disabled }) => (disabled ? "not-allowed" : "text")};
+
+  @media (max-width: 1100px) {
+    width: 100%;
+  }
 `;
 
 export const Button = styled.button<DisabledProps>`
@@ -470,11 +500,15 @@ export const Button = styled.button<DisabledProps>`
   width: 137px;
   height: 39px;
   position: fixed;
-  right: 33px;
+  right: 60px;
   bottom: 25px;
   z-index: 2;
 
+  @media (max-width: 1100px) {
+    right: 40px;
+  }
   @media (max-width: 850px) {
-    right: 24px;
+    right: 40px;
+    bottom: 15px;
   }
 `;

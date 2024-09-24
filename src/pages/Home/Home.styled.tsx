@@ -27,7 +27,7 @@ export const MainContainer = styled.div`
   flex-direction: column;
   min-height: 100vh;
   width: 100%;
-  padding-top: 20px;
+  padding-top: 80px;
   box-sizing: border-box;
   overflow: hidden;
 `;
@@ -45,7 +45,7 @@ export const TextContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding-top: 100px;
+  padding-top: 30px;
 `;
 
 export const Text = styled.p`

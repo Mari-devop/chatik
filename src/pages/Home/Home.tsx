@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Question, IndividualWithoutFullImage } from "./types";
@@ -60,13 +60,14 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
     string | null
   >(null);
   const [activeRow, setActiveRow] = useState<number | null>(null);
+  const [filteredResponses, setFilteredResponses] = useState<any[]>([]);
   const navigate = useNavigate();
   const gridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
     const shareToken = queryParams.get("token");
-  
+
     if (shareToken) {
       dbInstance.addData("users", { shareToken: shareToken });
       console.log(`Share token saved: ${shareToken}`);
@@ -157,25 +158,12 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
     fetchIndividuals();
   }, []);
 
-  const arrayBufferToBase64 = (buffer: number[]) => {
-    let binary = "";
-    const len = buffer.length;
-    for (let i = 0; i < len; i++) {
-      binary += String.fromCharCode(buffer[i]);
-    }
-    return window.btoa(binary);
-  };
-
-  const handleQuestionClick = (questionId: number, questionText: string) => {
-    setSelectedQuestion(questionId);
-    setSelectedQuestionText(questionText);
-    if (gridRef.current) {
-      gridRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
-  const handleIndividualClick = async (individualId: number) => {
+  const fetchFullImage = async (
+    individualId: number
+  ): Promise<string | null> => {
     try {
+      console.log("Fetching full image for individualId:", individualId);
+
       const response = await axios.get(
         `https://eternalai.fly.dev/individuals/image/${individualId}`,
         {
@@ -186,6 +174,7 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
       );
 
       const individualData = response.data;
+      console.log("Received individual data:", individualData);
 
       if (
         individualData &&
@@ -196,8 +185,110 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
         const fullImageStr = arrayBufferToBase64(
           individualData.imageBuffer.data
         );
-        const fullImageSrc = base64Flag + fullImageStr;
+        console.log("Full image converted to base64:", fullImageStr);
+        return base64Flag + fullImageStr;
+      } else {
+        console.error("Full image data not found");
+        return null;
+      }
+    } catch (error) {
+      console.error("Error fetching full image:", error);
+      return null;
+    }
+  };
 
+  const arrayBufferToBase64 = (buffer: number[]) => {
+    let binary = "";
+    const len = buffer.length;
+    for (let i = 0; i < len; i++) {
+      binary += String.fromCharCode(buffer[i]);
+    }
+    return window.btoa(binary);
+  };
+
+  const filterResponses = useCallback(
+    (responses: any[], questionId: number) => {
+      console.log("Filtering responses by questionId:", questionId);
+      const filtered = responses.filter(
+        (resp: any) => resp.questionId === questionId
+      );
+      console.log("Filtered responses:", filtered);
+      return filtered;
+    },
+    []
+  );
+
+  const saveResponseToIndexedDB = async (
+    questionId: number,
+    individualId: number,
+    response: string
+  ) => {
+    const responseData = {
+      questionId,
+      individualId,
+      text: response,
+    };
+    console.log("Saving response to IndexedDB:", responseData);
+    await dbInstance.addData("responses", responseData);
+  };
+
+  const fetchFreeChatResponse = async (questionId: number) => {
+    try {
+      const response = await axios.post(
+        "https://eternalai.fly.dev/api/freeChat",
+        { questionId },
+        { headers: { "Content-Type": "application/json" } }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error during freeChat:", error);
+      return null;
+    }
+  };
+
+  const handleQuestionClick = async (
+    questionId: number,
+    questionText: string
+  ) => {
+    setSelectedQuestion(questionId);
+    setSelectedQuestionText(questionText);
+
+    try {
+      const freeChatData = await fetchFreeChatResponse(questionId);
+      if (!freeChatData) return;
+
+      const { individualId, response } = freeChatData;
+
+      const fullImage = await fetchFullImage(individualId);
+      await saveResponseToIndexedDB(questionId, individualId, response);
+
+      const savedResponses = await dbInstance.getData("responses");
+      const relevantResponses = filterResponses(savedResponses, questionId);
+      const filteredWithoutLast = relevantResponses.slice(
+        0,
+        relevantResponses.length - 1
+      );
+
+      navigate("/chat", {
+        state: {
+          questionId,
+          questionText,
+          individualId,
+          fullImage,
+          response,
+          filteredResponses: filteredWithoutLast,
+        },
+      });
+    } catch (error) {
+      console.error("Error during question click:", error);
+    }
+  };
+
+  const handleIndividualClick = async (individualId: number) => {
+    if (isAuthenticated) {
+      const fullImage = await fetchFullImage(individualId);
+
+      if (fullImage) {
         const storedIndividuals = await dbInstance.getData("individuals");
         const individual: any = storedIndividuals.find(
           (ind: any) => ind.id === individualId
@@ -206,44 +297,18 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
         if (individual) {
           const selectedIndividual = {
             ...individual,
-            fullImage: fullImageSrc,
+            fullImage,
           };
 
-          if (isAuthenticated) {
-            navigate("/chat", {
-              state: { ...selectedIndividual, individualId },
-            });
-          } else {
-            if (selectedQuestion === null || selectedQuestionText === null) {
-              alert("Please select a question first.");
-
-              setTimeout(() => {
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }, 0);
-
-              return;
-            }
-
-            const selectedIndividualWithQuestion = {
-              ...selectedIndividual,
-              questionId: selectedQuestion,
-              questionText: selectedQuestionText,
-            };
-
-            await dbInstance.addData(
-              "individuals",
-              selectedIndividualWithQuestion
-            );
-            navigate("/chat", { state: selectedIndividualWithQuestion });
-          }
+          navigate("/chat", {
+            state: { ...selectedIndividual, individualId },
+          });
         } else {
           console.error("Individual not found in stored data");
         }
-      } else {
-        console.error("Full image data not found");
       }
-    } catch (error) {
-      console.error("Error fetching full image:", error);
+    } else {
+      alert("This feature requires registration. Please sign up to continue.");
     }
   };
 
