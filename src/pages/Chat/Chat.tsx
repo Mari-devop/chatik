@@ -170,7 +170,8 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
       }
       const users = await dbInstance.getData("users");
       console.log('Users from IndexedDB:', users);
-      const userToken = users.find((user:any) => user.token)?.token || users[0]?.shareToken;
+      const lastUser = users[users.length - 1]; 
+      const userToken = lastUser?.token; 
 
       if (!userToken) {
         console.error("Token is missing or user is not authenticated");
