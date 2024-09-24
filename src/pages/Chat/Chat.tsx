@@ -170,7 +170,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
       }
       const users = await dbInstance.getData("users");
       console.log('Users from IndexedDB:', users);
-      const userToken = users?.[0]?.token;
+      const userToken = users.find((user:any) => user.token)?.token || users[0]?.shareToken;
 
       if (!userToken) {
         console.error("Token is missing or user is not authenticated");
@@ -196,9 +196,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
       );
 
       setChatHistory((prev) => [...prev, { text: message, isUser: true }]);
-
       setCurrentResponse(response.data.response);
-
       setMessage("");
       setQuestionVisible(false);
       setIsLoading(false);
