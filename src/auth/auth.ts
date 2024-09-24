@@ -3,11 +3,12 @@ import { dbInstance } from "../db";
 
 export const register = async (email: string, password: string) => {
     const users = await dbInstance.getData("users");
-    const shareToken = users?.[0]?.shareToken;
+    const shareToken: string = users?.[0]?.shareToken;
+
     const requestBody = {
         email,
         password,
-        ...(shareToken && { shareToken })
+        shareToken
     };
     const response = await axios.post('https://eternalai.fly.dev/user/register', requestBody, {
         headers: {
