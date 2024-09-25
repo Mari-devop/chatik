@@ -47,6 +47,11 @@ export const PersonBox = styled.div`
     width: 300px;
     height: 300px;
   }
+
+  @media (max-width: 375px) {
+    width: 200px;
+    height: 200px;
+  }
 `;
 
 export const PersonShadow = styled.img`
@@ -60,6 +65,11 @@ export const PersonShadow = styled.img`
   @media (max-width: 980px) {
     width: 340px;
     height: 300px;
+  }
+
+  @media (max-width: 375px) {
+    width: 250px;
+    height: 200px;
   }
 `;
 
@@ -78,6 +88,12 @@ export const PersonPhoto = styled.img`
     left: 50%;
     transform: translateX(-50%);
   }
+
+  @media (max-width: 375px) {
+    width: 120px;
+    height: 150px;
+    top: 30px;
+  }
 `;
 
 export const TextBox = styled.div`
@@ -93,6 +109,10 @@ export const TextBox = styled.div`
     left: 50%;
     transform: translateX(-50%);
     margin-top: 80px;
+  }
+
+  @media (max-width: 375px) {
+    margin-top: 40px;
   }
 `;
 
@@ -198,6 +218,11 @@ export const Text = styled.h3`
   color: #000000;
   margin: 0px;
   padding-right: 10px;
+
+   @media (max-width: 375px) {
+      font-size: 12px;
+     
+    }
 `;
 
 export const AnswerBox = styled.div`
@@ -209,6 +234,14 @@ export const AnswerBox = styled.div`
   @media (max-width: 850px) {
     height: 150px;
     padding-right: 0px;
+  }
+
+  @media (min-height: 740px) {
+    height: 230px;
+  }
+
+  @media (min-height: 1000px) {
+    height: 400px;
   }
 `;
 
@@ -292,6 +325,10 @@ export const RespondBox = styled.div`
   @media (max-width: 850px) {
     width: 80%;
   }
+
+  @media (max-width: 375px) {
+    padding: 8px;
+  }
 `;
 
 export const TextRespond = styled.h3`
@@ -301,7 +338,7 @@ export const TextRespond = styled.h3`
   line-height: 20px;
   letter-spacing: -0.01em;
   color: #ffffff;
-  margin-right: 43px;
+  margin-right: 50px;
   width: 440px;
 
   @media (max-width: 1200px) {
@@ -310,6 +347,11 @@ export const TextRespond = styled.h3`
 
   @media (max-width: 1100px) {
     width: 100%;
+  }
+
+  @media (max-width: 375px) {
+    font-size: 14px;
+    line-height: 18px;
   }
 `;
 
@@ -332,7 +374,7 @@ export const QuestionContainer = styled.div`
   flex-direction: column;
   z-index: 9;
   width: auto;
-  margin-right: 20px;
+  margin-right: 50px;
 
   @media (max-width: 850px) {
     bottom: 65px;
@@ -341,6 +383,11 @@ export const QuestionContainer = styled.div`
     justify-content: center;
     align-items: center;
     margin: 0 auto;
+  }
+
+  @media (max-width: 500px) {
+    right: 20px;
+    width: 90%;
   }
 `;
 
@@ -425,6 +472,14 @@ export const PersonAnswer = styled.div`
     padding: 30px;
     margin: 0;
   }
+
+  @media (max-width: 500px) {
+    padding: 20px;
+  }
+
+  @media (max-width: 450px) {
+    min-width: 300px;
+  }
 `;
 
 export const InputBox = styled.div`
@@ -432,22 +487,32 @@ export const InputBox = styled.div`
   position: fixed;
   bottom: 0;
   width: 70%;
-  right: 35px;
-  padding: 20px;
+  right: 50px;
+  padding: 20px 0px;
   box-sizing: border-box;
   z-index: 10;
 
   @media (max-width: 1100px) {
     padding: 20px 0px;
     width: 60%;
+    right: 40px;
   }
+
   @media (max-width: 850px) {
     width: 90%;
-    margin: 0 auto;
+    right: 35px;
+    justify-content: center;
+    align-items: center;
     padding: 10px 0px;
   }
 
+  @media (max-width: 500px) {
+    right: 25px;
+  }
   
+  @media (max-width: 450px) {
+    right: 20px;
+  }
 `;
 
 export const InputWrapper = styled.div`
@@ -479,10 +544,6 @@ export const Input = styled.input<DisabledProps>`
   outline: none;
   position: relative;
   cursor: ${({ disabled }) => (disabled ? "not-allowed" : "text")};
-
-  @media (max-width: 1100px) {
-    width: 100%;
-  }
 `;
 
 export const Button = styled.button<DisabledProps>`
@@ -500,15 +561,23 @@ export const Button = styled.button<DisabledProps>`
   width: 137px;
   height: 39px;
   position: fixed;
-  right: 60px;
+  right: 55px;
   bottom: 25px;
   z-index: 2;
 
   @media (max-width: 1100px) {
-    right: 40px;
+    right: 45px;
   }
   @media (max-width: 850px) {
     right: 40px;
     bottom: 15px;
+  }
+
+  @media (max-width: 500px) {
+    right: 30px;
+  }
+
+  @media (max-width: 450px) {
+    right: 25px;
   }
 `;

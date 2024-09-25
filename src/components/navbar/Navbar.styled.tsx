@@ -37,6 +37,10 @@ export const ImageContainer = styled.div`
         transform: none;
         width: 144px;
     }
+
+     @media (max-width: 375px) {
+        top: 10px;
+     }
 `;
 
 export const Image = styled.img`
@@ -112,6 +116,10 @@ export const ButtonMenu = styled.button`
         right: 16px;  
         top: 50px;
     }
+
+    @media (max-width: 375px) {
+        top: 25px;
+     }
 `;
 
 export const Icon = styled.img`
@@ -218,6 +226,10 @@ export const ButtonShare = styled.button`
         padding: 10px 16px;
         font-size: 10px;
     }
+
+    @media (max-width: 375px) {
+        top: -25px;
+     }
 `;
 
 export const IconShare = styled.img`

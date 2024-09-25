@@ -260,25 +260,37 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
       const { individualId, response } = freeChatData;
 
       const fullImage = await fetchFullImage(individualId);
-      await saveResponseToIndexedDB(questionId, individualId, response);
 
-      const savedResponses = await dbInstance.getData("responses");
-      const relevantResponses = filterResponses(savedResponses, questionId);
-      const filteredWithoutLast = relevantResponses.slice(
-        0,
-        relevantResponses.length - 1
+      const storedIndividuals = await dbInstance.getData("individuals");
+      const selectedIndividual = storedIndividuals.find(
+        (ind: any) => ind.id === individualId
       );
 
-      navigate("/chat", {
-        state: {
-          questionId,
-          questionText,
-          individualId,
-          fullImage,
-          response,
-          filteredResponses: filteredWithoutLast,
-        },
-      });
+      if (selectedIndividual) {
+        await saveResponseToIndexedDB(questionId, individualId, response);
+
+        const savedResponses = await dbInstance.getData("responses");
+        const relevantResponses = filterResponses(savedResponses, questionId);
+        const filteredWithoutLast = relevantResponses.slice(
+          0,
+          relevantResponses.length - 1
+        );
+
+        navigate("/chat", {
+          state: {
+            questionId,
+            questionText,
+            individualId,
+            fullImage,
+            response,
+            filteredResponses: filteredWithoutLast,
+            name: selectedIndividual.name,
+            title: selectedIndividual.title,
+          },
+        });
+      } else {
+        console.error("Individual not found in stored data");
+      }
     } catch (error) {
       console.error("Error during question click:", error);
     }

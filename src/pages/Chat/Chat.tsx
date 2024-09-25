@@ -45,10 +45,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const individual = location.state;
-  const {
-    individualId,
-    response: initialResponse,
-  } = location.state;
+  const { individualId, response: initialResponse, name, title } = location.state;
   console.log("Received state from /Home:", location.state);
   const [scrolled, setScrolled] = useState(false);
   const [filteredResponses, setFilteredResponses] = useState<any[]>(
@@ -133,7 +130,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
       if (currentResponse && currentResponse.trim() !== "") {
         setChatHistory((prev) => [
           ...prev,
-          { text: currentResponse, isUser: false }, 
+          { text: currentResponse, isUser: false },
         ]);
       }
 
@@ -249,17 +246,18 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
             <PersonShadow src={shadow} />
             <PersonPhoto src={individual?.fullImage || ""} />
             <TextBox>
-              <Title>{individual?.name}</Title>
-              <Subtitle>{individual?.title}</Subtitle>
+              <Title>{name || individual?.name}</Title>
+              <Subtitle>{title || individual?.title}</Subtitle>
             </TextBox>
           </PersonBox>
         </PersonContainer>
         <DialogContainer>
           <RespondContainer>
-          <Question $isVisible={questionVisible && !!individual?.questionText}>
-                <Text>{individual?.questionText}</Text>
-              </Question>
-          
+            <Question
+              $isVisible={questionVisible && !!individual?.questionText}
+            >
+              <Text>{individual?.questionText}</Text>
+            </Question>
 
             <AnswerBox id="scrollContainer">
               <FadeOverlay $scrolled={scrolled} />
