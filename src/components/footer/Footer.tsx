@@ -14,8 +14,15 @@ import logo from '../../assets/images/logo.png';
 import twitter from '../../assets/images/footer/twitter.png';
 import fb from '../../assets/images/footer/fb.png';
 import youtube from '../../assets/images/footer/youtube.png';
+import SmsChat from '../SmsChat/SmsChat';
+
 
 const Footer = () => {
+    const[openSmsChat, setOpenSmsChat] = React.useState(false);
+
+    const handleSmsChat = () => {
+        setOpenSmsChat(true);
+    }
   return (
     <FooterContainer>
         <LogoContainer>
@@ -28,10 +35,11 @@ const Footer = () => {
         </TinyText>
         <SocialContainer>
             <Text>follow us</Text>
-            <Button><Icon src={twitter} /></Button>
+            <Button onClick={handleSmsChat}><Icon src={twitter} /></Button>
             <Button><Icon src={fb} /></Button>
             <Button><Icon src={youtube} /></Button>
         </SocialContainer>
+        {openSmsChat && <SmsChat setIsLoginOpen={setOpenSmsChat} setIsSignupOpen={setOpenSmsChat} />}
     </FooterContainer>
   )
 }

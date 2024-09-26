@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Question, IndividualWithoutFullImage } from "./types";
 import { dbInstance } from "../../db";
 import {
@@ -36,6 +36,7 @@ import {
   Person,
 } from "./Home.styled";
 import Footer from "../../components/footer/Footer";
+import ModalSuccess from "../../components/ModalSuccess/ModalSuccess";
 import mask from "../../assets/images/main-page/left2.png";
 import jobs from "../../assets/images/main-page/left.png";
 import luter from "../../assets/images/main-page/center.png";
@@ -60,8 +61,11 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
     string | null
   >(null);
   const [activeRow, setActiveRow] = useState<number | null>(null);
-  const [filteredResponses, setFilteredResponses] = useState<any[]>([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modalType, setModalType] = useState<"success" | "failure">("success");
+  const [modalMessage, setModalMessage] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
   const gridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -320,7 +324,9 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
         }
       }
     } else {
-      alert("This feature requires registration. Please sign up to continue.");
+      setModalType("failure");
+      setModalMessage("Please, log in to chat with individuals");
+      setIsModalVisible(true);
     }
   };
 
@@ -328,79 +334,93 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
     setActiveRow(index);
   };
 
+  useEffect(() => {
+    if (location.state?.scrollToIndividuals && gridRef.current) {
+      gridRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [location]);
+
   return (
-    <Container>
-      <MainContainer>
-        <Section>
-          <TextContainer>
-            <Text>ask important people important questions</Text>
-            <Subtitle>
-              Choose a question to quickly get a realistic response
-            </Subtitle>
-            {questions.map((question, index) => (
-              <Row
-                key={question.questionId}
-                $isActive={activeRow === index}
-                onClick={() => {
-                  handleRowClick(index);
-                  handleQuestionClick(question.questionId, question.question);
-                }}
-              >
-                <TextRow>{question.question}</TextRow>
-              </Row>
-            ))}
-          </TextContainer>
-          <PhotoContainer>
-            <Wrapper1>
-              <Image1 src={mask} />
-              <Image2 src={jobs} />
-              <Image3 src={luter} />
-              <Image4 src={albert} />
-              <Image5 src={deva} />
-            </Wrapper1>
-            <Wrapper2>
-              <Image6 src={shadow} />
-              <Image7 src={conversation} />
-              <Image8 src={bigshadow} />
-              <Image9 src={brightpinkshadow} />
-              <Image10 src={pinkshadow} />
-            </Wrapper2>
-          </PhotoContainer>
-        </Section>
-        <Section ref={gridRef}>
-          <TextPersonContainer>
-            <Title ref={gridRef}>individuals</Title>
-            <Subtext>
-              Ask a question to your favorite person and get a realistic
-              response
-            </Subtext>
-          </TextPersonContainer>
-          <Grid>
-            {individuals &&
-              individuals.map((individual: IndividualWithoutFullImage) => (
-                <GridRow
-                  key={individual.id}
-                  onClick={() => handleIndividualClick(individual.id)}
+    <>
+      <ModalSuccess
+        isVisible={isModalVisible}
+        modalType={modalType}
+        message={modalMessage}
+        onClose={() => setIsModalVisible(false)}
+      />
+      <Container>
+        <MainContainer>
+          <Section>
+            <TextContainer>
+              <Text>ask important people important questions</Text>
+              <Subtitle>
+                Choose a question to quickly get a realistic response
+              </Subtitle>
+              {questions.map((question, index) => (
+                <Row
+                  key={question.questionId}
+                  $isActive={activeRow === index}
+                  onClick={() => {
+                    handleRowClick(index);
+                    handleQuestionClick(question.questionId, question.question);
+                  }}
                 >
-                  <Person
-                    src={
-                      typeof individual.smallImage === "string"
-                        ? individual.smallImage
-                        : ""
-                    }
-                    alt={individual.name}
-                  />
-                  <GridText>
-                    <GridTitle>{individual.name}</GridTitle>
-                    <GridSubtext>{individual.title}</GridSubtext>
-                  </GridText>
-                </GridRow>
+                  <TextRow>{question.question}</TextRow>
+                </Row>
               ))}
-          </Grid>
-        </Section>
-      </MainContainer>
-      <Footer />
-    </Container>
+            </TextContainer>
+            <PhotoContainer>
+              <Wrapper1>
+                <Image1 src={mask} />
+                <Image2 src={jobs} />
+                <Image3 src={luter} />
+                <Image4 src={albert} />
+                <Image5 src={deva} />
+              </Wrapper1>
+              <Wrapper2>
+                <Image6 src={shadow} />
+                <Image7 src={conversation} />
+                <Image8 src={bigshadow} />
+                <Image9 src={brightpinkshadow} />
+                <Image10 src={pinkshadow} />
+              </Wrapper2>
+            </PhotoContainer>
+          </Section>
+          <Section ref={gridRef}>
+            <TextPersonContainer>
+              <Title ref={gridRef}>individuals</Title>
+              <Subtext>
+                Ask a question to your favorite person and get a realistic
+                response
+              </Subtext>
+            </TextPersonContainer>
+            <Grid>
+              {individuals &&
+                individuals.map((individual: IndividualWithoutFullImage) => (
+                  <GridRow
+                    key={individual.id}
+                    onClick={() => handleIndividualClick(individual.id)}
+                  >
+                    <Person
+                      src={
+                        typeof individual.smallImage === "string"
+                          ? individual.smallImage
+                          : ""
+                      }
+                      alt={individual.name}
+                    />
+                    <GridText>
+                      <GridTitle>{individual.name}</GridTitle>
+                      <GridSubtext>{individual.title}</GridSubtext>
+                    </GridText>
+                  </GridRow>
+                ))}
+            </Grid>
+          </Section>
+        </MainContainer>
+        <Footer />
+      </Container>
+    </>
   );
 };
 

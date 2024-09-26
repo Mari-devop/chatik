@@ -30,6 +30,10 @@ export const ButtonSecondary = styled.button`
   cursor: pointer;
   align-items: left;
   display: flex;
+
+  &:focus {
+    outline: 1px solid #B5E42E;
+  }
 `;
 
 export const CustomGoogleButton = styled.button`

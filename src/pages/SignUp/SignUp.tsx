@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import FocusTrap from "focus-trap-react";
 import axios from "axios";
 import { useGoogleLogin } from "@react-oauth/google";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -46,6 +47,20 @@ const SignUp: React.FC<SignupProps> = ({
     setIsSignupOpen(false);
     setIsLoginOpen(false);
   };
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        handleCloseClick();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   const handleLogoClick = () => {
     setIsSignupOpen(false);
@@ -146,79 +161,82 @@ const SignUp: React.FC<SignupProps> = ({
   }, []);
 
   return (
-    <>
-      <ModalSuccess
-        isVisible={isModalVisible}
-        modalType={modalType}
-        message={modalMessage}
-        onClose={() => setIsModalVisible(false)}
-      />
-      <UserContainer>
-        <Navbar>
-          <CloseIcon onClick={handleCloseClick} />
-          <ImageContainer>
-            <Image src={logo} alt="logo" onClick={handleLogoClick} />
-          </ImageContainer>
-        </Navbar>
-        <BoxContainer>
-          <AvenirH2>Get started</AvenirH2>
-          <TextMedium>To continue please create an account</TextMedium>
-          <Row>
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              placeholder="justin@gmail.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </Row>
-          <Row>
-            <label htmlFor="password">Password</label>
-            <input
-              type={isPasswordVisible ? "text" : "password"}
-              id="password"
-              placeholder="********"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <FontAwesomeIcon
-              icon={isPasswordVisible ? faEye : faEyeSlash}
-              onClick={() => setIsPasswordVisible(!isPasswordVisible)}
-              style={{
-                position: "absolute",
-                color: "white",
-                cursor: "pointer",
-                bottom: "260px",
-                right: "100px",
-              }}
-            />
-          </Row>
-          <ButtonContainer>
-            <CustomGoogleButton onClick={() => googleSignUp()}>
-              <img src={googleIcon} alt="google" />
-              SIGN UP WITH GOOGLE
-            </CustomGoogleButton>
-            <Button onClick={handleRegister}>SIGN UP</Button>
-          </ButtonContainer>
-          <Divider />
-          <TextCenter>
-            <Text>
-              Already have an account?{" "}
-              <span
-                onClick={() => {
-                  setIsSignupOpen(false);
-                  setIsLoginOpen(true);
+    <FocusTrap>
+      <div role="dialog" aria-modal="true">
+        <ModalSuccess
+          isVisible={isModalVisible}
+          modalType={modalType}
+          message={modalMessage}
+          onClose={() => setIsModalVisible(false)}
+        />
+        <UserContainer>
+          <Navbar>
+            <CloseIcon onClick={handleCloseClick} />
+            <ImageContainer>
+              <Image src={logo} alt="logo" onClick={handleLogoClick} />
+            </ImageContainer>
+          </Navbar>
+          <BoxContainer>
+            <AvenirH2>Get started</AvenirH2>
+            <TextMedium>To continue please create an account</TextMedium>
+            <Row>
+              <label htmlFor="email">Email</label>
+              <input
+                type="email"
+                id="email"
+                placeholder="justin@gmail.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </Row>
+            <Row>
+              <label htmlFor="password">Password</label>
+              <input
+                type={isPasswordVisible ? "text" : "password"}
+                id="password"
+                placeholder="********"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <FontAwesomeIcon
+                icon={isPasswordVisible ? faEye : faEyeSlash}
+                onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+                style={{
+                  position: "absolute",
+                  color: "white",
+                  cursor: "pointer",
+                  bottom: "260px",
+                  right: "100px",
                 }}
-                style={{ cursor: "pointer", color: "#F82D98" }}
-              >
-                Sign in
-              </span>
-            </Text>
-          </TextCenter>
-        </BoxContainer>
-      </UserContainer>
-    </>
+              />
+            </Row>
+            <ButtonContainer>
+              <CustomGoogleButton onClick={() => googleSignUp()}>
+                <img src={googleIcon} alt="google" />
+                SIGN UP WITH GOOGLE
+              </CustomGoogleButton>
+              <Button onClick={handleRegister}>SIGN UP</Button>
+            </ButtonContainer>
+            <Divider />
+            <TextCenter>
+              <Text>
+                Already have an account?{" "}
+                <span
+                  onClick={() => {
+                    setIsSignupOpen(false);
+                    setIsLoginOpen(true);
+                  }}
+                  style={{ cursor: "pointer", color: "#F82D98" }}
+                  tabIndex={0}
+                >
+                  Sign in
+                </span>
+              </Text>
+            </TextCenter>
+          </BoxContainer>
+        </UserContainer>
+      </div>
+    </FocusTrap>
   );
 };
 

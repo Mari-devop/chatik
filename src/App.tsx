@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
 import { dbInstance } from "./db";
 import SignUp from "./pages/SignUp/SignUp";
 import { MainContainer, ContentContainer } from "./assets/css/Global.styled";
@@ -16,6 +18,10 @@ import NewPassword from "./pages/NewPassword/NewPassword";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import Paywall from "./pages/Paywall/Paywall";
 import HowItWorks from "./pages/HowItWorks/HowItWorks";
+
+const stripePromise = loadStripe(
+  "pk_test_51PqIRMRxh50Nc0qLf4KgICJ8Gb4lP7e4iOqZp0SJFlG9rIABwbfH0u09I708ArEEkN3VJ3lzojlUcuvwZ0IYXpcU00E7LfZZkG"
+);
 
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -44,10 +50,23 @@ function App() {
           />
           <ContentContainer>
             <Routes>
-              <Route path="/" element={<Home isAuthenticated={isAuthenticated} />} />
+              <Route
+                path="/"
+                element={<Home isAuthenticated={isAuthenticated} />}
+              />
               <Route path="/about" element={<About />} />
-              <Route path="/chat" element={<Chat isAuthenticated={isAuthenticated} />} />
-              <Route path="/paywall" element={<Paywall />} />
+              <Route
+                path="/chat"
+                element={<Chat isAuthenticated={isAuthenticated} />}
+              />
+              <Route
+                path="/paywall"
+                element={
+                  <Elements stripe={stripePromise}>
+                    <Paywall />
+                  </Elements>
+                }
+              />
               <Route path="/how" element={<HowItWorks />} />
               <Route
                 path="/verify-email"
@@ -57,7 +76,9 @@ function App() {
                 path="/accountDetails"
                 element={
                   <ProtectedRoute isAuthenticated={isAuthenticated}>
-                    <AccountDetails />
+                    <Elements stripe={stripePromise}>
+                      <AccountDetails />
+                    </Elements>
                   </ProtectedRoute>
                 }
               />

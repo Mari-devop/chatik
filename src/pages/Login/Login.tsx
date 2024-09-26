@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import FocusTrap from 'focus-trap-react';
 import axios from "axios";
 import { useGoogleLogin } from "@react-oauth/google";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -47,6 +48,20 @@ const Login: React.FC<LoginProps> = ({
   const [modalType, setModalType] = useState<"success" | "failure">("success");
   const [modalMessage, setModalMessage] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        handleCloseClick(); 
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   const handleCloseClick = () => {
     setIsLoginOpen(false);
@@ -207,7 +222,8 @@ const Login: React.FC<LoginProps> = ({
   }, [isModalVisible]);
 
   return (
-    <>
+    <FocusTrap>
+      <div role="dialog" aria-modal="true">
       <ModalSuccess
         isVisible={isModalVisible}
         modalType={modalType}
@@ -258,16 +274,16 @@ const Login: React.FC<LoginProps> = ({
             />
           </Row>
           <Row>
-            <ButtonSecondary onClick={handleForgotPassword}>
+            <ButtonSecondary onClick={handleForgotPassword} tabIndex={0}>
               Forgot password?
             </ButtonSecondary>
           </Row>
           <ButtonContainer>
-            <CustomGoogleButton onClick={() => googleLogin()}>
+            <CustomGoogleButton onClick={() => googleLogin()} tabIndex={0}>
               <img src={googleIcon} alt="google" />
               SIGN IN WITH GOOGLE
             </CustomGoogleButton>
-            <Button onClick={handleLogin}>SIGN IN</Button>
+            <Button onClick={handleLogin} tabIndex={0}>SIGN IN</Button>
           </ButtonContainer>
           <Divider />
           <TextCenter>
@@ -279,6 +295,7 @@ const Login: React.FC<LoginProps> = ({
                   setIsSignupOpen(true);
                 }}
                 style={{ cursor: "pointer", color: "#F82D98" }}
+                tabIndex={0}
               >
                 Sign up
               </span>
@@ -286,7 +303,8 @@ const Login: React.FC<LoginProps> = ({
           </TextCenter>
         </BoxContainer>
       </UserContainer>
-    </>
+      </div>
+    </FocusTrap>
   );
 };
 

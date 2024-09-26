@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import FocusTrap from 'focus-trap-react';
 import { dbInstance } from "../../db";
 import { MenuProps, User } from "./types";
 import {
@@ -19,7 +20,7 @@ import {
 import facebook from "../../assets/images/menu/facebook.png";
 import instagram from "../../assets/images/menu/instagram.png";
 import discord from "../../assets/images/menu/discord-mark-white 1.png";
-import twitter from "../../assets/images/menu/twitter.png";
+import twitter from "../../assets/images/menu/x-twitter-brands-solid.svg";
 import logo from "../../assets/images/logo.png";
 import { ImageContainer, Image } from "../navbar/Navbar.styled";
 import Login from "../../pages/Login/Login";
@@ -35,6 +36,20 @@ const Menu: React.FC<MenuProps> = ({
   const [loading, setLoading] = useState(true);
   const [isSignupOpen, setIsSignupOpen] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        handleCloseClick(); 
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   const handleCloseClick = () => {
     setIsMenuOpen(false);

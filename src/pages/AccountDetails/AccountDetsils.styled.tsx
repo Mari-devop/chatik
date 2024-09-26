@@ -211,6 +211,8 @@ export const CardDetails = styled.div`
   height: 62px;
   background-color: #111;
   color: #fff;
+  width: 529px;
+  padding: 0 16px;
 `;
 
 export const CardIcon = styled.div`

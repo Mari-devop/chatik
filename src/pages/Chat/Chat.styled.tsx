@@ -237,7 +237,7 @@ export const AnswerBox = styled.div`
   }
 
   @media (min-height: 740px) {
-    height: 230px;
+    height: 300px;
   }
 
   @media (min-height: 1000px) {

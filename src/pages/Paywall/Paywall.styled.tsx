@@ -1,12 +1,20 @@
 import styled from "styled-components";
 
+export const Section = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: calc(100vh - 80px);
+  scroll-snap-align: start;
+`;
+
 export const BoxContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
   width: 100%;
-  margin-top: 32px;
+  margin-top: 12px;
   gap: 32px;
 `;
 
@@ -208,6 +216,8 @@ export const CardDetails = styled.div`
   height: 56px;
   background-color: #111;
   color: #fff;
+  width: 529px;
+  padding: 0 16px;
 `;
 
 export const CheckBox = styled.div`

@@ -18,6 +18,7 @@ import {
 import Menu from "../menu/Menu";
 import Login from "../../pages/Login/Login";
 import SignUp from "../../pages/SignUp/SignUp";
+import ModalSuccess from "../ModalSuccess/ModalSuccess";
 import logo from "../../assets/images/logo.png";
 import menu from "../../assets/images/main-page/menu.png";
 import share from "../../assets/images/share 1.png";
@@ -34,6 +35,8 @@ export const Navbar = ({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isSignupOpen, setIsSignupOpen] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [shareLink, setShareLink] = useState("");
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -67,14 +70,37 @@ export const Navbar = ({
     setIsSignupOpen(!isSignupOpen);
   };
 
+  const handleShareClick = async () => {
+    const generatedLink = `${window.location.origin}`;
+    setShareLink(generatedLink);
+    setShowModal(true);
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        handleLogoClick();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
   return (
     <div>
+      <ModalSuccess
+        isVisible={showModal}
+        modalType="share"
+        shareLink={shareLink}
+        message="Share this link to your friend"
+        onClose={() => setShowModal(false)}
+      />
       <NavbarContainer
-        style={
-          location.pathname === "/accountDetails"
-            ? { position: "sticky", top: 0, width: "100%", zIndex: 1000 }
-            : {}
-        }
+        style={{ position: "sticky", top: 0, width: "100%", zIndex: 1000 }}
       >
         <ImageContainer>
           <Image src={logo} alt="logo" onClick={handleLogoClick} />
@@ -94,7 +120,7 @@ export const Navbar = ({
                 </>
               )}
               {isAuthenticated && (
-                <ButtonShare>
+                <ButtonShare onClick={handleShareClick}>
                   <IconShare src={share} />
                   SHARE
                 </ButtonShare>

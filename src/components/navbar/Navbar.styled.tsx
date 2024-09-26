@@ -119,6 +119,7 @@ export const ButtonMenu = styled.button`
 
     @media (max-width: 375px) {
         top: 25px;
+        fill: linear-gradient(45deg, #5833EF, #F82D98);
      }
 `;
 
