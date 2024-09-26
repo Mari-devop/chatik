@@ -133,12 +133,12 @@ const Paywall = () => {
 
       const result = await response.json();
 
-      if (response.status === 200) {
-        setModalType("success");
-        setModalMessage("Payment successful");
-        setIsModalVisible(true);
-        return;
-      }
+      // if (response.status === 200) {
+      //   setModalType("success");
+      //   setModalMessage("Payment successful");
+      //   setIsModalVisible(true);
+      //   return;
+      // }
 
       if (result.error) {
         setModalType("failure");
