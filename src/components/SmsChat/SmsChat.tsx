@@ -16,6 +16,7 @@ const SmsChat: React.FC<SmsChatProps> = ({
   setIsSignupOpen,
 }) => {
   const [isSuccess, setIsSuccess] = useState(false);
+  
   const handleSubmit = () => {
     setIsSuccess(true);
   };

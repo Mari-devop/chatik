@@ -1,9 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import InputMask from "react-input-mask";
 import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
+import { User } from "../../components/menu/types";
+import { ColorRing } from "react-loader-spinner";
 import { dbInstance } from "../../db";
 import { Container } from "../Home/Home.styled";
 import { Row, Button } from "../SignUp/SignUp.styled";
+import { CheckBox, SaveButton } from "../Paywall/Paywall.styled";
 import {
   FirstBox,
   SecondBox,
@@ -16,7 +21,7 @@ import {
   ImageDown,
   CardInputContainer,
   CardDetails,
-  SaveButton,
+  SaveButtonPay,
 } from "./AccountDetsils.styled";
 import {
   AvenirH2,
@@ -27,6 +32,8 @@ import Footer from "../../components/footer/Footer";
 import ModalSuccess from "../../components/ModalSuccess/ModalSuccess";
 import up from "../../assets/images/accountDetails/up.png";
 import down from "../../assets/images/accountDetails/down.png";
+import check from "../../assets/images/paywall/check 1.png";
+import { createTypeReferenceDirectiveResolutionCache } from "typescript";
 
 const AccountDetails = () => {
   const [userData, setUserData] = useState({
@@ -35,14 +42,62 @@ const AccountDetails = () => {
     phone: "",
     password: "",
     hasSubscription: false,
+    nextBillingDate: "",
   });
   const [isPaymentUpdated, setIsPaymentUpdated] = useState(false);
   const [showCardInput, setShowCardInput] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalType, setModalType] = useState<"success" | "failure">("success");
   const [modalMessage, setModalMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const formattedDate = new Date(userData.nextBillingDate).toLocaleDateString();
+  const [emailError, setEmailError] = useState(false);
+  const [phoneError, setPhoneError] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
+  const [isFormValid, setIsFormValid] = useState(false);
   const stripe = useStripe();
   const elements = useElements();
+  const navigate = useNavigate();
+
+  const handleStartChatting = () => {
+    navigate("/");
+  };
+
+  const handleSubmit = () => {
+    setShowCardInput(true);
+  };
+
+  useEffect(() => {
+    validateForm();
+  }, [userData]);
+
+  const validateEmail = (email: string) => {
+    const gmailRegex = /^[^\s@]+@gmail\.com$/;
+    return gmailRegex.test(email);
+  };
+
+  const validatePhone = (phone: string) => {
+    const phoneRegex = /^\+380 \d{2} \d{3} \d{2} \d{2}$/;
+    return phoneRegex.test(phone);
+  };
+
+  const validatePassword = (password: string) => {
+    return password ? password.length >= 8 : false;
+  };
+
+  const validateForm = () => {
+    const isEmailValid = validateEmail(userData.email);
+    const isPhoneValid = validatePhone(userData.phone);
+    const isPasswordValid = validatePassword(userData.password);
+  
+    setEmailError(!isEmailValid);
+    setPhoneError(!isPhoneValid);
+    setPasswordError(!isPasswordValid);
+  
+    // Устанавливаем состояние валидности формы
+    setIsFormValid(isEmailValid && isPhoneValid && isPasswordValid);
+  };
+  
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -68,9 +123,42 @@ const AccountDetails = () => {
           }
         );
 
-        setUserData(response.data);
-      } catch (error) {
+        setUserData({
+          ...response.data,
+          nextBillingDate: response.data.nextBillingDate,
+        });
+
+        console.log(response.data);
+      } catch (error: any) {
         console.error("Error fetching user profile:", error);
+
+        if (error.response?.status === 401) {
+          console.error(
+            "Token is expired or invalid, deleting token and redirecting to login..."
+          );
+
+          try {
+            const users = await dbInstance.getData("users");
+            const currentUser = users.find((user: User) => user.token);
+
+            if (currentUser) {
+              await dbInstance.deleteData("users", currentUser.id);
+
+              setModalType("failure");
+              setModalMessage("Please login to access your profile");
+              setIsModalVisible(true);
+
+              setTimeout(() => {
+                setIsModalVisible(false);
+                navigate("/");
+              }, 3000);
+            } else {
+              console.error("No user with token found to delete");
+            }
+          } catch (error) {
+            console.error("Error deleting token:", error);
+          }
+        }
       }
     };
 
@@ -78,6 +166,8 @@ const AccountDetails = () => {
   }, []);
 
   const handleUpdateUserData = async () => {
+    if(!isFormValid) return;
+
     try {
       const users = await dbInstance.getData("users");
       if (!users || users.length === 0) {
@@ -111,10 +201,39 @@ const AccountDetails = () => {
 
       if (response.status === 200) {
         await dbInstance.addData("users", updatedData);
+        setModalType("success");
+        setModalMessage("User data updated successfully");
+        setIsModalVisible(true);
       }
-
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating user data:", error);
+      if (error.response?.status === 401) {
+        console.error(
+          "Token is expired or invalid, deleting token and redirecting to login..."
+        );
+
+        try {
+          const users = await dbInstance.getData("users");
+          const currentUser = users.find((user: User) => user.token);
+
+          if (currentUser) {
+            await dbInstance.deleteData("users", currentUser.id);
+
+            setModalType("failure");
+            setModalMessage("Please login to access your profile");
+            setIsModalVisible(true);
+
+            setTimeout(() => {
+              setIsModalVisible(false);
+              navigate("/");
+            }, 3000);
+          } else {
+            console.error("No user with token found to delete");
+          }
+        } catch (error) {
+          console.error("Error deleting token:", error);
+        }
+      }
     }
   };
 
@@ -124,16 +243,19 @@ const AccountDetails = () => {
       return;
     }
 
+    setIsLoading(true);
     try {
       const users = await dbInstance.getData("users");
       if (!users || users.length === 0) {
         console.error("No user data found in IndexedDB");
+        setIsLoading(false);
         return;
       }
       const userToken = users[0]?.token;
 
       if (!userToken) {
         console.error("No token found for the user");
+        setIsLoading(false);
         return;
       }
 
@@ -141,6 +263,7 @@ const AccountDetails = () => {
 
       if (!cardElement) {
         console.error("CardElement not found");
+        setIsLoading(false);
         return;
       }
       const { error, paymentMethod } = await stripe.createPaymentMethod({
@@ -152,6 +275,7 @@ const AccountDetails = () => {
         setModalType("failure");
         setModalMessage("An error occurred during payment processing");
         setIsModalVisible(true);
+        setIsLoading(false);
         return;
       }
 
@@ -159,6 +283,7 @@ const AccountDetails = () => {
         setModalType("failure");
         setModalMessage("An error occurred during payment processing");
         setIsModalVisible(true);
+        setIsLoading(false);
         return;
       }
 
@@ -179,22 +304,24 @@ const AccountDetails = () => {
 
       const result = await response.json();
       if (response.status === 200) {
-        setModalType("success");
-        setModalMessage("Payment updated successfully");
-        setIsModalVisible(true);
+        setIsPaymentUpdated(true);
       }
       if (result.error) {
         setModalType("failure");
         setModalMessage("An error occurred during payment processing");
         setIsModalVisible(true);
+        setIsLoading(false);
         return;
       }
+
       setIsPaymentUpdated(true);
+      setIsLoading(false);
     } catch (error: any) {
       console.error(error);
       setModalType("failure");
       setModalMessage("An error occurred during payment processing");
       setIsModalVisible(true);
+      setIsLoading(false);
     }
   };
 
@@ -289,19 +416,30 @@ const AccountDetails = () => {
               onChange={(e) =>
                 setUserData({ ...userData, email: e.target.value })
               }
+              style={{
+                borderColor: emailError ? "red" : "",
+              }}
             />
           </Row>
           <Row>
-            <label htmlFor="tel">Phone number</label>
-            <input
-              type="tel"
-              id="tel"
-              placeholder={userData.phone || "+380 055 555-55-55"}
+            <label htmlFor="phone">Phone number</label>
+            <InputMask
+              mask="+380 99 999 99 99"
               value={userData.phone || ""}
-              onChange={(e) =>
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setUserData({ ...userData, phone: e.target.value })
               }
-            />
+              style={{
+                borderColor: phoneError ? "red" : "",
+              }}
+            >
+              {(inputProps: any) => (
+                <input
+                  {...inputProps}
+                  type="tel"
+                />
+              )} 
+            </InputMask>
           </Row>
           <Row>
             <label htmlFor="password">Password</label>
@@ -313,48 +451,93 @@ const AccountDetails = () => {
               onChange={(e) =>
                 setUserData({ ...userData, password: e.target.value })
               }
+              style={{
+                borderColor: passwordError ? "red" : "",
+              }}
             />
           </Row>
           <ButtonContainer>
-            <Button onClick={handleUpdateUserData}>SAVE</Button>
+            <Button onClick={handleUpdateUserData} disabled={!isFormValid}>SAVE</Button>
           </ButtonContainer>
         </FirstBox>
 
-        {userData.hasSubscription && (
+        {isPaymentUpdated ? (
           <SecondBox>
-            <Boxik>
-              <ArquitectaH5 style={{ color: "white" }}>PRO</ArquitectaH5>
-            </Boxik>
-            <AvenirH4
-              style={{
-                color: "white",
-                marginTop: "12px",
-                marginBottom: "12px",
-              }}
-            >
-              $10 / month
+            <CheckBox>
+              <img src={check} alt="check" />
+            </CheckBox>
+            <AvenirH4 style={{ color: "white", margin: "12px 0" }}>
+              You have successfully subscribed!
             </AvenirH4>
-            <Text>Next payment will be processed on April 6, 2023</Text>
-            {!showCardInput ? (
-              <>
-                <ButtonUpdate onClick={() => setShowCardInput(true)}>
-                  UPDATE PAYMENT
-                </ButtonUpdate>
-                <ButtonCancel onClick={handleCancelSubscription}>
-                  CANCEL SUBSCRIPTION
-                </ButtonCancel>
-              </>
-            ) : (
-              <CardInputContainer>
-                <CardDetails>
-                  <div style={{ marginBottom: "0px", width: "100%" }}>
-                    <CardElement options={cardElementOptions} />
-                  </div>
-                </CardDetails>
-                <SaveButton onClick={handleUpdatePayment}>SAVE</SaveButton>
-              </CardInputContainer>
-            )}
+            <Text style={{ color: "white" }}>
+              A receipt was sent to your email
+            </Text>
+            <SaveButton onClick={handleStartChatting}>
+              START CHATTING
+            </SaveButton>
           </SecondBox>
+        ) : (
+          userData.hasSubscription && (
+            <SecondBox>
+              <Boxik>
+                <ArquitectaH5 style={{ color: "white" }}>PRO</ArquitectaH5>
+              </Boxik>
+              <AvenirH4
+                style={{
+                  color: "white",
+                  marginTop: "12px",
+                  marginBottom: "12px",
+                }}
+              >
+                $10 / month
+              </AvenirH4>
+              <Text>
+                Next payment will be processed on {formattedDate || "N/A"}
+              </Text>
+              {!showCardInput ? (
+                <div>
+                  <ButtonUpdate onClick={handleSubmit}>
+                    UPDATE PAYMENT
+                  </ButtonUpdate>
+
+                  <ButtonCancel onClick={handleCancelSubscription}>
+                    CANCEL SUBSCRIPTION
+                  </ButtonCancel>
+                </div>
+              ) : (
+                <CardInputContainer>
+                  <CardDetails>
+                    <div style={{ marginBottom: "0px", width: "100%" }}>
+                      <CardElement options={cardElementOptions} />
+                    </div>
+                  </CardDetails>
+                  {isLoading ? (
+                    <div style={{ display: "flex", justifyContent: "center" }}>
+                      <ColorRing
+                        visible={true}
+                        height="80"
+                        width="80"
+                        ariaLabel="color-ring-loading"
+                        wrapperStyle={{}}
+                        wrapperClass="color-ring-wrapper"
+                        colors={[
+                          "#5833EF",
+                          "#5833EF",
+                          "#F82D98",
+                          "#F82D98",
+                          "#B5E42E",
+                        ]}
+                      />
+                    </div>
+                  ) : (
+                    <SaveButtonPay onClick={handleUpdatePayment}>
+                      SAVE
+                    </SaveButtonPay>
+                  )}
+                </CardInputContainer>
+              )}
+            </SecondBox>
+          )
         )}
 
         <ImageDown src={down} />

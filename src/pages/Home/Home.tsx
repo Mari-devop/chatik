@@ -80,13 +80,13 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
 
   useEffect(() => {
     const fetchQuestions = async () => {
-      const storedQuestions = await dbInstance.getData("questions");
-
-      if (storedQuestions.length) {
-        setQuestions(storedQuestions);
-        return;
-      }
       try {
+        const storedQuestions = await dbInstance.getData("questions");
+
+        if (storedQuestions.length > 0) {
+          setQuestions(storedQuestions);
+          return;
+        } 
         const response = await axios.get(
           "https://eternalai.fly.dev/individuals/questions",
           {
@@ -98,7 +98,7 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
         const addedData = await Promise.all(
           fetchedQuestions.map(async (question: Question) => {
             const existingQuestion = await dbInstance.getData("questions");
-            if (!existingQuestion) {
+            if (existingQuestion.length === 0) {
               await dbInstance.addData("questions", question);
             }
           })

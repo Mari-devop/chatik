@@ -15,7 +15,7 @@ const HowItWorks = () => {
           <Box>
             <Row>
               <Boxik>
-                <ArquitectaH5 style={{ color: "white" }}>Trail</ArquitectaH5>
+                <ArquitectaH5 style={{ color: "white" }}>Free</ArquitectaH5>
               </Boxik>
               <AvenirH4
                 style={{
@@ -39,7 +39,7 @@ const HowItWorks = () => {
             </Row>
             <Row>
               <Boxik>
-                <ArquitectaH5 style={{ color: "white" }}>Free</ArquitectaH5>
+                <ArquitectaH5 style={{ color: "white" }}>Trail</ArquitectaH5>
               </Boxik>
               <AvenirH4
                 style={{

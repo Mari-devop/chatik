@@ -1,5 +1,6 @@
 export interface MenuProps {
     setIsMenuOpen: (value: boolean) => void;
+    isMenuOpen?: boolean;
     checkAuthentication: () => Promise<boolean>;
     setIsAuthenticated: (value: boolean) => void;
 };

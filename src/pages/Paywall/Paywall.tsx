@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
+import { ColorRing } from "react-loader-spinner";
 import { dbInstance } from "../../db";
+import { User } from "../../components/menu/types";
 import {
   Container,
   MainContainer,
@@ -65,6 +67,7 @@ const Paywall = () => {
   const [modalType, setModalType] = useState<"success" | "failure">("success");
   const [modalMessage, setModalMessage] = useState("");
   const [shareLink, setShareLink] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const stripe = useStripe();
   const elements = useElements();
@@ -79,22 +82,27 @@ const Paywall = () => {
       return;
     }
 
+    setIsLoading(true);
+
     try {
       const users = await dbInstance.getData("users");
       if (!users || users.length === 0) {
         console.error("No user data found in IndexedDB");
+        setIsLoading(false);
         return;
       }
       const userToken = users[0]?.token;
 
       if (!userToken) {
         console.error("No token found for the user");
+        setIsLoading(false);
         return;
       }
 
       const cardElement = elements.getElement(CardElement);
       if (!cardElement) {
         console.error("CardElement not found");
+        setIsLoading(false);
         return;
       }
       const { error, paymentMethod } = await stripe.createPaymentMethod({
@@ -106,6 +114,7 @@ const Paywall = () => {
         setModalType("failure");
         setModalMessage("Payment method creation failed");
         setIsModalVisible(true);
+        setIsLoading(false);
         return;
       }
 
@@ -113,6 +122,7 @@ const Paywall = () => {
         setModalType("failure");
         setModalMessage("Payment method creation failed");
         setIsModalVisible(true);
+        setIsLoading(false);
         return;
       }
 
@@ -133,17 +143,11 @@ const Paywall = () => {
 
       const result = await response.json();
 
-      // if (response.status === 200) {
-      //   setModalType("success");
-      //   setModalMessage("Payment successful");
-      //   setIsModalVisible(true);
-      //   return;
-      // }
-
       if (result.error) {
         setModalType("failure");
         setModalMessage(result.error.message || "Payment failed");
         setIsModalVisible(true);
+        setIsLoading(false);
         return;
       }
 
@@ -155,15 +159,43 @@ const Paywall = () => {
         setModalType("failure");
         setModalMessage(confirmError.message || "Payment failed");
         setIsModalVisible(true);
+        setIsLoading(false);
         return;
       }
 
       setIsPaymentConfirmed(true);
+      setIsLoading(false);
     } catch (error: any) {
       console.error(error);
-      setModalType("failure");
-      setModalMessage("Payment failed");
-      setIsModalVisible(true);
+      if (error.response?.status === 401) {
+        console.error("Token is expired or invalid, deleting token and redirecting to login...");
+  
+        try {
+          const users = await dbInstance.getData("users");
+          const currentUser = users.find((user: User) => user.token);
+  
+          if (currentUser) {
+            await dbInstance.deleteData("users", currentUser.id);
+  
+            setModalType("failure");
+            setModalMessage("Please login to complete the payment");
+            setIsModalVisible(true);
+  
+            setTimeout(() => {
+              setIsModalVisible(false);
+              navigate("/");
+            }, 3000);
+          } else {
+            console.error("No user with token found to delete");
+          }
+        } catch (deleteError) {
+          console.error("Error deleting token:", deleteError);
+        }
+      } else {
+        setModalType("failure");
+        setModalMessage("Payment failed");
+        setIsModalVisible(true);
+      }
     }
   };
 
@@ -205,6 +237,26 @@ const Paywall = () => {
   const handleStartChatting = () => {
     navigate("/", { state: { scrollToIndividuals: true } });
   };
+
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.key === "Enter") {
+        if (isMakePayment) {
+          handleShareClick();
+        } else if (isPaymentConfirmed) {
+          handleStartChatting();
+        } else {
+          handlePaymentSubmit();
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [isMakePayment, isPaymentConfirmed]);
 
   return (
     <>
@@ -326,9 +378,37 @@ const Paywall = () => {
                           <CardElement options={cardElementOptions} />
                         </div>
                       </CardDetails>
-                      <SaveButton onClick={handlePaymentSubmit}>
-                        SUBMIT PAYMENT
-                      </SaveButton>
+                      {isLoading ? (
+                     
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                          
+                          }}
+                        >
+                          <ColorRing
+                            visible={true}
+                            height="80"
+                            width="80"
+                            ariaLabel="color-ring-loading"
+                            wrapperStyle={{}}
+                            wrapperClass="color-ring-wrapper"
+                            colors={[
+                              "#5833EF",
+                              "#5833EF",
+                              "#F82D98",
+                              "#F82D98",
+                              "#B5E42E",
+                            ]}
+                          />
+                        </div>
+                      ) : (
+                        
+                        <SaveButton onClick={handlePaymentSubmit}>
+                          SUBMIT PAYMENT
+                        </SaveButton>
+                      )}
                     </CardInputContainer>
                   </ThirdBox>
                 )}

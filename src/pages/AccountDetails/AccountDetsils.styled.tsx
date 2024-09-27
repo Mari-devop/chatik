@@ -1,6 +1,13 @@
 import styled from "styled-components";
 import InputMask from "react-input-mask"; 
 
+export const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+
 export const FirstBox = styled.div`
   display: flex;
   flex-direction: column;
@@ -142,7 +149,6 @@ export const ButtonUpdate = styled.button`
   cursor: pointer;
   border-radius: 120px;
   border: 1px solid var(--border-color-hover);
-  cursor: pointer;
   font-family: "Arquitecta";
   font-weight: 700;
   font-size: 13px;
@@ -158,7 +164,6 @@ export const ButtonCancel = styled.button`
   background: transparent;
   cursor: pointer;
   border: none;
-  cursor: pointer;
   font-family: "Arquitecta";
   font-weight: 700;
   font-size: 13px;
@@ -261,7 +266,7 @@ export const CvcInput = styled(MaskedInput)`
   z-index: 9999;
 `;
 
-export const SaveButton = styled.button`
+export const SaveButtonPay = styled.button`
   background-image: linear-gradient(to right, #6a00f4, #c900ff);
   color: white;
   border: none;

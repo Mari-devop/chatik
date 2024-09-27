@@ -51,6 +51,13 @@ const Menu: React.FC<MenuProps> = ({
     };
   }, []);
 
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, []);
+
   const handleCloseClick = () => {
     setIsMenuOpen(false);
   };

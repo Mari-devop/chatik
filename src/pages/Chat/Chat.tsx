@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { dbInstance } from "../../db";
+import { User } from "../../components/menu/types";
 import {
   ChatContainer,
   PersonContainer,
@@ -59,11 +60,15 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
   const [questionVisible, setQuestionVisible] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modalType, setModalType] = useState<"success" | "failure">("success");
+  const [modalMessage, setModalMessage] = useState("");
+  const answerBoxRef = useRef<HTMLDivElement | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+  const [userIsScrolling, setUserIsScrolling] = useState(false);
 
   useEffect(() => {
-    console.log("Received state from /Home:", location.state);
     const { filteredResponses } = location.state;
-    console.log("filteredResponses on /chat:", filteredResponses);
 
     if (!filteredResponses || filteredResponses.length === 0) {
       console.warn("No filtered responses available");
@@ -97,7 +102,14 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
   const handleScroll = (e: Event) => {
     const target = e.target as HTMLElement;
     const top = target.scrollTop;
+    const height = target.scrollHeight - target.clientHeight;
     setScrolled(top > 0);
+
+    if (top < height - 100) {
+      setUserIsScrolling(true);
+    } else {
+      setUserIsScrolling(false);
+    }
   };
 
   useEffect(() => {
@@ -112,6 +124,12 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (!userIsScrolling && answerBoxRef.current) {
+      answerBoxRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [filteredResponses, chatHistory]);
 
   const handleSendMessage = async () => {
     if (!message.trim() || isLoading) return;
@@ -160,6 +178,34 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
       setIsLoading(false);
       console.error("Error sending message:", error);
 
+      if (error.response?.status === 401) {
+        console.error("Token is expired or invalid, deleting token and redirecting to login...");
+  
+        try {
+          const users = await dbInstance.getData("users");
+          const currentUser = users.find((user: User) => user.token);
+  
+          if (currentUser) {
+            await dbInstance.deleteData("users", currentUser.id);
+  
+            setModalType("failure");
+            setModalMessage("Please login to use this feature");
+            setShowModal(true);
+  
+  
+            setTimeout(() => {
+              setShowModal(false);
+              navigate("/");
+            }, 3000);
+          } else {
+            console.error("No user with token found to delete");
+          }
+        } catch (error) {
+          console.error("Error deleting token:", error);
+        }
+      }
+  
+      
       if (
         error.response?.status === 500 &&
         error.response?.data?.message.includes(
@@ -259,7 +305,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
               <Text>{individual?.questionText}</Text>
             </Question>
 
-            <AnswerBox id="scrollContainer">
+            <AnswerBox id="scrollContainer" ref={scrollContainerRef}>
               <FadeOverlay $scrolled={scrolled} />
               {filteredResponses.length > 0 &&
                 filteredResponses.map((resp: any, index: number) => (
@@ -296,6 +342,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
                     </RespondBox>
                   </Respond>
                 ))}
+                <div ref={answerBoxRef} /> 
             </AnswerBox>
           </RespondContainer>
           <QuestionContainer>
