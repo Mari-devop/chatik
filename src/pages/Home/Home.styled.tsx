@@ -96,6 +96,10 @@ export const Subtitle = styled.p`
 `;
 
 export const TextRow = styled.p`
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
   font-family: "Avenir";
   font-weight: 400;
   font-size: 14px;

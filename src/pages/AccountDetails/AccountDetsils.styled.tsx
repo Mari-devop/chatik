@@ -288,3 +288,47 @@ export const SaveButtonPay = styled.button`
     opacity: 0.9;
   }
 `;
+
+
+export const Button = styled.button<{ disabled: boolean }>`
+  width: 48%;
+  height: 56px;
+  background: ${({ disabled }) =>
+    disabled
+      ? 'linear-gradient(90deg, #6a6868d4, #d3d3d3)' 
+      : 'var(--primary-gradient)'};
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  border-radius: 120px;
+  border: none;
+  font-family: 'Arquitecta';
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 14px;
+  letter-spacing: 0.3em;
+  color: #ffffff;
+
+  &:hover {
+    background: ${({ disabled }) =>
+      disabled
+        ? 'linear-gradient(90deg, #6a6868d4, #d3d3d3)' 
+        : 'var(--primary-gradient-hover)'};
+  }
+
+  @media (max-width: 500px) {
+    width: 100%;
+    margin-top: 16px;
+  }
+`;
+
+export const EmailContainer = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  gap: 16px;
+`;
+
+export const VerificationIcon = styled.div`
+  font-size: 20px;
+  margin-bottom: 12px;
+`;

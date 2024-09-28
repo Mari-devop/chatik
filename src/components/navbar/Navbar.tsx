@@ -76,6 +76,12 @@ export const Navbar = ({
     setShowModal(true);
   };
 
+  const handleShareClickChat = async () => {
+    const generatedLink = `${window.location.origin}/chat`;
+    setShareLink(generatedLink);
+    setShowModal(true);
+  };
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -134,7 +140,7 @@ export const Navbar = ({
               <Icon src={menu} alt="menu" />
             </ButtonMenu>
             <RightContainer>
-              <ButtonShare>
+              <ButtonShare onClick={handleShareClickChat}>
                 <IconShare src={share} />
                 SHARE
               </ButtonShare>

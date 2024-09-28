@@ -7,7 +7,7 @@ import { User } from "../../components/menu/types";
 import { ColorRing } from "react-loader-spinner";
 import { dbInstance } from "../../db";
 import { Container } from "../Home/Home.styled";
-import { Row, Button } from "../SignUp/SignUp.styled";
+import { Row } from "../SignUp/SignUp.styled";
 import { CheckBox, SaveButton } from "../Paywall/Paywall.styled";
 import {
   FirstBox,
@@ -22,7 +22,15 @@ import {
   CardInputContainer,
   CardDetails,
   SaveButtonPay,
+  Button,
+  VerificationIcon,
+  EmailContainer,
 } from "./AccountDetsils.styled";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCheckCircle,
+  faTimesCircle,
+} from "@fortawesome/free-solid-svg-icons";
 import {
   AvenirH2,
   AvenirH4,
@@ -33,7 +41,6 @@ import ModalSuccess from "../../components/ModalSuccess/ModalSuccess";
 import up from "../../assets/images/accountDetails/up.png";
 import down from "../../assets/images/accountDetails/down.png";
 import check from "../../assets/images/paywall/check 1.png";
-import { createTypeReferenceDirectiveResolutionCache } from "typescript";
 
 const AccountDetails = () => {
   const [userData, setUserData] = useState({
@@ -42,6 +49,7 @@ const AccountDetails = () => {
     phone: "",
     password: "",
     hasSubscription: false,
+    isVerified: false,
     nextBillingDate: "",
   });
   const [isPaymentUpdated, setIsPaymentUpdated] = useState(false);
@@ -77,11 +85,13 @@ const AccountDetails = () => {
   };
 
   const validatePhone = (phone: string) => {
+    if (!phone) return true;
     const phoneRegex = /^\+380 \d{2} \d{3} \d{2} \d{2}$/;
     return phoneRegex.test(phone);
   };
 
   const validatePassword = (password: string) => {
+    if (!password) return true;
     return password ? password.length >= 8 : false;
   };
 
@@ -89,84 +99,93 @@ const AccountDetails = () => {
     const isEmailValid = validateEmail(userData.email);
     const isPhoneValid = validatePhone(userData.phone);
     const isPasswordValid = validatePassword(userData.password);
-  
+
     setEmailError(!isEmailValid);
     setPhoneError(!isPhoneValid);
     setPasswordError(!isPasswordValid);
-  
-    // Устанавливаем состояние валидности формы
+
     setIsFormValid(isEmailValid && isPhoneValid && isPasswordValid);
   };
-  
 
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        const users = await dbInstance.getData("users");
-        if (!users || users.length === 0) {
-          console.error("No user data found in IndexedDB");
-          return;
+  const fetchUserProfile = async () => {
+    try {
+      const users = await dbInstance.getData("users");
+      if (!users || users.length === 0) {
+        console.error("No user data found in IndexedDB");
+        return;
+      }
+      const userToken = users[0]?.token;
+
+      if (!userToken) {
+        console.error("No token found for the user");
+        return;
+      }
+
+      const response = await axios.get(
+        "https://eternalai.fly.dev/user/profile",
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
         }
-        const userToken = users[0]?.token;
+      );
 
-        if (!userToken) {
-          console.error("No token found for the user");
-          return;
-        }
+      const profileData = response.data;
+      if (!profileData.isVerified) {
+        setTimeout(() => {
+          setModalType("failure");
+          setModalMessage("Please, check your email box to verify your email!");
+          setIsModalVisible(true);
+        }, 3000);
+      }
+      setUserData({
+        ...profileData,
+        nextBillingDate: profileData.nextBillingDate,
+        isVerified: false,
+      });
 
-        const response = await axios.get(
-          "https://eternalai.fly.dev/user/profile",
-          {
-            headers: {
-              Authorization: `Bearer ${userToken}`,
-            },
-          }
+      console.log(response.data);
+    } catch (error: any) {
+      console.error("Error fetching user profile:", error);
+
+      if (error.response?.status === 401) {
+        console.error(
+          "Token is expired or invalid, deleting token and redirecting to login..."
         );
 
-        setUserData({
-          ...response.data,
-          nextBillingDate: response.data.nextBillingDate,
-        });
+        try {
+          const users = await dbInstance.getData("users");
+          const currentUser = users.find((user: User) => user.token);
 
-        console.log(response.data);
-      } catch (error: any) {
-        console.error("Error fetching user profile:", error);
+          if (currentUser) {
+            // await dbInstance.deleteData("users", currentUser.id);
 
-        if (error.response?.status === 401) {
-          console.error(
-            "Token is expired or invalid, deleting token and redirecting to login..."
-          );
+            setModalType("failure");
+            setModalMessage(
+              "Please, check your email box to verify your email!"
+            );
+            setIsModalVisible(true);
 
-          try {
-            const users = await dbInstance.getData("users");
-            const currentUser = users.find((user: User) => user.token);
-
-            if (currentUser) {
-              await dbInstance.deleteData("users", currentUser.id);
-
-              setModalType("failure");
-              setModalMessage("Please login to access your profile");
-              setIsModalVisible(true);
-
-              setTimeout(() => {
-                setIsModalVisible(false);
-                navigate("/");
-              }, 3000);
-            } else {
-              console.error("No user with token found to delete");
-            }
-          } catch (error) {
-            console.error("Error deleting token:", error);
+            setTimeout(() => {
+              setIsModalVisible(false);
+              navigate("/");
+            }, 3000);
+          } else {
+            console.error("No user with token found to delete");
           }
+        } catch (error) {
+          console.error("Error deleting token:", error);
         }
       }
-    };
+    }
+  };
 
+  useEffect(() => {
     fetchUserProfile();
   }, []);
 
   const handleUpdateUserData = async () => {
-    if(!isFormValid) return;
+    if (!isFormValid) return;
 
     try {
       const users = await dbInstance.getData("users");
@@ -200,10 +219,16 @@ const AccountDetails = () => {
       );
 
       if (response.status === 200) {
-        await dbInstance.addData("users", updatedData);
+        // await dbInstance.addData("users", updatedData);
+        console.log(response.data);
         setModalType("success");
         setModalMessage("User data updated successfully");
         setIsModalVisible(true);
+
+        setTimeout(async () => {
+          setIsModalVisible(false);
+          await fetchUserProfile();
+        }, 3000);
       }
     } catch (error: any) {
       console.error("Error updating user data:", error);
@@ -217,7 +242,7 @@ const AccountDetails = () => {
           const currentUser = users.find((user: User) => user.token);
 
           if (currentUser) {
-            await dbInstance.deleteData("users", currentUser.id);
+            // await dbInstance.deleteData("users", currentUser.id);
 
             setModalType("failure");
             setModalMessage("Please login to access your profile");
@@ -407,7 +432,22 @@ const AccountDetails = () => {
             />
           </Row>
           <Row>
-            <label htmlFor="email">Email</label>
+            <EmailContainer>
+              <label htmlFor="email">Email</label>
+              <VerificationIcon>
+                {userData.isVerified ? (
+                  <FontAwesomeIcon
+                    icon={faTimesCircle}
+                    style={{ color: "red" }}
+                  />
+                ) : (
+                  <FontAwesomeIcon
+                    icon={faCheckCircle}
+                    style={{ color: "green" }}
+                  />
+                )}
+              </VerificationIcon>
+            </EmailContainer>
             <input
               type="email"
               id="email"
@@ -426,6 +466,7 @@ const AccountDetails = () => {
             <InputMask
               mask="+380 99 999 99 99"
               value={userData.phone || ""}
+              placeholder="+380 99 999 99 99"
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setUserData({ ...userData, phone: e.target.value })
               }
@@ -433,12 +474,7 @@ const AccountDetails = () => {
                 borderColor: phoneError ? "red" : "",
               }}
             >
-              {(inputProps: any) => (
-                <input
-                  {...inputProps}
-                  type="tel"
-                />
-              )} 
+              {(inputProps: any) => <input {...inputProps} type="tel" />}
             </InputMask>
           </Row>
           <Row>
@@ -457,7 +493,9 @@ const AccountDetails = () => {
             />
           </Row>
           <ButtonContainer>
-            <Button onClick={handleUpdateUserData} disabled={!isFormValid}>SAVE</Button>
+            <Button onClick={handleUpdateUserData} disabled={!isFormValid}>
+              SAVE
+            </Button>
           </ButtonContainer>
         </FirstBox>
 

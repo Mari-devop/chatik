@@ -247,7 +247,7 @@ export const AnswerBox = styled.div`
 
 export const FadeOverlay = styled.div<{ $scrolled: boolean }>`
   position: absolute;
-  top: 96px;
+  top: 100px;
   left: 0px;
   right: 0;
   height: 120px;
@@ -486,7 +486,7 @@ export const InputBox = styled.div`
   display: flex;
   position: fixed;
   bottom: 0;
-  width: 70%;
+  width: 50%;
   right: 50px;
   padding: 20px 0px;
   box-sizing: border-box;

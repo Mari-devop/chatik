@@ -46,8 +46,12 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const individual = location.state;
-  const { individualId, response: initialResponse, name, title } = location.state;
-  console.log("Received state from /Home:", location.state);
+  const {
+    individualId,
+    response: initialResponse,
+    name,
+    title,
+  } = location.state;
   const [scrolled, setScrolled] = useState(false);
   const [filteredResponses, setFilteredResponses] = useState<any[]>(
     location.state.filteredResponses || []
@@ -58,6 +62,8 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
   const [message, setMessage] = useState<string>("");
   const [chatHistory, setChatHistory] = useState<any[]>([]);
   const [questionVisible, setQuestionVisible] = useState(true);
+  const [isDialogStarted, setIsDialogStarted] = useState(false);
+  const [wasQuestionClicked, setWasQuestionClicked] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -127,7 +133,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
 
   useEffect(() => {
     if (!userIsScrolling && answerBoxRef.current) {
-      answerBoxRef.current.scrollIntoView({ behavior: 'smooth' });
+      answerBoxRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [filteredResponses, chatHistory]);
 
@@ -145,6 +151,8 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
       }
 
       setIsLoading(true);
+      setIsDialogStarted(true);
+
       if (currentResponse && currentResponse.trim() !== "") {
         setChatHistory((prev) => [
           ...prev,
@@ -179,20 +187,21 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
       console.error("Error sending message:", error);
 
       if (error.response?.status === 401) {
-        console.error("Token is expired or invalid, deleting token and redirecting to login...");
-  
+        console.error(
+          "Token is expired or invalid, deleting token and redirecting to login..."
+        );
+
         try {
           const users = await dbInstance.getData("users");
           const currentUser = users.find((user: User) => user.token);
-  
+
           if (currentUser) {
             await dbInstance.deleteData("users", currentUser.id);
-  
+
             setModalType("failure");
             setModalMessage("Please login to use this feature");
             setShowModal(true);
-  
-  
+
             setTimeout(() => {
               setShowModal(false);
               navigate("/");
@@ -204,8 +213,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
           console.error("Error deleting token:", error);
         }
       }
-  
-      
+
       if (
         error.response?.status === 500 &&
         error.response?.data?.message.includes(
@@ -277,6 +285,10 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
     setQuestionVisible(false);
   };
 
+  const handleQuestionClick = () => {
+    setWasQuestionClicked(true); 
+  };
+
   return (
     <>
       <ModalSuccess
@@ -299,12 +311,14 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
         </PersonContainer>
         <DialogContainer>
           <RespondContainer>
+          {(isDialogStarted || !!individual?.questionText) && (
             <Question
               $isVisible={questionVisible && !!individual?.questionText}
+              onClick={handleQuestionClick}
             >
               <Text>{individual?.questionText}</Text>
             </Question>
-
+          )}
             <AnswerBox id="scrollContainer" ref={scrollContainerRef}>
               <FadeOverlay $scrolled={scrolled} />
               {filteredResponses.length > 0 &&
@@ -342,13 +356,15 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
                     </RespondBox>
                   </Respond>
                 ))}
-                <div ref={answerBoxRef} /> 
+              <div ref={answerBoxRef} />
             </AnswerBox>
           </RespondContainer>
           <QuestionContainer>
-            <PersonAnswer>
-              <Text>{currentResponse || <LoadingDots />}</Text>
-            </PersonAnswer>
+            {(isDialogStarted || !!individual?.questionText) && (
+              <PersonAnswer>
+                <Text>{currentResponse || <LoadingDots />}</Text>
+              </PersonAnswer>
+            )}
           </QuestionContainer>
           <InputBox>
             <InputWrapper>

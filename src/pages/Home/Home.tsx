@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Question, IndividualWithoutFullImage } from "./types";
+import { ColorRing } from "react-loader-spinner";
 import { dbInstance } from "../../db";
 import {
   Container,
@@ -64,6 +65,7 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalType, setModalType] = useState<"success" | "failure">("success");
   const [modalMessage, setModalMessage] = useState("");
+  const [loadingQuestionId, setLoadingQuestionId] = useState<number | null>(null); 
   const navigate = useNavigate();
   const location = useLocation();
   const gridRef = useRef<HTMLDivElement>(null);
@@ -256,6 +258,7 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
   ) => {
     setSelectedQuestion(questionId);
     setSelectedQuestionText(questionText);
+    setLoadingQuestionId(questionId);
 
     try {
       const freeChatData = await fetchFreeChatResponse(questionId);
@@ -297,6 +300,8 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
       }
     } catch (error) {
       console.error("Error during question click:", error);
+    } finally {
+      setLoadingQuestionId(null);
     }
   };
 
@@ -365,7 +370,19 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
                     handleQuestionClick(question.questionId, question.question);
                   }}
                 >
-                  <TextRow>{question.question}</TextRow>
+                  <TextRow>
+                    {question.question}
+                    {loadingQuestionId === question.questionId && (
+                      <ColorRing
+                        visible={true}
+                        height="35"
+                        width="35"
+                        ariaLabel="color-ring-loading"
+                        wrapperStyle={{ marginLeft: '20px'}}
+                        colors={["#5833EF", "#5833EF", "#F82D98", "#F82D98", "#db5ff1"]}
+                      />
+                    )}
+                  </TextRow>
                 </Row>
               ))}
             </TextContainer>
