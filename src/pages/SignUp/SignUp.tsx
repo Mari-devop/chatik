@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import FocusTrap from "focus-trap-react";
 import axios from "axios";
 import { useGoogleLogin } from "@react-oauth/google";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 import { register } from "../../auth/auth";
 import { dbInstance } from "../../db";
 import { SignupProps } from "./types";
@@ -15,6 +15,7 @@ import {
   Divider,
   Text,
   TextCenter,
+  StyledIcon 
 } from "./SignUp.styled";
 import {
   ImageContainer,
@@ -194,20 +195,12 @@ const SignUp: React.FC<SignupProps> = ({
               <input
                 type={isPasswordVisible ? "text" : "password"}
                 id="password"
-                placeholder="********"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-              <FontAwesomeIcon
+             <StyledIcon
                 icon={isPasswordVisible ? faEye : faEyeSlash}
                 onClick={() => setIsPasswordVisible(!isPasswordVisible)}
-                style={{
-                  position: "absolute",
-                  color: "white",
-                  cursor: "pointer",
-                  bottom: "260px",
-                  right: "100px",
-                }}
               />
             </Row>
             <ButtonContainer>

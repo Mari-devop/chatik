@@ -1,19 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import FocusTrap from 'focus-trap-react';
+import FocusTrap from "focus-trap-react";
 import axios from "axios";
 import { useGoogleLogin } from "@react-oauth/google";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { login } from "../../auth/auth";
 import { dbInstance } from "../../db";
 import { LoginProps } from "./types";
-import { AvenirH2 } from "../../assets/css/Global.styled";
 import {
   BoxContainer,
   Row,
   Button,
   ButtonContainer,
-  Divider,
   Text,
   TextCenter,
 } from "../SignUp/SignUp.styled";
@@ -21,6 +18,9 @@ import {
   ButtonSecondary,
   UserContainer,
   CustomGoogleButton,
+  StyledIcon,
+  AvenirTitle,
+  Divider,
 } from "./Login.styled";
 import {
   ImageContainer,
@@ -52,7 +52,7 @@ const Login: React.FC<LoginProps> = ({
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        handleCloseClick(); 
+        handleCloseClick();
       }
     };
 
@@ -224,85 +224,79 @@ const Login: React.FC<LoginProps> = ({
   return (
     <FocusTrap>
       <div role="dialog" aria-modal="true">
-      <ModalSuccess
-        isVisible={isModalVisible}
-        modalType={modalType}
-        message={modalMessage}
-        onClose={() => setIsModalVisible(false)}
-      />
-      <UserContainer>
-        <Navbar>
-          <CloseIcon onClick={handleCloseClick} />
-          <ImageContainer>
-            <Image src={logo} alt="logo" onClick={handleLogoClick} />
-          </ImageContainer>
-        </Navbar>
-        <BoxContainer>
-          <AvenirH2>Login</AvenirH2>
-          <Row>
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              placeholder="justin@gmail.com"
-              value={email || ""}
-              onChange={(e) => setEmail(e.target.value)}
-              style={{
-                borderColor: !isEmailValid ? "red" : "",
-              }}
-            />
-          </Row>
-          <Row>
-            <label htmlFor="password">Password</label>
-            <input
-              type={isPasswordVisible ? "text" : "password"}
-              id="password"
-              placeholder="********"
-              value={password || ""}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <FontAwesomeIcon
-              icon={isPasswordVisible ? faEye : faEyeSlash}
-              onClick={() => setIsPasswordVisible(!isPasswordVisible)}
-              style={{
-                position: "absolute",
-                color: "white",
-                cursor: "pointer",
-                bottom: "305px",
-                right: "100px",
-              }}
-            />
-          </Row>
-          <Row>
-            <ButtonSecondary onClick={handleForgotPassword} tabIndex={0}>
-              Forgot password?
-            </ButtonSecondary>
-          </Row>
-          <ButtonContainer>
-            <CustomGoogleButton onClick={() => googleLogin()} tabIndex={0}>
-              <img src={googleIcon} alt="google" />
-              SIGN IN WITH GOOGLE
-            </CustomGoogleButton>
-            <Button onClick={handleLogin} tabIndex={0}>SIGN IN</Button>
-          </ButtonContainer>
-          <Divider />
-          <TextCenter>
-            <Text>
-              Don’t have an account?{" "}
-              <span
-                onClick={() => {
-                  setIsLoginOpen(false);
-                  setIsSignupOpen(true);
+        <ModalSuccess
+          isVisible={isModalVisible}
+          modalType={modalType}
+          message={modalMessage}
+          onClose={() => setIsModalVisible(false)}
+        />
+        <UserContainer>
+          <Navbar>
+            <CloseIcon onClick={handleCloseClick} />
+            <ImageContainer>
+              <Image src={logo} alt="logo" onClick={handleLogoClick} />
+            </ImageContainer>
+          </Navbar>
+          <BoxContainer>
+            <AvenirTitle>Login</AvenirTitle>
+            <Row>
+              <label htmlFor="email">Email</label>
+              <input
+                type="email"
+                id="email"
+                placeholder="justin@gmail.com"
+                value={email || ""}
+                onChange={(e) => setEmail(e.target.value)}
+                style={{
+                  borderColor: !isEmailValid ? "red" : "",
                 }}
-                style={{ cursor: "pointer", color: "#F82D98" }}
-                tabIndex={0}
-              >
-                Sign up
-              </span>
-            </Text>
-          </TextCenter>
-        </BoxContainer>
-      </UserContainer>
+              />
+            </Row>
+            <Row>
+              <label htmlFor="password">Password</label>
+              <input
+                type={isPasswordVisible ? "text" : "password"}
+                id="password"
+                value={password || ""}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <StyledIcon
+                icon={isPasswordVisible ? faEye : faEyeSlash}
+                onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+              />
+            </Row>
+            <Row>
+              <ButtonSecondary onClick={handleForgotPassword} tabIndex={0}>
+                Forgot password?
+              </ButtonSecondary>
+            </Row>
+            <ButtonContainer>
+              <CustomGoogleButton onClick={() => googleLogin()} tabIndex={0}>
+                <img src={googleIcon} alt="google" />
+                SIGN IN WITH GOOGLE
+              </CustomGoogleButton>
+              <Button onClick={handleLogin} tabIndex={0}>
+                SIGN IN
+              </Button>
+            </ButtonContainer>
+            <Divider />
+            <TextCenter>
+              <Text>
+                Don’t have an account?{" "}
+                <span
+                  onClick={() => {
+                    setIsLoginOpen(false);
+                    setIsSignupOpen(true);
+                  }}
+                  style={{ cursor: "pointer", color: "#F82D98" }}
+                  tabIndex={0}
+                >
+                  Sign up
+                </span>
+              </Text>
+            </TextCenter>
+          </BoxContainer>
+        </UserContainer>
       </div>
     </FocusTrap>
   );

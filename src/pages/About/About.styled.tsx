@@ -90,10 +90,19 @@ export const Container = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    height: 100vh;
+    justify-content: center;
+    height: calc(100vh - 70px);
     width: 100vw;
     position: relative;
+    
+    @media (max-width: 1078px) {
+        margin-top: 70px;
+    }
+
+    @media (max-width: 767px) {
+        margin-top: 80px;
+        height: calc(100vh - 80px);
+    }
 `;
 
 export const Button = styled.button`
@@ -165,10 +174,10 @@ export const BoxContainer = styled.div`
 
    @media (max-width: 767px) {
         width: calc(100% - 32px); 
-        margin-top: 49px;
-        margin-bottom: 121px;
-        margin-left: 16px;
-        margin-right: 16px;
         padding: 48px;
+    }
+
+    @media (max-width: 420px) {
+        padding: 24px;
     }
 `;

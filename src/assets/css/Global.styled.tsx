@@ -96,6 +96,7 @@ export const TextTiny = styled.p`
     font-size: 12px;
     line-height: 18px;
     letter-spacing: -0.01em;
+    margin: 0;
 `;
 
 export const TextSmallBold = styled.p`

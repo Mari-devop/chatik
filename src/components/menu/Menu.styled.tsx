@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { Link } from "react-router-dom";
 
 export const MenuContainer = styled.div`
   display: flex;
@@ -37,6 +38,7 @@ export const Row = styled.div`
   justify-content: center;
   align-items: center;
   margin-top: 32px;
+  margin-bottom: 0px;
   width: 100%;
   cursor: pointer;
 
@@ -59,7 +61,7 @@ export const Divider = styled.div`
   width: 279px;
   height: 1px;
   background-color: #2f2535;
-  margin-top: 32px;
+  margin-top: 15px;
 `;
 
 export const SocialContainer = styled.div`
@@ -75,6 +77,11 @@ export const Social = styled.img`
   width: 24px;
   height: 24px;
   cursor: pointer;
+
+  @media (max-width: 375px) {
+    width: 16px;
+    height: 16px;
+  }
 `;
 
 export const CloseIcon = styled.div`
@@ -96,6 +103,13 @@ export const CloseIcon = styled.div`
   @media (max-width: 900px) {
     right: 24px;
     left: auto;
+  }
+
+  @media (max-width: 375px) {
+    width: 48px;
+    height: 48px;
+    top: 12px;
+    right: 16px;
   }
 
   &::before,
@@ -131,12 +145,12 @@ export const ButtonSignOut = styled.button`
 
   @media (max-width: 900px) {
     top: auto;
-    bottom: 0;
-    left: 50%; 
-    transform: translateX(-50%); 
-    flex-direction: column; 
-    align-items: center; 
-    justify-content: center; 
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     width: 90%;
   }
 `;
@@ -156,6 +170,12 @@ export const ButtonLogin = styled.button`
     text-decoration: none;
     color: #ffffff;
   }
+
+  @media (max-width: 900px) {
+    order: 2;
+    margin-top: 16px;
+  }
+
 `;
 
 export const RightContainer = styled.div`
@@ -167,12 +187,12 @@ export const RightContainer = styled.div`
 
   @media (max-width: 900px) {
     top: auto;
-    bottom: 10px;
-    left: 50%; 
-    transform: translateX(-50%); 
-    flex-direction: column; 
-    align-items: center; 
-    justify-content: center; 
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     width: 90%;
   }
 `;
@@ -205,5 +225,23 @@ export const ButtonStart = styled.button`
   a {
     text-decoration: none;
     color: #ffffff;
+  }
+`;
+
+export const StyledLink = styled(Link)`
+  text-decoration: none;
+  color: var(--white-color);
+
+  font-family: "Avenir";
+  font-weight: 500;
+  font-size: 32px;
+  line-height: 48px;
+  letter-spacing: -0.01em;
+
+  @media (max-width: 375px) {
+    span {
+      font-size: 24px;
+      line-height: 24px;
+    }
   }
 `;

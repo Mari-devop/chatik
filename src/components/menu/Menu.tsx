@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import FocusTrap from 'focus-trap-react';
+import { useNavigate } from "react-router-dom";
 import { dbInstance } from "../../db";
 import { MenuProps, User } from "./types";
 import {
@@ -16,6 +15,7 @@ import {
   ButtonStart,
   ButtonLogin,
   RightContainer,
+  StyledLink,
 } from "./Menu.styled";
 import facebook from "../../assets/images/menu/facebook.png";
 import instagram from "../../assets/images/menu/instagram.png";
@@ -40,7 +40,7 @@ const Menu: React.FC<MenuProps> = ({
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        handleCloseClick(); 
+        handleCloseClick();
       }
     };
 
@@ -115,75 +115,77 @@ const Menu: React.FC<MenuProps> = ({
       setIsAuthenticatedState(isAuth);
       setLoading(false);
     };
-  
+
     checkAuthStatus();
   }, []);
-  
+
   if (loading) {
-    return <div style={{ visibility: 'hidden' }}>Loading...</div>;
+    return <div style={{ visibility: "hidden" }}>Loading...</div>;
   }
-  
+
   return (
     <>
-    <MenuContainer>
-      <Navbar>
-        {isAuthenticated ? (
-          <>
-            <CloseIcon onClick={handleCloseClick} />
-            <ImageContainer>
-              <Image src={logo} alt="logo" onClick={handleLogoClick} />
-            </ImageContainer>
-            <ButtonSignOut onClick={handleSignOut}>SIGN OUT</ButtonSignOut>
-          </>
-        ) : (
-          <>
-            <CloseIcon onClick={handleCloseClick} />
-            <ImageContainer>
-              <Image src={logo} alt="logo" onClick={handleLogoClick} />
-            </ImageContainer>
-            <RightContainer>
-              <ButtonLogin onClick={handleLoginClick}>LOGIN</ButtonLogin>
-              <ButtonStart onClick={handleSignupClick}>GET STARTED</ButtonStart>
-            </RightContainer>
-          </>
-        )}
-      </Navbar>
-
-      <Content>
-        <Row>
-          <Link to="/about" onClick={handleLinkClick}>
-            <span>About us</span>
-          </Link>
-        </Row>
-        <Row>
-          <Link to="/paywall" onClick={handlePrisingClick}>
-            <span>Pricing</span>
-          </Link>
-        </Row>
-        <Row>
-        <Link to="/how" onClick={handleHowClick}>
-          <span>How it works</span>
-          </Link>
-        </Row>
-        <Row>
+      <MenuContainer>
+        <Navbar>
           {isAuthenticated ? (
-            <Link to="/accountDetails" onClick={handleAccountClick}>
-              <span>My account</span>
-            </Link>
+            <>
+              <CloseIcon onClick={handleCloseClick} />
+              <ImageContainer>
+                <Image src={logo} alt="logo" onClick={handleLogoClick} />
+              </ImageContainer>
+              <ButtonSignOut onClick={handleSignOut}>SIGN OUT</ButtonSignOut>
+            </>
           ) : (
-            <span style={{ display: "none" }}></span>
+            <>
+              <CloseIcon onClick={handleCloseClick} />
+              <ImageContainer>
+                <Image src={logo} alt="logo" onClick={handleLogoClick} />
+              </ImageContainer>
+              <RightContainer>
+                <ButtonLogin onClick={handleLoginClick}>LOGIN</ButtonLogin>
+                <ButtonStart onClick={handleSignupClick}>
+                  GET STARTED
+                </ButtonStart>
+              </RightContainer>
+            </>
           )}
-        </Row>
-        <Divider />
-        <SocialContainer>
-          <Social src={facebook} alt="facebook" />
-          <Social src={instagram} alt="instagram" />
-          <Social src={twitter} alt="twitter" />
-          <Social src={discord} alt="discord" />
-        </SocialContainer>
-      </Content>
-    </MenuContainer>
-    {isLoginOpen && (
+        </Navbar>
+
+        <Content>
+          <Row>
+            <StyledLink to="/about" onClick={handleLinkClick}>
+              <span>About us</span>
+            </StyledLink>
+          </Row>
+          <Row>
+            <StyledLink to="/paywall" onClick={handlePrisingClick}>
+              <span>Pricing</span>
+            </StyledLink>
+          </Row>
+          <Row>
+            <StyledLink to="/how" onClick={handleHowClick}>
+              <span>How it works</span>
+            </StyledLink>
+          </Row>
+          <Row>
+            {isAuthenticated ? (
+              <StyledLink to="/accountDetails" onClick={handleAccountClick}>
+                <span>My account</span>
+              </StyledLink>
+            ) : (
+              <span style={{ display: "none" }}></span>
+            )}
+          </Row>
+          <Divider />
+          <SocialContainer>
+            <Social src={facebook} alt="facebook" />
+            <Social src={instagram} alt="instagram" />
+            <Social src={twitter} alt="twitter" />
+            <Social src={discord} alt="discord" />
+          </SocialContainer>
+        </Content>
+      </MenuContainer>
+      {isLoginOpen && (
         <Login
           setIsLoginOpen={setIsLoginOpen}
           setIsSignupOpen={setIsSignupOpen}

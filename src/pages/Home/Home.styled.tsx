@@ -38,6 +38,10 @@ export const Section = styled.div`
   justify-content: center;
   height: calc(100vh - 70px);
   scroll-snap-align: start;
+
+  @media (max-width: 500px) {
+    height: 100%;
+  }
 `;
 
 export const TextContainer = styled.div`
@@ -521,6 +525,11 @@ export const Grid = styled.div`
     height: 100vh;
     overflow-y: auto;
     padding-bottom: 80px;
+  }
+
+  @media (max-width: 500px) {
+    overflow-y: hidden;
+    height: 100%;
   }
 `;
 

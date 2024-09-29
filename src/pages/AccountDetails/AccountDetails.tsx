@@ -52,6 +52,7 @@ const AccountDetails = () => {
     isVerified: false,
     nextBillingDate: "",
   });
+  const [initialEmail, setInitialEmail] = useState("");
   const [isPaymentUpdated, setIsPaymentUpdated] = useState(false);
   const [showCardInput, setShowCardInput] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -131,9 +132,10 @@ const AccountDetails = () => {
       );
 
       const profileData = response.data;
+      setInitialEmail(response.data.email);
       if (!profileData.isVerified) {
         setTimeout(() => {
-          setModalType("failure");
+          setModalType("success");
           setModalMessage("Please, check your email box to verify your email!");
           setIsModalVisible(true);
         }, 3000);
@@ -225,10 +227,14 @@ const AccountDetails = () => {
         setModalMessage("User data updated successfully");
         setIsModalVisible(true);
 
-        setTimeout(async () => {
+        setTimeout(() => {
           setIsModalVisible(false);
-          await fetchUserProfile();
-        }, 3000);
+
+          if (userData.email !== initialEmail) {
+            setModalMessage("Please check your email to verify the new address");
+            setIsModalVisible(true);
+          }
+        }, 2000);
       }
     } catch (error: any) {
       console.error("Error updating user data:", error);
@@ -242,7 +248,7 @@ const AccountDetails = () => {
           const currentUser = users.find((user: User) => user.token);
 
           if (currentUser) {
-            // await dbInstance.deleteData("users", currentUser.id);
+            await dbInstance.deleteData("users", currentUser.id);
 
             setModalType("failure");
             setModalMessage("Please login to access your profile");
@@ -366,6 +372,7 @@ const AccountDetails = () => {
       },
     },
     hidePostalCode: true,
+    autoComplete: 'off'
   };
 
   const handleCancelSubscription = async () => {
@@ -545,7 +552,7 @@ const AccountDetails = () => {
               ) : (
                 <CardInputContainer>
                   <CardDetails>
-                    <div style={{ marginBottom: "0px", width: "100%" }}>
+                    <div style={{ marginBottom: "0px", width: "100%", overflow: 'hidden' }}>
                       <CardElement options={cardElementOptions} />
                     </div>
                   </CardDetails>

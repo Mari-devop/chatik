@@ -47,6 +47,12 @@ export const ModalContainer = styled.div<{ type: 'success' | 'failure' | 'share'
     mask-composite: exclude;
     z-index: -1; 
   }
+
+  @media (min-width: 375px) {
+    max-width: 400px;
+    width: 90%;
+    top: 3px;
+  }
 `;
 
 export const SocialContainer = styled.div`

@@ -7,8 +7,6 @@ import { User } from "../../components/menu/types";
 import {
   Container,
   MainContainer,
-  PhotoContainer,
-  TextContainer,
   Wrapper1,
   Wrapper2,
   Image1,
@@ -23,10 +21,13 @@ import {
 } from "../Home/Home.styled";
 import {
   Section,
+  TextContainer,
   BoxContainer,
+  PhotoContainer,
   FirstBox,
   SecondBox,
   ThirdBox,
+  AvenirTitle,
   Type,
   Button,
   Row,
@@ -37,6 +38,10 @@ import {
   CardDetails,
   CheckBox,
   CheckIcon,
+  AvenirH4Text,
+  TextMediumH4,
+  AvenirText,
+  CheckBoxText
 } from "./Paywall.styled";
 import {
   AvenirH2,
@@ -228,7 +233,8 @@ const Paywall = () => {
 
       const generatedLink = `${window.location.origin}/?token=${userToken}`;
       setShareLink(generatedLink);
-      setShowModal(true);
+      setShowModal(true); 
+      console.log("Modal should be shown, showModal:", true);   
     } catch (error) {
       console.error(error);
     }
@@ -271,14 +277,14 @@ const Paywall = () => {
         <MainContainer>
           <Section>
             <TextContainer>
-              <AvenirH2
+              <AvenirTitle
                 style={{ color: "white", marginTop: "0px", marginBottom: "0" }}
               >
                 Unlock full features
-              </AvenirH2>
-              <TextMedium style={{ margin: "0" }}>
+              </AvenirTitle>
+              <AvenirText>
                 Share or subscribe to continue asking unlimited questions
-              </TextMedium>
+              </AvenirText>
               <BoxContainer>
                 {isMakePayment ? (
                   <>
@@ -288,7 +294,7 @@ const Paywall = () => {
                           Free
                         </TextMedium>
                       </Type>
-                      <AvenirH4
+                      <AvenirH4Text
                         style={{
                           color: "white",
                           marginTop: "0",
@@ -296,11 +302,11 @@ const Paywall = () => {
                         }}
                       >
                         Share with a friend
-                      </AvenirH4>
-                      <TextMedium>
+                      </AvenirH4Text>
+                      <TextMediumH4>
                         Get <span style={{ color: "#F82D98" }}>3 free</span>{" "}
                         questions when you share on social media
-                      </TextMedium>
+                      </TextMediumH4>
                       <Button onClick={handleShareClick}>SHARE</Button>
                     </FirstBox>
                     <SecondBox>
@@ -346,9 +352,9 @@ const Paywall = () => {
                     <CheckBox>
                       <CheckIcon src={check} />
                     </CheckBox>
-                    <AvenirH4 style={{ color: "white", margin: "12px 0" }}>
+                    <CheckBoxText>
                       You have successfully subscribed!
-                    </AvenirH4>
+                    </CheckBoxText>
                     <TextMedium style={{ color: "white" }}>
                       A receipt was sent to your email
                     </TextMedium>

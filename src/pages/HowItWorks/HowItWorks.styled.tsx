@@ -36,6 +36,10 @@ export const Box = styled.div`
     mask-composite: exclude;
     z-index: -1;
   }
+
+  @media (max-width: 817px) {
+    width: 90%;
+  }
 `;
 
 export const Row = styled.div`
