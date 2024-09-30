@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 
 
-export const ModalContainer = styled.div<{ type: 'success' | 'failure' | 'share' }>`
+export const ModalContainer = styled.div<{ type: 'success' | 'failure' | 'share' | 'confirm' }>`
   position: fixed;
   top: 25px; 
   left: 50%; 

@@ -15,7 +15,7 @@ import {
   Divider,
   Text,
   TextCenter,
-  StyledIcon 
+  StyledIcon,
 } from "./SignUp.styled";
 import {
   ImageContainer,
@@ -161,6 +161,16 @@ const SignUp: React.FC<SignupProps> = ({
     };
   }, []);
 
+  const handleContainerClick = () => {
+    setIsLoginOpen(false);
+    setIsSignupOpen(false);
+    navigate("/"); 
+  };
+
+  const handleInnerClick = (event: React.MouseEvent) => {
+    event.stopPropagation();
+  };
+
   return (
     <FocusTrap>
       <div role="dialog" aria-modal="true">
@@ -170,14 +180,14 @@ const SignUp: React.FC<SignupProps> = ({
           message={modalMessage}
           onClose={() => setIsModalVisible(false)}
         />
-        <UserContainer>
+        <UserContainer onClick={handleContainerClick}>
           <Navbar>
             <CloseIcon onClick={handleCloseClick} />
             <ImageContainer>
               <Image src={logo} alt="logo" onClick={handleLogoClick} />
             </ImageContainer>
           </Navbar>
-          <BoxContainer>
+          <BoxContainer onClick={handleInnerClick}>
             <AvenirH2>Get started</AvenirH2>
             <TextMedium>To continue please create an account</TextMedium>
             <Row>
@@ -191,16 +201,18 @@ const SignUp: React.FC<SignupProps> = ({
               />
             </Row>
             <Row>
-              <label htmlFor="password">Password</label>
+              <label htmlFor="password">
+                Password
+                <StyledIcon
+                  icon={isPasswordVisible ? faEye : faEyeSlash}
+                  onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+                />
+              </label>
               <input
                 type={isPasswordVisible ? "text" : "password"}
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-              />
-             <StyledIcon
-                icon={isPasswordVisible ? faEye : faEyeSlash}
-                onClick={() => setIsPasswordVisible(!isPasswordVisible)}
               />
             </Row>
             <ButtonContainer>

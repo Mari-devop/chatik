@@ -216,24 +216,7 @@ export const LinkStyled = styled(Link)`
 `;
 
 export const StyledIcon = styled(FontAwesomeIcon)`
-  position: absolute;
   color: white;
   cursor: pointer;
-  bottom: 305px;
-  right: 100px;
-
-  @media screen and (max-width: 500px) {
-    bottom: 345px;
-  }
-
-    @media (max-height: 932px) {
-        bottom: 305px;
-    }
-  @media (max-height: 740px) {
-    bottom: 255px;
-  }
-
-   @media (max-height: 667px) {
-    bottom: 280px;
-   }
+  margin-left: 10px;
 `;

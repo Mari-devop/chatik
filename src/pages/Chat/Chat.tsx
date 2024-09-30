@@ -60,6 +60,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
     initialResponse
   );
   const [message, setMessage] = useState<string>("");
+  const [isGrowing, setIsGrowing] = useState(false);
   const [chatHistory, setChatHistory] = useState<any[]>([]);
   const [questionVisible, setQuestionVisible] = useState(true);
   const [isDialogStarted, setIsDialogStarted] = useState(false);
@@ -147,6 +148,9 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
 
       if (!userToken) {
         console.error("Token is missing or user is not authenticated");
+        setModalType("failure");
+        setModalMessage("Please login to use this feature");
+        setShowModal(true);
         return;
       }
 
@@ -270,14 +274,17 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
     }
   }, [individual, fetchChatHistory]);
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && isAuthenticated) {
       handleSendMessage();
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value);
+    e.target.style.height = "auto";
+    e.target.style.height = `${e.target.scrollHeight}px`;
+    setIsGrowing(e.target.scrollHeight > 45);
     setQuestionVisible(false);
   };
 
@@ -286,7 +293,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
   };
 
   const handleQuestionClick = () => {
-    setWasQuestionClicked(true); 
+    setWasQuestionClicked(true);
   };
 
   return (
@@ -311,14 +318,14 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
         </PersonContainer>
         <DialogContainer>
           <RespondContainer>
-          {(isDialogStarted || !!individual?.questionText) && (
-            <Question
-              $isVisible={questionVisible && !!individual?.questionText}
-              onClick={handleQuestionClick}
-            >
-              <Text>{individual?.questionText}</Text>
-            </Question>
-          )}
+            {(isDialogStarted || !!individual?.questionText) && (
+              <Question
+                $isVisible={questionVisible && !!individual?.questionText}
+                onClick={handleQuestionClick}
+              >
+                <Text>{individual?.questionText}</Text>
+              </Question>
+            )}
             <AnswerBox id="scrollContainer" ref={scrollContainerRef}>
               <FadeOverlay $scrolled={scrolled} />
               {filteredResponses.length > 0 &&
@@ -367,14 +374,17 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
             )}
           </QuestionContainer>
           <InputBox>
-            <InputWrapper>
+            <InputWrapper isGrowing={isGrowing}>
               <Input
+                as="textarea"
                 placeholder="Enter your message..."
                 disabled={!isAuthenticated}
                 value={message}
                 onChange={handleInputChange}
                 onFocus={handleInputFocus}
                 onKeyDown={handleKeyDown}
+                rows={1}
+                isGrowing={isGrowing}
               />
             </InputWrapper>
             <Button onClick={handleSendMessage} disabled={!isAuthenticated}>

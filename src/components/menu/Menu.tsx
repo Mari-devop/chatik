@@ -58,6 +58,15 @@ const Menu: React.FC<MenuProps> = ({
     };
   }, []);
 
+  const handleContainerClick = () => {
+    setIsMenuOpen(false);
+    navigate("/"); 
+  }
+
+  const handleInnerClick = (event: React.MouseEvent) => {
+    event.stopPropagation();
+  };
+
   const handleCloseClick = () => {
     setIsMenuOpen(false);
   };
@@ -85,16 +94,23 @@ const Menu: React.FC<MenuProps> = ({
   const handleSignOut = async () => {
     try {
       const users = await dbInstance.getData("users");
-      const currentUser = users.find((user: User) => user.token);
-      if (currentUser) {
-        await dbInstance.deleteData("users", currentUser.id);
+      const tokensToDelete: number[] = [];
+
+      users.forEach((user: User) => {
+        if (user.token) {
+          tokensToDelete.push(user.id);
+        }
+      });
+
+      for(const userId of tokensToDelete) {
+        await dbInstance.deleteData("users", userId);
+      }
+
         setIsMenuOpen(false);
         await checkAuthentication();
         setIsAuthenticated(false);
         navigate("/");
-      } else {
-        console.error("No user with token found for sign out");
-      }
+     
     } catch (error) {
       console.error("Error signing out:", error);
     }
@@ -125,8 +141,8 @@ const Menu: React.FC<MenuProps> = ({
 
   return (
     <>
-      <MenuContainer>
-        <Navbar>
+      <MenuContainer onClick={handleContainerClick}>
+        <Navbar onClick={handleInnerClick}>
           {isAuthenticated ? (
             <>
               <CloseIcon onClick={handleCloseClick} />
@@ -151,7 +167,7 @@ const Menu: React.FC<MenuProps> = ({
           )}
         </Navbar>
 
-        <Content>
+        <Content onClick={handleInnerClick}>
           <Row>
             <StyledLink to="/about" onClick={handleLinkClick}>
               <span>About us</span>

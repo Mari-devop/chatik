@@ -63,6 +63,16 @@ const Login: React.FC<LoginProps> = ({
     };
   }, []);
 
+  const handleContainerClick = () => {
+    setIsLoginOpen(false);
+    setIsSignupOpen(false);
+    navigate("/"); 
+  };
+
+  const handleInnerClick = (event: React.MouseEvent) => {
+    event.stopPropagation();
+  };
+
   const handleCloseClick = () => {
     setIsLoginOpen(false);
     setIsSignupOpen(false);
@@ -230,14 +240,14 @@ const Login: React.FC<LoginProps> = ({
           message={modalMessage}
           onClose={() => setIsModalVisible(false)}
         />
-        <UserContainer>
+        <UserContainer onClick={handleContainerClick}>
           <Navbar>
             <CloseIcon onClick={handleCloseClick} />
             <ImageContainer>
               <Image src={logo} alt="logo" onClick={handleLogoClick} />
             </ImageContainer>
           </Navbar>
-          <BoxContainer>
+          <BoxContainer onClick={handleInnerClick}>
             <AvenirTitle>Login</AvenirTitle>
             <Row>
               <label htmlFor="email">Email</label>
@@ -253,16 +263,18 @@ const Login: React.FC<LoginProps> = ({
               />
             </Row>
             <Row>
-              <label htmlFor="password">Password</label>
+              <label htmlFor="password">
+                Password
+                <StyledIcon
+                icon={isPasswordVisible ? faEye : faEyeSlash}
+                onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+              />
+              </label>
               <input
                 type={isPasswordVisible ? "text" : "password"}
                 id="password"
                 value={password || ""}
                 onChange={(e) => setPassword(e.target.value)}
-              />
-              <StyledIcon
-                icon={isPasswordVisible ? faEye : faEyeSlash}
-                onClick={() => setIsPasswordVisible(!isPasswordVisible)}
               />
             </Row>
             <Row>

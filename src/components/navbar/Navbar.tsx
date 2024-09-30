@@ -14,6 +14,8 @@ import {
   ButtonShare,
   IconShare,
   CloseIcon,
+  Line,
+  LineShort,
 } from "./Navbar.styled";
 import Menu from "../menu/Menu";
 import Login from "../../pages/Login/Login";
@@ -114,7 +116,9 @@ export const Navbar = ({
         {location.pathname === "/" && (
           <Box>
             <ButtonMenu onClick={handleMenuClick}>
-              <Icon src={menu} alt="menu" />
+              <Line />
+              <LineShort />
+              <Line />
             </ButtonMenu>
             <RightContainer>
               {!isAuthenticated && (
@@ -137,7 +141,9 @@ export const Navbar = ({
         {location.pathname === "/chat" && (
           <Box>
             <ButtonMenu onClick={handleMenuClick}>
-              <Icon src={menu} alt="menu" />
+              <Line />
+              <LineShort />
+              <Line />
             </ButtonMenu>
             <RightContainer>
               <ButtonShare onClick={handleShareClickChat}>
@@ -148,9 +154,13 @@ export const Navbar = ({
           </Box>
         )}
         {location.pathname === "/accountDetails" && (
-          <ButtonMenu onClick={handleMenuClick}>
-            <Icon src={menu} alt="menu" />
-          </ButtonMenu>
+          <Box style={{ justifyContent: "flex-start" }}>
+            <ButtonMenu onClick={handleMenuClick}>
+              <Line />
+              <LineShort />
+              <Line />
+            </ButtonMenu>
+          </Box>
         )}
         {location.pathname === "/paywall" && (
           <CloseIcon onClick={handleLogoClick} />

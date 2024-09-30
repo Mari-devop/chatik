@@ -1,5 +1,9 @@
 import styled from "styled-components";
 
+interface DisabledProps {
+  disabled: boolean;
+}
+
 export const Section = styled.div`
   display: flex;
   flex-direction: column;
@@ -164,7 +168,7 @@ export const ThirdBox = styled.div`
   }
 
   @media (max-width: 900px) {
-    width: 70%; 
+    width: 70%;
   }
 
   @media (max-width: 650px) {
@@ -215,13 +219,16 @@ export const IconCheck = styled.img`
   height: 16px;
 `;
 
-export const SubscribeButton = styled.button`
-  background-image: linear-gradient(to right, #6a00f4, #c900ff);
+export const SubscribeButton = styled.button<DisabledProps>`
+    background-image: ${({ disabled }) =>
+    disabled
+      ? 'linear-gradient(to right, #303030, #929292)'
+      : 'linear-gradient(to right, #6a00f4, #c900ff)'};
   color: white;
   border: none;
   padding: 15px 20px;
   border-radius: 30px;
-  cursor: pointer;
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   margin-top: 12px;
   font-family: "Arquitecta";
   font-weight: 700;
@@ -232,8 +239,10 @@ export const SubscribeButton = styled.button`
   width: 119px;
   transition: opacity 0.3s ease;
   z-index: 10;
+
   &:hover {
-    opacity: 0.9;
+    background: ${({ disabled }) =>
+      disabled ? 'linear-gradient(to right, #303030, #929292)' : 'var(--primary-gradient-hover)'};
   }
 `;
 
@@ -270,7 +279,7 @@ export const SaveButton = styled.button`
   margin-top: 20px;
 
   &:hover {
-    opacity: 0.9;
+    background: var(--primary-gradient-hover);
   }
 `;
 
@@ -307,18 +316,18 @@ export const CheckBox = styled.div`
 `;
 
 export const CheckBoxText = styled.p`
-    font-family: 'Avenir';
-    font-weight: 800;
-    font-size: 24px;
-    line-height: 36px;
-    letter-spacing: -0.01em;
-    margin: 12px 0;
-    color: var(--white-color);
+  font-family: "Avenir";
+  font-weight: 800;
+  font-size: 24px;
+  line-height: 36px;
+  letter-spacing: -0.01em;
+  margin: 12px 0;
+  color: var(--white-color);
 
-    @media (max-width: 470px) {
-      font-size: 18px;
-      line-height: 25px;
-    }
+  @media (max-width: 470px) {
+    font-size: 18px;
+    line-height: 25px;
+  }
 `;
 
 export const CheckIcon = styled.img`

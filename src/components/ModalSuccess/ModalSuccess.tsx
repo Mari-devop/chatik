@@ -7,11 +7,13 @@ import twitter from "../../assets/images/menu/x-twitter-brands-solid.svg";
 
 interface ModalSuccessProps {
   isVisible: boolean;
-  modalType: "success" | "failure" | "share";
+  modalType: "success" | "failure" | "share" | "confirm";
   message: string;
   shareLink?: string; 
   onClose: () => void;
+  children?: React.ReactNode; 
 }
+
 
 const ModalSuccess: React.FC<ModalSuccessProps> = ({
   isVisible,
@@ -19,6 +21,7 @@ const ModalSuccess: React.FC<ModalSuccessProps> = ({
   message,
   shareLink,
   onClose,
+  children,
 }) => {
   useEffect(() => {
     if (isVisible) {
@@ -89,6 +92,8 @@ const ModalSuccess: React.FC<ModalSuccessProps> = ({
       ) : (
         <p>{message}</p>
       )}
+
+      {children && <div>{children}</div>}
     </ModalContainer>
   );
 };

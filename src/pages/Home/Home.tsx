@@ -370,7 +370,7 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
                     handleQuestionClick(question.questionId, question.question);
                   }}
                 >
-                  <TextRow>
+                  <TextRow style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
                     {question.question}
                     {loadingQuestionId === question.questionId && (
                       <ColorRing
@@ -378,7 +378,6 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
                         height="35"
                         width="35"
                         ariaLabel="color-ring-loading"
-                        wrapperStyle={{ marginLeft: '20px'}}
                         colors={["#5833EF", "#5833EF", "#F82D98", "#F82D98", "#db5ff1"]}
                       />
                     )}

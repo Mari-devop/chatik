@@ -486,53 +486,58 @@ export const InputBox = styled.div`
   display: flex;
   position: fixed;
   bottom: 0;
-  width: 50%;
-  right: 50px;
+  width: 720px;
+  right: 60px;
   padding: 20px 0px;
   box-sizing: border-box;
   z-index: 10;
 
+  @media (max-width: 1200px) {
+    width: 580px;
+  }
+
   @media (max-width: 1100px) {
-    padding: 20px 0px;
-    width: 60%;
-    right: 40px;
+    width: 520px;
+    right: 42px;
+  }
+
+  @media (max-width: 950px) {
+    width: 420px;
+    
   }
 
   @media (max-width: 850px) {
     width: 90%;
     right: 35px;
-    justify-content: center;
-    align-items: center;
     padding: 10px 0px;
   }
 
   @media (max-width: 500px) {
-    right: 25px;
-  }
-  
-  @media (max-width: 450px) {
     right: 20px;
   }
 `;
 
-export const InputWrapper = styled.div`
+export const InputWrapper = styled.div<{ isGrowing: boolean }>`
   position: relative;
   width: 100%;
-  border-radius: 120px;
+  border-radius: ${({ isGrowing }) => (isGrowing ? "10px" : "120px")};
   background: linear-gradient(45deg, #5833ef, #f82d98);
   padding: 1px;
   display: flex;
   align-items: center;
+  transition: border-radius 0.3s ease;
 `;
 
-export const Input = styled.input<DisabledProps>`
+export const Input = styled.textarea<DisabledProps & { isGrowing: boolean }>`
   background: ${({ disabled }) =>
     disabled
       ? "linear-gradient(45deg, rgba(4,4,16,1) 0%, #929292d4 100%)"
       : "linear-gradient(45deg, rgba(4,4,16,1) 0%, rgba(15,3,6,1) 100%)"};
   border: none;
-  border-radius: 120px;
+  border-radius: ${({ isGrowing }) => (isGrowing ? "10px" : "120px")};
   padding-left: 32px;
+  padding-right: 150px;
+  padding-top: 8px;
   font-family: "Avenir";
   font-weight: 400;
   font-size: 16px;
@@ -540,11 +545,23 @@ export const Input = styled.input<DisabledProps>`
   letter-spacing: -0.01em;
   color: #ffffff;
   width: 100%;
-  height: 45px;
   outline: none;
   position: relative;
   cursor: ${({ disabled }) => (disabled ? "not-allowed" : "text")};
+  resize: none; 
+  overflow: auto; 
+  height: auto; 
+  min-height: 45px; 
+  max-height: 200px; 
+  transition: border-radius 0.3s ease; 
+  box-sizing: border-box;
+
+  @media (max-width: 375px) {
+    padding-right: 100px;
+    font-size: 14px;
+  }
 `;
+
 
 export const Button = styled.button<DisabledProps>`
   background: ${({ disabled }) =>
@@ -561,7 +578,7 @@ export const Button = styled.button<DisabledProps>`
   width: 137px;
   height: 39px;
   position: fixed;
-  right: 55px;
+  right: 65px;
   bottom: 25px;
   z-index: 2;
 
@@ -574,10 +591,16 @@ export const Button = styled.button<DisabledProps>`
   }
 
   @media (max-width: 500px) {
-    right: 30px;
+    right: 25px;
   }
 
   @media (max-width: 450px) {
     right: 25px;
+  }
+
+  @media (max-width: 375px) {
+    width: 80px;
+    font-size: 12px;
+    bottom: 14px;
   }
 `;

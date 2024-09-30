@@ -1,31 +1,36 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Container } from "../Home/Home.styled";
-import { Box, Row } from "./HowItWorks.styled";
+import { Box, Row, AvenirH4Title } from "./HowItWorks.styled";
 import {
   ArquitectaH5,
   AvenirH4,
   AvenirH3,
-  TextMedium
+  TextMedium,
 } from "../../assets/css/Global.styled";
 import { Boxik } from "../AccountDetails/AccountDetsils.styled";
 
 const HowItWorks = () => {
+  const navigate = useNavigate();
+  const handleContainerClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate("/");
+  };
+
+  const handleInnerClick = (event: React.MouseEvent) => {
+    event.stopPropagation();
+  };
+
   return (
-    <Container>
-          <Box>
+    <Container onClick={handleContainerClick}>
+          <Box onClick={handleInnerClick}>
             <Row>
               <Boxik>
                 <ArquitectaH5 style={{ color: "white" }}>Free</ArquitectaH5>
               </Boxik>
-              <AvenirH4
-                style={{
-                  color: "white",
-                  marginTop: "12px",
-                  marginBottom: "12px",
-                }}
-              >
+              <AvenirH4Title>
                 $0 / No registration needed
-              </AvenirH4>
+              </AvenirH4Title>
               <TextMedium
                 style={{
                   color: "white",
@@ -41,15 +46,11 @@ const HowItWorks = () => {
               <Boxik>
                 <ArquitectaH5 style={{ color: "white" }}>Trail</ArquitectaH5>
               </Boxik>
-              <AvenirH4
-                style={{
-                  color: "white",
-                  marginTop: "12px",
-                  marginBottom: "12px",
-                }}
+              <AvenirH4Title
+                
               >
                 $0 / Registration needed
-              </AvenirH4>
+              </AvenirH4Title>
               <TextMedium
                 style={{
                   color: "white",
@@ -66,15 +67,11 @@ const HowItWorks = () => {
               <Boxik>
                 <ArquitectaH5 style={{ color: "white" }}>PRO</ArquitectaH5>
               </Boxik>
-              <AvenirH4
-                style={{
-                  color: "white",
-                  marginTop: "12px",
-                  marginBottom: "12px",
-                }}
+              <AvenirH4Title
+               
               >
                 $10 / month
-              </AvenirH4>
+              </AvenirH4Title>
               <TextMedium
                 style={{
                   color: "white",

@@ -59,17 +59,19 @@ const AccountDetails = () => {
   const [modalType, setModalType] = useState<"success" | "failure">("success");
   const [modalMessage, setModalMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const formattedDate = new Date(userData.nextBillingDate).toLocaleDateString();
   const [emailError, setEmailError] = useState(false);
   const [phoneError, setPhoneError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);
+  const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
+
   const stripe = useStripe();
   const elements = useElements();
   const navigate = useNavigate();
+  const isEmailChanged = userData.email !== initialEmail;
 
   const handleStartChatting = () => {
-    navigate("/");
+    navigate("/", { state: { scrollToIndividuals: true } });
   };
 
   const handleSubmit = () => {
@@ -108,6 +110,15 @@ const AccountDetails = () => {
     setIsFormValid(isEmailValid && isPhoneValid && isPasswordValid);
   };
 
+  const formattedDate = new Date(userData.nextBillingDate).toLocaleDateString(
+    "en-US",
+    {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }
+  );
+
   const fetchUserProfile = async () => {
     try {
       const users = await dbInstance.getData("users");
@@ -133,6 +144,7 @@ const AccountDetails = () => {
 
       const profileData = response.data;
       setInitialEmail(response.data.email);
+
       if (!profileData.isVerified) {
         setTimeout(() => {
           setModalType("success");
@@ -157,24 +169,26 @@ const AccountDetails = () => {
 
         try {
           const users = await dbInstance.getData("users");
-          const currentUser = users.find((user: User) => user.token);
+          const tokensToDelete: number[] = [];
 
-          if (currentUser) {
-            // await dbInstance.deleteData("users", currentUser.id);
+          users.forEach((user: User) => {
+            if (user.token) {
+              tokensToDelete.push(user.id);
+            }
+          });
 
-            setModalType("failure");
-            setModalMessage(
-              "Please, check your email box to verify your email!"
-            );
-            setIsModalVisible(true);
-
-            setTimeout(() => {
-              setIsModalVisible(false);
-              navigate("/");
-            }, 3000);
-          } else {
-            console.error("No user with token found to delete");
+          for (const userId of tokensToDelete) {
+            await dbInstance.deleteData("users", userId);
           }
+
+          setModalType("failure");
+          setModalMessage("Please, check your email box to verify your email!");
+          setIsModalVisible(true);
+
+          setTimeout(() => {
+            setIsModalVisible(false);
+            navigate("/");
+          }, 3000);
         } catch (error) {
           console.error("Error deleting token:", error);
         }
@@ -231,13 +245,16 @@ const AccountDetails = () => {
           setIsModalVisible(false);
 
           if (userData.email !== initialEmail) {
-            setModalMessage("Please check your email to verify the new address");
+            setModalMessage(
+              "Please check your email to verify the new address"
+            );
             setIsModalVisible(true);
           }
         }, 2000);
       }
     } catch (error: any) {
       console.error("Error updating user data:", error);
+
       if (error.response?.status === 401) {
         console.error(
           "Token is expired or invalid, deleting token and redirecting to login..."
@@ -245,22 +262,26 @@ const AccountDetails = () => {
 
         try {
           const users = await dbInstance.getData("users");
-          const currentUser = users.find((user: User) => user.token);
+          const tokensToDelete: number[] = [];
 
-          if (currentUser) {
-            await dbInstance.deleteData("users", currentUser.id);
+          users.forEach((user: User) => {
+            if (user.token) {
+              tokensToDelete.push(user.id);
+            }
+          });
 
-            setModalType("failure");
-            setModalMessage("Please login to access your profile");
-            setIsModalVisible(true);
-
-            setTimeout(() => {
-              setIsModalVisible(false);
-              navigate("/");
-            }, 3000);
-          } else {
-            console.error("No user with token found to delete");
+          for (const userId of tokensToDelete) {
+            await dbInstance.deleteData("users", userId);
           }
+
+          setModalType("failure");
+          setModalMessage("Please login to access your profile");
+          setIsModalVisible(true);
+
+          setTimeout(() => {
+            setIsModalVisible(false);
+            navigate("/");
+          }, 3000);
         } catch (error) {
           console.error("Error deleting token:", error);
         }
@@ -372,10 +393,14 @@ const AccountDetails = () => {
       },
     },
     hidePostalCode: true,
-    autoComplete: 'off'
+    autoComplete: "off",
   };
 
-  const handleCancelSubscription = async () => {
+  const handleCancelSubscription = () => {
+    setIsCancelModalVisible(true);
+  };
+
+  const handleConfirmCancel = async () => {
     try {
       const users = await dbInstance.getData("users");
       if (!users || users.length === 0) {
@@ -411,6 +436,8 @@ const AccountDetails = () => {
       setModalType("failure");
       setModalMessage("An error occurred while cancelling subscription");
       setIsModalVisible(true);
+    } finally {
+      setIsCancelModalVisible(false);
     }
   };
 
@@ -422,8 +449,29 @@ const AccountDetails = () => {
         message={modalMessage}
         onClose={() => setIsModalVisible(false)}
       />
+      <ModalSuccess
+        isVisible={isCancelModalVisible}
+        modalType="confirm"
+        message="Are you sure you want to cancel your subscription?"
+        onClose={() => setIsCancelModalVisible(false)}
+      >
+        <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
+          <button
+            onClick={handleConfirmCancel}
+            style={{ padding: "10px", backgroundColor: "transparent", color: "#fff", borderRadius: '30px', border: '1px solid #777', cursor: 'pointer' }}
+          >
+            Yes
+          </button>
+          <button
+            onClick={() => setIsCancelModalVisible(false)}
+            style={{ padding: "10px", backgroundColor: "transparent", color: "#fff", borderRadius: '30px', border: '1px solid #777', cursor: 'pointer' }}
+          >
+            No
+          </button>
+        </div>
+      </ModalSuccess>
+
       <Container>
-        <ImageUp src={up} />
         <FirstBox>
           <AvenirH2>Account Details</AvenirH2>
           <Row>
@@ -442,17 +490,10 @@ const AccountDetails = () => {
             <EmailContainer>
               <label htmlFor="email">Email</label>
               <VerificationIcon>
-                {userData.isVerified ? (
-                  <FontAwesomeIcon
-                    icon={faTimesCircle}
-                    style={{ color: "red" }}
-                  />
-                ) : (
-                  <FontAwesomeIcon
-                    icon={faCheckCircle}
-                    style={{ color: "green" }}
-                  />
-                )}
+                <FontAwesomeIcon
+                  icon={isEmailChanged ? faTimesCircle : faCheckCircle}
+                  style={{ color: isEmailChanged ? "red" : "green" }}
+                />
               </VerificationIcon>
             </EmailContainer>
             <input
@@ -540,7 +581,7 @@ const AccountDetails = () => {
                 Next payment will be processed on {formattedDate || "N/A"}
               </Text>
               {!showCardInput ? (
-                <div>
+                <div style={{ width: "100%" }}>
                   <ButtonUpdate onClick={handleSubmit}>
                     UPDATE PAYMENT
                   </ButtonUpdate>
@@ -552,7 +593,13 @@ const AccountDetails = () => {
               ) : (
                 <CardInputContainer>
                   <CardDetails>
-                    <div style={{ marginBottom: "0px", width: "100%", overflow: 'hidden' }}>
+                    <div
+                      style={{
+                        marginBottom: "0px",
+                        width: "100%",
+                        overflow: "hidden",
+                      }}
+                    >
                       <CardElement options={cardElementOptions} />
                     </div>
                   </CardDetails>

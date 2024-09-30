@@ -155,29 +155,6 @@ export const ButtonSignOut = styled.button`
   }
 `;
 
-export const ButtonLogin = styled.button`
-  background-color: transparent;
-  color: var(--white-color);
-  border: none;
-  cursor: pointer;
-  font-family: "Arquitecta";
-  font-weight: 700;
-  font-size: 13px;
-  line-height: 14px;
-  letter-spacing: 0.3em;
-
-  a {
-    text-decoration: none;
-    color: #ffffff;
-  }
-
-  @media (max-width: 900px) {
-    order: 2;
-    margin-top: 16px;
-  }
-
-`;
-
 export const RightContainer = styled.div`
   display: flex;
   align-items: center;
@@ -225,6 +202,57 @@ export const ButtonStart = styled.button`
   a {
     text-decoration: none;
     color: #ffffff;
+  }
+`;
+
+export const ButtonLogin = styled.button`
+  position: relative;
+  background-color: transparent;
+  color: var(--white-color);
+  border: none;
+  cursor: pointer;
+  font-family: "Arquitecta";
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 14px;
+  letter-spacing: 0.3em;
+  padding: 15px 30px; 
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 1px solid transparent; 
+    border-radius: 120px; 
+    background: linear-gradient(90deg, #f82d98, #5833ef); 
+    -webkit-mask: 
+      linear-gradient(#fff 0 0) padding-box, 
+      linear-gradient(#fff 0 0);
+    mask: 
+      linear-gradient(#fff 0 0) padding-box, 
+      linear-gradient(#fff 0 0);
+    mask-composite: exclude; 
+    pointer-events: none; 
+    transition: opacity 0.3s ease;
+    opacity: 0; 
+  }
+
+  &:hover::before {
+    opacity: 1; 
+  }
+
+  a {
+    text-decoration: none;
+    color: #ffffff;
+  }
+
+  @media (max-width: 900px) {
+    order: 2;
+    width: 100%;
+    padding: 15px 0;
   }
 `;
 

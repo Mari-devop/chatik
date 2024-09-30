@@ -156,11 +156,12 @@ export const ButtonUpdate = styled.button`
   letter-spacing: 0.3em;
   color: #ffffff;
   transition: background 0.3s ease;
-  margin-bottom: 32px;
+  margin-bottom: 12px;
 `;
 
 export const ButtonCancel = styled.button`
   width: 100%;
+  height: 56px;
   background: transparent;
   cursor: pointer;
   border: none;
@@ -170,6 +171,11 @@ export const ButtonCancel = styled.button`
   line-height: 14px;
   letter-spacing: 0.3em;
   color: #ffffff;
+
+  &:hover {
+    border: 1px solid var(--border-color-hover);
+    border-radius: 120px;
+  }
 `;
 
 export const ButtonContainer = styled.div`
@@ -187,15 +193,15 @@ export const ButtonContainer = styled.div`
 
 export const ImageUp = styled.img`
   position: absolute;
-  top: -200px;
+  bottom: 100px;
   right: 0px;
   z-index: 1;
 `;
 
 export const ImageDown = styled.img`
   position: absolute;
-  bottom: -100px;
-  right: 0;
+  top: -100px;
+  left: 0;
   z-index: 0;
 `;
 

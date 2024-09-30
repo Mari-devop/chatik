@@ -121,25 +121,53 @@ export const RightContainer = styled.div`
   }
 `;
 
+
 export const ButtonMenu = styled.button`
-  background-color: transparent;
+  background: none;
   border: none;
   cursor: pointer;
-  top: 34px;
-  left: 32px;
-  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 36px; 
+  height: 24px; 
+  padding: 0;
+  margin-top: 36px;
+  position: relative;
+
+  div {
+    background-color: white; 
+    height: 3px; 
+    border-radius: 1px; 
+    transition: all 0.3s ease;
+  }
+
+  &:hover div {
+    background: linear-gradient(90deg, #f82d98, #5833ef);
+  }
 
   @media (max-width: 900px) {
-    left: auto;
-    right: 16px;
-    top: 50px;
+    position: absolute; 
+    right: 40px; 
+    top: 14px; 
+    height: 20px;
   }
 
   @media (max-width: 375px) {
-    top: 25px;
-    fill: linear-gradient(45deg, #5833ef, #f82d98);
+    top: -10px;
+    width: 24px;
   }
 `;
+
+export const Line = styled.div`
+  width: 100%; 
+  margin-left: 8px;
+`;
+
+export const LineShort = styled.div`
+  width: 100%; 
+`;
+
 
 export const Icon = styled.img`
   width: 36px;
@@ -148,6 +176,7 @@ export const Icon = styled.img`
 `;
 
 export const ButtonLogin = styled.button`
+  position: relative;
   background-color: transparent;
   color: var(--white-color);
   border: none;
@@ -157,6 +186,33 @@ export const ButtonLogin = styled.button`
   font-size: 13px;
   line-height: 14px;
   letter-spacing: 0.3em;
+  padding: 15px 30px; 
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 1px solid transparent; 
+    border-radius: 120px; 
+    background: linear-gradient(90deg, #f82d98, #5833ef); 
+    -webkit-mask: 
+      linear-gradient(#fff 0 0) padding-box, 
+      linear-gradient(#fff 0 0);
+    mask: 
+      linear-gradient(#fff 0 0) padding-box, 
+      linear-gradient(#fff 0 0);
+    mask-composite: exclude; 
+    pointer-events: none; 
+    transition: opacity 0.3s ease;
+    opacity: 0; 
+  }
+
+  &:hover::before {
+    opacity: 1; 
+  }
 
   a {
     text-decoration: none;
@@ -167,6 +223,7 @@ export const ButtonLogin = styled.button`
     display: none;
   }
 `;
+
 
 export const ButtonStart = styled.button`
   background: var(--primary-gradient);
@@ -243,6 +300,7 @@ export const ButtonShare = styled.button`
     height: 32px;
     padding: 10px 16px;
     font-size: 10px;
+    margin-right: 46px;
   }
 
   @media (max-width: 375px) {

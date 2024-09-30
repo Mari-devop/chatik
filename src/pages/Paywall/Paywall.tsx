@@ -41,7 +41,7 @@ import {
   AvenirH4Text,
   TextMediumH4,
   AvenirText,
-  CheckBoxText
+  CheckBoxText,
 } from "./Paywall.styled";
 import {
   AvenirH2,
@@ -67,6 +67,7 @@ import pinkshadow from "../../assets/images/main-page/bright-pinkshadow.png";
 const Paywall = () => {
   const [isMakePayment, setIsMakePayment] = useState(true);
   const [isPaymentConfirmed, setIsPaymentConfirmed] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalType, setModalType] = useState<"success" | "failure">("success");
@@ -77,9 +78,26 @@ const Paywall = () => {
   const stripe = useStripe();
   const elements = useElements();
 
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      const users = await dbInstance.getData("users");
+      const userToken = users[0]?.token;
+      setIsAuthenticated(!!userToken);
+    };
+    checkAuthStatus();
+  }, []);
+  
+
   const handleMakePayment = () => {
+    if (!isAuthenticated) {
+      setModalType("failure");
+      setModalMessage("Please log in to subscribe");
+      setIsModalVisible(true);
+      return;
+    }
     setIsMakePayment(false);
   };
+  
 
   const handlePaymentSubmit = async () => {
     if (!stripe || !elements) {
@@ -173,26 +191,32 @@ const Paywall = () => {
     } catch (error: any) {
       console.error(error);
       if (error.response?.status === 401) {
-        console.error("Token is expired or invalid, deleting token and redirecting to login...");
-  
+        console.error(
+          "Token is expired or invalid, deleting token and redirecting to login..."
+        );
+
         try {
           const users = await dbInstance.getData("users");
-          const currentUser = users.find((user: User) => user.token);
-  
-          if (currentUser) {
-            await dbInstance.deleteData("users", currentUser.id);
-  
-            setModalType("failure");
-            setModalMessage("Please login to complete the payment");
-            setIsModalVisible(true);
-  
-            setTimeout(() => {
-              setIsModalVisible(false);
-              navigate("/");
-            }, 3000);
-          } else {
-            console.error("No user with token found to delete");
+          const tokensToDelete: number[] = [];
+
+          users.forEach((user: User) => {
+            if (user.token) {
+              tokensToDelete.push(user.id);
+            }
+          });
+
+          for (const userId of tokensToDelete) {
+            await dbInstance.deleteData("users", userId);
           }
+
+          setModalType("failure");
+          setModalMessage("Please login to complete the payment");
+          setIsModalVisible(true);
+
+          setTimeout(() => {
+            setIsModalVisible(false);
+            navigate("/");
+          }, 3000);
         } catch (deleteError) {
           console.error("Error deleting token:", deleteError);
         }
@@ -233,8 +257,8 @@ const Paywall = () => {
 
       const generatedLink = `${window.location.origin}/?token=${userToken}`;
       setShareLink(generatedLink);
-      setShowModal(true); 
-      console.log("Modal should be shown, showModal:", true);   
+      setShowModal(true);
+      console.log("Modal should be shown, showModal:", true);
     } catch (error) {
       console.error(error);
     }
@@ -264,6 +288,15 @@ const Paywall = () => {
     };
   }, [isMakePayment, isPaymentConfirmed]);
 
+  const handleContainerClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate("/");
+  };
+
+  const handleInnerClick = (event: React.MouseEvent) => {
+    event.stopPropagation();
+  };
+
   return (
     <>
       <ModalSuccess
@@ -273,7 +306,7 @@ const Paywall = () => {
         message="Share this link to your friend"
         onClose={() => setShowModal(false)}
       />
-      <Container>
+      <Container onClick={handleContainerClick}>
         <MainContainer>
           <Section>
             <TextContainer>
@@ -288,7 +321,7 @@ const Paywall = () => {
               <BoxContainer>
                 {isMakePayment ? (
                   <>
-                    <FirstBox>
+                    <FirstBox onClick={handleInnerClick}>
                       <Type>
                         <TextMedium style={{ color: "#0E0E10" }}>
                           Free
@@ -309,7 +342,7 @@ const Paywall = () => {
                       </TextMediumH4>
                       <Button onClick={handleShareClick}>SHARE</Button>
                     </FirstBox>
-                    <SecondBox>
+                    <SecondBox onClick={handleInnerClick}>
                       <Boxik>
                         <ArquitectaH5 style={{ color: "white" }}>
                           PRO
@@ -342,13 +375,16 @@ const Paywall = () => {
                           Access to all characters
                         </TextSmall>
                       </Row>
-                      <SubscribeButton onClick={handleMakePayment}>
+                      <SubscribeButton 
+                        onClick={handleMakePayment}
+                        disabled={!isAuthenticated}
+                      >
                         SUBSCRIBE
                       </SubscribeButton>
                     </SecondBox>
                   </>
                 ) : isPaymentConfirmed ? (
-                  <ThirdBox>
+                  <ThirdBox onClick={handleInnerClick}>
                     <CheckBox>
                       <CheckIcon src={check} />
                     </CheckBox>
@@ -363,7 +399,7 @@ const Paywall = () => {
                     </SaveButton>
                   </ThirdBox>
                 ) : (
-                  <ThirdBox>
+                  <ThirdBox onClick={handleInnerClick}>
                     <Boxik>
                       <ArquitectaH5 style={{ color: "white" }}>
                         PRO
@@ -385,12 +421,10 @@ const Paywall = () => {
                         </div>
                       </CardDetails>
                       {isLoading ? (
-                     
                         <div
                           style={{
                             display: "flex",
                             justifyContent: "center",
-                          
                           }}
                         >
                           <ColorRing
@@ -410,7 +444,6 @@ const Paywall = () => {
                           />
                         </div>
                       ) : (
-                        
                         <SaveButton onClick={handlePaymentSubmit}>
                           SUBMIT PAYMENT
                         </SaveButton>
