@@ -289,6 +289,7 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
             questionText,
             individualId,
             fullImage,
+            smallImage: selectedIndividual.smallImage,
             response,
             filteredResponses: filteredWithoutLast,
             name: selectedIndividual.name,

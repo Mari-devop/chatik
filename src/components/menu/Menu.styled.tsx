@@ -172,6 +172,10 @@ export const RightContainer = styled.div`
     justify-content: center;
     width: 90%;
   }
+
+  @media (max-width: 375px) {
+    bottom: 10px;
+  }
 `;
 
 export const ButtonStart = styled.button`

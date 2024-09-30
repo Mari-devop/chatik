@@ -104,7 +104,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
     if (filteredResponses.length > 0) {
       loadImagesForResponses();
     }
-  }, [filteredResponses]);
+  }, [location.state.filteredResponses]);
 
   const handleScroll = (e: Event) => {
     const target = e.target as HTMLElement;
@@ -156,14 +156,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
 
       setIsLoading(true);
       setIsDialogStarted(true);
-
-      if (currentResponse && currentResponse.trim() !== "") {
-        setChatHistory((prev) => [
-          ...prev,
-          { text: currentResponse, isUser: false },
-        ]);
-      }
-
+      
       setChatHistory((prev) => [...prev, { text: message, isUser: true }]);
 
       const body = {
@@ -182,6 +175,15 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
         }
       );
 
+      const smallImage = individual?.smallImage || await fetchSmallImageForResponse(individualId);
+      setChatHistory((prev) => [
+        ...prev,
+        { text: response.data.response, isUser: false, smallImage }
+      ]);
+      setFilteredResponses((prev) => [
+        ...prev,
+        { text: response.data.response, smallImage, individualId }
+      ]);
       setCurrentResponse(response.data.response);
       setMessage("");
       setQuestionVisible(false);
@@ -257,12 +259,17 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
       );
       const chatData = response.data.chatHistory;
 
-      const parsedChatHistory = chatData.map((entry: any) => ({
-        isUser: entry.sender === "user",
-        text: entry.content,
-      }));
-
-      setChatHistory(parsedChatHistory);
+      const updatedChatHistory = await Promise.all(
+        chatData.map(async (entry: any) => {
+          const smallImage = await fetchSmallImageForResponse(individualId);
+          return {
+            isUser: entry.sender === "user",
+            text: entry.content,
+            smallImage, // Attach smallImage
+          };
+        })
+      );
+      setChatHistory(updatedChatHistory);
     } catch (error) {
       console.error("Error fetching chat history:", error);
     }

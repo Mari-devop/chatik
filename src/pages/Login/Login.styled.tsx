@@ -73,7 +73,12 @@ export const CustomGoogleButton = styled.button`
 
   @media (max-width: 500px) {
     width: 100%;
+    order: 2;
+    margin-top: 16px;
+    font-size: 12px;
   }
+
+
 `;
 
 export const StyledIcon = styled(FontAwesomeIcon)`
