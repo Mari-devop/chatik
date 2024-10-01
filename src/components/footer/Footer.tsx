@@ -35,7 +35,7 @@ const Footer = () => {
         </TinyText>
         <SocialContainer>
             <Text>follow us</Text>
-            <Button onClick={handleSmsChat}><Icon src={twitter} /></Button>
+            <Button><Icon src={twitter} /></Button>
             <Button><Icon src={fb} /></Button>
             <Button><Icon src={youtube} /></Button>
         </SocialContainer>

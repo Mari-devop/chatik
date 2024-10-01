@@ -36,7 +36,6 @@ import {
 import ModalSuccess from "../../components/ModalSuccess/ModalSuccess";
 import LoadingDots from "../../components/LoadingDots/LoadingDots";
 import shadow from "../../assets/images/chat/shadow.png";
-import voice from "../../assets/images/chat/Frame 143725185.png";
 import share from "../../assets/images/chat/Frame 143725072.png";
 
 interface ChatProps {
@@ -224,7 +223,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
 
       const smallImage = await fetchSmallImageForResponse(individualId);
       setCurrentResponse(response.data.response);
-      setFilteredResponses((prev) => [...prev, { text: response.data.response, smallImage, individualId }]);
+      //setFilteredResponses((prev) => [...prev, { text: response.data.response, smallImage, individualId }]);
       
       setMessage("");
  
@@ -424,7 +423,6 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
                         {resp?.text || "No response available"}
                       </TextRespond>
                       <Social>
-                        <IconSocial src={voice} />
                         <IconSocial src={share} />
                       </Social>
                     </RespondBox>
@@ -442,7 +440,6 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
                     <RespondBox>
                       <TextRespond>{chat.text}</TextRespond>
                       <Social>
-                        <IconSocial src={voice} />
                         <IconSocial src={share} />
                       </Social>
                     </RespondBox>

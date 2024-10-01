@@ -93,7 +93,7 @@ export const Navbar = ({
   };
 
   const handleShareClickChat = async () => {
-    const generatedLink = `${window.location.origin}/chat`;
+    const generatedLink = `${window.location.origin}`;
     setShareLink(generatedLink);
     setShowModal(true);
   };
