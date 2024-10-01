@@ -36,6 +36,13 @@ import ModalSuccess from "../../components/ModalSuccess/ModalSuccess";
 import LoadingDots from "../../components/LoadingDots/LoadingDots";
 import shadow from "../../assets/images/chat/shadow.png";
 import share from "../../assets/images/chat/Frame 143725072.png";
+import { ColorRing } from "react-loader-spinner";
+
+interface Message {
+  isUser: boolean;
+  text: string;
+  smallImage: string;
+}
 
 interface ChatProps {
   isAuthenticated: boolean;
@@ -60,7 +67,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
   );
   const [message, setMessage] = useState<string>("");
   const [isGrowing, setIsGrowing] = useState(false);
-  const [chatHistory, setChatHistory] = useState<any[]>([]);
+  const [chatHistory, setChatHistory] = useState<Message[]>([]);
   const [questionVisible, setQuestionVisible] = useState(true);
   const [isDialogStarted, setIsDialogStarted] = useState(false);
   const [wasQuestionClicked, setWasQuestionClicked] = useState(false);
@@ -69,9 +76,10 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalType, setModalType] = useState<"success" | "failure">("success");
   const [modalMessage, setModalMessage] = useState("");
+  const [userIsScrolling, setUserIsScrolling] = useState(false);
   const answerBoxRef = useRef<HTMLDivElement | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
-  const [userIsScrolling, setUserIsScrolling] = useState(false);
+
 
   useEffect(() => {
     const { filteredResponses } = location.state;
@@ -301,7 +309,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
       }
 
       const response = await axios.get(
-        `https://eternalai.fly.dev/api/chatHistory/${individualId}`,
+       `https://eternalai.fly.dev/api/chatHistory/${individualId}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -309,7 +317,8 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
           },
         }
       );
-      const chatData = response.data.chatHistory;
+      const chatData = response.data.chatHistory.chat;
+   
 
       const updatedChatHistory = await Promise.all(
         chatData.map(async (entry: any) => {
@@ -323,10 +332,11 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
       );
      
       
-      setChatHistory(updatedChatHistory);
+      setChatHistory(updatedChatHistory); 
+  
     } catch (error) {
       console.error("Error fetching chat history:", error);
-    }
+    } 
   }, [individualId]);
 
   useEffect(() => {
@@ -427,7 +437,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
                     </RespondBox>
                   </Respond>
                 ))}
-
+ 
               {chatHistory.length > 0 &&
                 chatHistory.map((chat, index) => (
                   <Respond key={index}>
