@@ -64,10 +64,12 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
   const [currentResponse, setCurrentResponse] = useState<string | null>(
     initialResponse
   );
-  const [userImage, setUserImage] = useState<string>(shadow);
+  const [userImage, setUserImage] = useState<string>(shadow); //может и не надо
   const [message, setMessage] = useState<string>("");
   const [isGrowing, setIsGrowing] = useState(false);
   const [chatHistory, setChatHistory] = useState<Message[]>([]);
+  const [totalPages, setTotalPages] = useState<number>(0);
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const [questionVisible, setQuestionVisible] = useState(true);
   const [isDialogStarted, setIsDialogStarted] = useState(false);
   const [wasQuestionClicked, setWasQuestionClicked] = useState(false);
@@ -305,55 +307,67 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
     }
   };
 
-  const fetchChatHistory = useCallback(async () => {
+  const fetchAllChatHistory = useCallback(async () => {
     if (!individualId) return;
-
+  
     try {
       const users = await dbInstance.getData("users");
       const lastUser = users[users.length - 1];
       const userToken = lastUser?.token;
-
+  
       if (!userToken) {
         console.error("Token is missing or user is not authenticated");
         return;
       }
-
-      const response = await axios.get(
-       `https://eternalai.fly.dev/api/chatHistory/${individualId}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${userToken}`,
-          },
-        }
-      );
-      const chatData = response.data.chatHistory.chat;
-   
-
-      const updatedChatHistory = await Promise.all(
-        chatData.map(async (entry: any) => {
-          const smallImage = await fetchSmallImageForResponse(individualId);
-          return {
-            isUser: entry.sender === "user",
-            text: entry.content,
-            smallImage: entry.sender === "user" ? userImage : smallImage,
-          };
-        })
-      );
-     
-      
-      setChatHistory(updatedChatHistory); 
   
+      let allChatHistory: Message[] = [];
+      let page = 1;
+      let totalPages = 1;
+  
+      while (page <= totalPages) {
+        const response = await axios.get(
+          `https://eternalai.fly.dev/api/chatHistory/${individualId}?page=${page}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${userToken}`,
+            },
+          }
+        );
+  
+        const { chat, totalPages: fetchedTotalPages } = response.data.chatHistory;
+        totalPages = fetchedTotalPages;
+  
+        const updatedChatHistory = await Promise.all(
+          chat.map(async (entry: any) => {
+            const smallImage = await fetchSmallImageForResponse(individualId);
+            return {
+              isUser: entry.sender === "user",
+              text: entry.content,
+              smallImage: entry.sender === "user" ? userImage : smallImage,
+            };
+          })
+        );
+
+        allChatHistory = [...allChatHistory, ...updatedChatHistory];
+  
+        page += 1;
+      }
+  
+      setChatHistory(allChatHistory);
     } catch (error) {
       console.error("Error fetching chat history:", error);
-    } 
-  }, [individualId]);
-
+    }
+  }, [individualId, userImage]);
+  
   useEffect(() => {
     if (individual) {
-      fetchChatHistory();
+      fetchAllChatHistory();
     }
-  }, [individual, fetchChatHistory]);
+  }, [individual, fetchAllChatHistory]);
+  
+
+
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     const target = e.target as HTMLTextAreaElement; 
