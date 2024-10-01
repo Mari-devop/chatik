@@ -113,6 +113,7 @@ const SignUp: React.FC<SignupProps> = ({
         const userProfile = profileResponse.data;
         const userEmail = userProfile.email;
         const userName = userProfile.name;
+        const userImage = userProfile.picture; 
 
         const users = await dbInstance.getData("users");
         const shareToken = users?.[0]?.shareToken;
@@ -133,6 +134,7 @@ const SignUp: React.FC<SignupProps> = ({
             email: userEmail,
             token,
             name: userName,
+            image: userImage,
           });
           setModalType("success");
           setModalMessage(

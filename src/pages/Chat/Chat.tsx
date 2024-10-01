@@ -17,7 +17,6 @@ import {
   Question,
   Text,
   AnswerBox,
-  FadeOverlay,
   Respond,
   RespondBox,
   TextRespond,
@@ -155,6 +154,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
       const users = await dbInstance.getData("users");
       const lastUser = users[users.length - 1];
       const token = lastUser?.token;
+      const userImage = lastUser?.image || shadow; 
 
       if (!token) {
         setModalType("failure");
@@ -194,7 +194,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
         setCurrentResponse(null);
       }
 
-      setChatHistory((prev) => [...prev, { text: formattedMessage, isUser: true }]);
+      setChatHistory((prev) => [...prev, { text: formattedMessage, isUser: true, smallImage: userImage }]);
 
       const body = {
         characterId: individualId,
@@ -349,8 +349,8 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
   
       
         setTimeout(() => {
-        target.style.height = "auto"; // Reset height to auto to calculate new height
-        target.style.height = `${target.scrollHeight}px`; // Set height based on content
+        target.style.height = "auto"; 
+        target.style.height = `${target.scrollHeight}px`; 
       }, 0);
       } else {
  
@@ -411,7 +411,6 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
               </Question>
             )}
             <AnswerBox id="scrollContainer" ref={scrollContainerRef}>
-              <FadeOverlay $scrolled={scrolled} />
               {filteredResponses.length > 0 &&
                 filteredResponses.map((resp: any, index: number) => (
                   <Respond key={index}>
@@ -433,9 +432,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
                 chatHistory.map((chat, index) => (
                   <Respond key={index}>
                     <IconBox>
-                      <Icon
-                        src={chat.isUser ? shadow : individual?.smallImage}
-                      />
+                    <Icon src={chat.isUser ? chat.smallImage : individual?.smallImage || shadow} />
                     </IconBox>
                     <RespondBox>
                       <TextRespond>{chat.text}</TextRespond>

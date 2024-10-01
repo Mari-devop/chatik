@@ -243,6 +243,21 @@ export const AnswerBox = styled.div`
   height: 400px;
   padding-right: 16px;
 
+   mask-image: linear-gradient(
+    to bottom, 
+    rgba(0, 0, 0, 0), 
+    rgba(0, 0, 0, 1) 20%, 
+    rgba(0, 0, 0, 1) 80%, 
+    rgba(0, 0, 0, 0)
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom, 
+    rgba(0, 0, 0, 0), 
+    rgba(0, 0, 0, 1) 20%, 
+    rgba(0, 0, 0, 1) 80%, 
+    rgba(0, 0, 0, 0)
+  );
+
   @media (max-width: 850px) {
     height: 150px;
     padding-right: 0px;
@@ -254,29 +269,6 @@ export const AnswerBox = styled.div`
 
   @media (min-height: 1000px) {
     height: 400px;
-  }
-`;
-
-export const FadeOverlay = styled.div<{ $scrolled: boolean }>`
-  position: absolute;
-  top: 100px;
-  left: 0px;
-  right: 0;
-  height: 120px;
-  background: linear-gradient(rgba(17, 17, 21, 0.9), transparent);
-  pointer-events: none;
-  opacity: ${({ $scrolled }) => ($scrolled ? 1 : 0)};
-  transition: opacity 0.3s ease;
-  z-index: 1;
-  width: 100%;
-
-  @media (max-width: 900px) {
-    height: 50px;
-  }
-
-  @media (max-width: 850px) {
-    top: 0px;
-    height: 80px;
   }
 `;
 

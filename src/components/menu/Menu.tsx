@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import FocusTrap from "focus-trap-react";
 import { useNavigate } from "react-router-dom";
 import { dbInstance } from "../../db";
 import { MenuProps, User } from "./types";
@@ -60,8 +61,8 @@ const Menu: React.FC<MenuProps> = ({
 
   const handleContainerClick = () => {
     setIsMenuOpen(false);
-    navigate("/"); 
-  }
+    navigate("/");
+  };
 
   const handleInnerClick = (event: React.MouseEvent) => {
     event.stopPropagation();
@@ -101,7 +102,7 @@ const Menu: React.FC<MenuProps> = ({
   useEffect(() => {
     checkAuthStatus();
   }, [isLoginOpen, isSignupOpen]);
-   
+
   const handleSignOut = async () => {
     try {
       const users = await dbInstance.getData("users");
@@ -113,15 +114,14 @@ const Menu: React.FC<MenuProps> = ({
         }
       });
 
-      for(const userId of tokensToDelete) {
+      for (const userId of tokensToDelete) {
         await dbInstance.deleteData("users", userId);
       }
 
-        setIsMenuOpen(false);
-        await checkAuthentication();
-        setIsAuthenticated(false);
-        navigate("/");
-     
+      setIsMenuOpen(false);
+      await checkAuthentication();
+      setIsAuthenticated(false);
+      navigate("/");
     } catch (error) {
       console.error("Error signing out:", error);
     }
@@ -140,84 +140,86 @@ const Menu: React.FC<MenuProps> = ({
   }
 
   return (
-    <>
-      <MenuContainer onClick={handleContainerClick}>
-        <Navbar onClick={handleInnerClick}>
-          {isAuthenticated ? (
-            <>
-              <CloseIcon onClick={handleCloseClick} />
-              <ImageContainer>
-                <Image src={logo} alt="logo" onClick={handleLogoClick} />
-              </ImageContainer>
-              <ButtonSignOut onClick={handleSignOut}>SIGN OUT</ButtonSignOut>
-            </>
-          ) : (
-            <>
-              <CloseIcon onClick={handleCloseClick} />
-              <ImageContainer>
-                <Image src={logo} alt="logo" onClick={handleLogoClick} />
-              </ImageContainer>
-              <RightContainer>
-                <ButtonLogin onClick={handleLoginClick}>LOGIN</ButtonLogin>
-                <ButtonStart onClick={handleSignupClick}>
-                  GET STARTED
-                </ButtonStart>
-              </RightContainer>
-            </>
-          )}
-        </Navbar>
-
-        <Content onClick={handleInnerClick}>
-          <Row>
-            <StyledLink to="/about" onClick={handleLinkClick}>
-              <span>About us</span>
-            </StyledLink>
-          </Row>
-          <Row>
-            <StyledLink to="/paywall" onClick={handlePrisingClick}>
-              <span>Pricing</span>
-            </StyledLink>
-          </Row>
-          <Row>
-            <StyledLink to="/how" onClick={handleHowClick}>
-              <span>How it works</span>
-            </StyledLink>
-          </Row>
-          <Row>
+    <FocusTrap>
+      <div role="dialog" aria-modal="true">
+        <MenuContainer onClick={handleContainerClick}>
+          <Navbar onClick={handleInnerClick}>
             {isAuthenticated ? (
-              <StyledLink to="/accountDetails" onClick={handleAccountClick}>
-                <span>My account</span>
-              </StyledLink>
+              <>
+                <CloseIcon onClick={handleCloseClick} />
+                <ImageContainer>
+                  <Image src={logo} alt="logo" onClick={handleLogoClick} />
+                </ImageContainer>
+                <ButtonSignOut onClick={handleSignOut}>SIGN OUT</ButtonSignOut>
+              </>
             ) : (
-              <span style={{ display: "none" }}></span>
+              <>
+                <CloseIcon onClick={handleCloseClick} />
+                <ImageContainer>
+                  <Image src={logo} alt="logo" onClick={handleLogoClick} />
+                </ImageContainer>
+                <RightContainer>
+                  <ButtonLogin onClick={handleLoginClick}>LOGIN</ButtonLogin>
+                  <ButtonStart onClick={handleSignupClick}>
+                    GET STARTED
+                  </ButtonStart>
+                </RightContainer>
+              </>
             )}
-          </Row>
-          <Divider />
-          <SocialContainer>
-            <Social src={facebook} alt="facebook" />
-            <Social src={instagram} alt="instagram" />
-            <Social src={twitter} alt="twitter" />
-            <Social src={discord} alt="discord" />
-          </SocialContainer>
-        </Content>
-      </MenuContainer>
-      {isLoginOpen && (
-        <Login
-          setIsLoginOpen={setIsLoginOpen}
-          setIsSignupOpen={setIsSignupOpen}
-          checkAuthentication={checkAuthentication}
-          setIsAuthenticated={setIsAuthenticated}
-        />
-      )}
-      {isSignupOpen && (
-        <SignUp
-          setIsSignupOpen={setIsSignupOpen}
-          setIsLoginOpen={setIsLoginOpen}
-          checkAuthentication={checkAuthentication}
-          setIsAuthenticated={setIsAuthenticated}
-        />
-      )}
-    </>
+          </Navbar>
+
+          <Content onClick={handleInnerClick}>
+            <Row>
+              <StyledLink to="/about" onClick={handleLinkClick}>
+                <span>About us</span>
+              </StyledLink>
+            </Row>
+            <Row>
+              <StyledLink to="/paywall" onClick={handlePrisingClick}>
+                <span>Pricing</span>
+              </StyledLink>
+            </Row>
+            <Row>
+              <StyledLink to="/how" onClick={handleHowClick}>
+                <span>How it works</span>
+              </StyledLink>
+            </Row>
+            <Row>
+              {isAuthenticated ? (
+                <StyledLink to="/accountDetails" onClick={handleAccountClick}>
+                  <span>My account</span>
+                </StyledLink>
+              ) : (
+                <span style={{ display: "none" }}></span>
+              )}
+            </Row>
+            <Divider />
+            <SocialContainer>
+              <Social src={facebook} alt="facebook" />
+              <Social src={instagram} alt="instagram" />
+              <Social src={twitter} alt="twitter" />
+              <Social src={discord} alt="discord" />
+            </SocialContainer>
+          </Content>
+        </MenuContainer>
+        {isLoginOpen && (
+          <Login
+            setIsLoginOpen={setIsLoginOpen}
+            setIsSignupOpen={setIsSignupOpen}
+            checkAuthentication={checkAuthentication}
+            setIsAuthenticated={setIsAuthenticated}
+          />
+        )}
+        {isSignupOpen && (
+          <SignUp
+            setIsSignupOpen={setIsSignupOpen}
+            setIsLoginOpen={setIsLoginOpen}
+            checkAuthentication={checkAuthentication}
+            setIsAuthenticated={setIsAuthenticated}
+          />
+        )}
+      </div>
+    </FocusTrap>
   );
 };
 
