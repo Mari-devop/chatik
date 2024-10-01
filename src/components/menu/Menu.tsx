@@ -91,6 +91,17 @@ const Menu: React.FC<MenuProps> = ({
     setIsMenuOpen(false);
   };
 
+  const checkAuthStatus = async () => {
+    setLoading(true);
+    const isAuth = await checkAuthentication();
+    setIsAuthenticatedState(isAuth);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    checkAuthStatus();
+  }, [isLoginOpen, isSignupOpen]);
+   
   const handleSignOut = async () => {
     try {
       const users = await dbInstance.getData("users");
@@ -123,17 +134,6 @@ const Menu: React.FC<MenuProps> = ({
   const handleHowClick = () => {
     setIsMenuOpen(false);
   };
-
-  useEffect(() => {
-    const checkAuthStatus = async () => {
-      setLoading(true);
-      const isAuth = await checkAuthentication();
-      setIsAuthenticatedState(isAuth);
-      setLoading(false);
-    };
-
-    checkAuthStatus();
-  }, []);
 
   if (loading) {
     return <div style={{ visibility: "hidden" }}>Loading...</div>;

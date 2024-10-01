@@ -270,6 +270,7 @@ const Paywall = () => {
       }
 
       const generatedLink = `${window.location.origin}/?token=${userToken}`;
+      await navigator.clipboard.writeText(generatedLink);
       setShareLink(generatedLink);
       setShowModal(true);
       console.log("Modal should be shown, showModal:", true);

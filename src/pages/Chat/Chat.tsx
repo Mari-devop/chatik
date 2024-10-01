@@ -139,6 +139,16 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
     }
   }, [filteredResponses, chatHistory]);
 
+  const breakLongWords = (message: string, maxLength: number = 32): string => {
+    return message.split(' ').map(word => {
+      if (word.length > maxLength) {
+        const brokenWord = word.match(new RegExp(`.{1,${maxLength}}`, 'g'))?.join('\n') || word;
+        return brokenWord;
+      }
+      return word;
+    }).join(' ');
+  };
+  
   const handleSendMessage = async () => {
     if (!message.trim() || isLoading) return;
 
@@ -174,6 +184,8 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
 
       setIsLoading(true);
       setIsDialogStarted(true);
+
+      const formattedMessage = breakLongWords(message, 32); 
       // setChatHistory((prev) => [...prev, { text: message, isUser: true }]);
       if (currentResponse && currentResponse.trim() !== "") {
         setChatHistory((prev) => [
@@ -183,11 +195,11 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
         setCurrentResponse(null);
       }
 
-      setChatHistory((prev) => [...prev, { text: message, isUser: true }]);
+      setChatHistory((prev) => [...prev, { text: formattedMessage, isUser: true }]);
 
       const body = {
         characterId: individualId,
-        message: message,
+        message: formattedMessage,
       };
 
       const response = await axios.post(

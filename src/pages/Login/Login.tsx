@@ -88,13 +88,10 @@ const Login: React.FC<LoginProps> = ({
       const response = await login(email, password);
 
       if (response && response.token) {
+        setIsAuthenticated(true);
+
         setModalType("success");
         setModalMessage("Login Successful!");
-        // await dbInstance.addData("users", {
-        //   email: response.email,
-        //   token: response.token,
-        // });
-        setIsAuthenticated(true);
         setIsModalVisible(true);
 
         setIsLoginOpen(false);
@@ -136,11 +133,12 @@ const Login: React.FC<LoginProps> = ({
         );
 
         const userProfile = profileResponse.data;
+        const userEmail = userProfile.email;
         const userName = userProfile.name;
 
         const res = await axios.post("https://eternalai.fly.dev/user/login", {
           googleToken: googleAccessToken,
-          email,
+          email: userEmail,
           password,
           name: userName,
         });
@@ -149,7 +147,7 @@ const Login: React.FC<LoginProps> = ({
 
         if (token) {
           await dbInstance.addData("users", {
-            email: res.data.email,
+            email: userEmail,
             token,
             name: userName,
           });

@@ -44,6 +44,7 @@ const ModalSuccess: React.FC<ModalSuccessProps> = ({
       {modalType === "share" ? (
         <>
           <p>{message}</p>
+         
           <SocialContainer>
             <Social
               src={facebook}

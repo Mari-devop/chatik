@@ -111,6 +111,7 @@ const SignUp: React.FC<SignupProps> = ({
         );
 
         const userProfile = profileResponse.data;
+        const userEmail = userProfile.email;
         const userName = userProfile.name;
 
         const users = await dbInstance.getData("users");
@@ -120,7 +121,7 @@ const SignUp: React.FC<SignupProps> = ({
           "https://eternalai.fly.dev/user/register",
           {
             googleToken: googleAccessToken,
-            email,
+            email: userEmail,
             name: userName,
             shareToken,
           }
@@ -129,7 +130,7 @@ const SignUp: React.FC<SignupProps> = ({
 
         if (token) {
           await dbInstance.addData("users", {
-            email: res.data.email,
+            email: userEmail,
             token,
             name: userName,
           });

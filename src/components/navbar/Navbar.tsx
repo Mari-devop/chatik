@@ -73,9 +73,24 @@ export const Navbar = ({
   };
 
   const handleShareClick = async () => {
-    const generatedLink = `${window.location.origin}`;
-    setShareLink(generatedLink);
-    setShowModal(true);
+    try {
+      const users: any = await dbInstance.getData("users");
+      const userToken = users?.[0]?.token;
+
+      if (!userToken) {
+        return;
+      }
+
+      const generatedLink = `${window.location.origin}/?token=${userToken}`;
+      await navigator.clipboard.writeText(generatedLink);
+
+      setShareLink(generatedLink);
+  
+      setShowModal(true);
+      console.log("Modal should be shown, showModal:", true);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleShareClickChat = async () => {

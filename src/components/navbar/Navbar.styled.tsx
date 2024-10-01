@@ -119,6 +119,7 @@ export const RightContainer = styled.div`
     margin-right: 46px;
     margin-top: 13px;
   }
+
 `;
 
 export const ButtonMenu = styled.button`
@@ -155,6 +156,7 @@ export const ButtonMenu = styled.button`
   @media (max-width: 375px) {
     top: -10px;
     width: 24px;
+    right: 23px;
   }
 `;
 
@@ -306,6 +308,8 @@ export const ButtonShare = styled.button`
 
   @media (max-width: 375px) {
     top: -25px;
+    width: auto;
+    height: auto;
   }
 `;
 
