@@ -36,7 +36,6 @@ import ModalSuccess from "../../components/ModalSuccess/ModalSuccess";
 import LoadingDots from "../../components/LoadingDots/LoadingDots";
 import shadow from "../../assets/images/chat/shadow.png";
 import share from "../../assets/images/chat/Frame 143725072.png";
-import { ColorRing } from "react-loader-spinner";
 
 interface Message {
   isUser: boolean;
@@ -65,6 +64,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
   const [currentResponse, setCurrentResponse] = useState<string | null>(
     initialResponse
   );
+  const [userImage, setUserImage] = useState<string>(shadow);
   const [message, setMessage] = useState<string>("");
   const [isGrowing, setIsGrowing] = useState(false);
   const [chatHistory, setChatHistory] = useState<Message[]>([]);
@@ -80,6 +80,16 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
   const answerBoxRef = useRef<HTMLDivElement | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const users = await dbInstance.getData("users");
+      const lastUser = users[users.length - 1];
+      if (lastUser?.image) {
+        setUserImage(lastUser.image);  // Store the user's image
+      }
+    };
+    fetchUserData();
+  }, []);
 
   useEffect(() => {
     const { filteredResponses } = location.state;
@@ -162,7 +172,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
       const users = await dbInstance.getData("users");
       const lastUser = users[users.length - 1];
       const token = lastUser?.token;
-      const userImage = lastUser?.image || shadow; 
+      // const userImage = lastUser?.image || shadow; 
 
       if (!token) {
         setModalType("failure");
@@ -191,6 +201,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
 
       setIsLoading(true);
       setIsDialogStarted(true);
+      setChatHistory((prev) => [...prev, { text: formattedMessage, isUser: true, smallImage: userImage }]);
 
       const formattedMessage = breakLongWords(message, 32); 
       // setChatHistory((prev) => [...prev, { text: message, isUser: true }]);
@@ -201,8 +212,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
         ]);
         setCurrentResponse(null);
       }
-
-      setChatHistory((prev) => [...prev, { text: formattedMessage, isUser: true, smallImage: userImage }]);
+     
 
       const body = {
         characterId: individualId,
@@ -326,7 +336,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
           return {
             isUser: entry.sender === "user",
             text: entry.content,
-            smallImage,
+            smallImage: entry.sender === "user" ? userImage : smallImage,
           };
         })
       );
