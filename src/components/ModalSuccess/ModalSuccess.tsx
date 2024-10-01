@@ -14,7 +14,6 @@ interface ModalSuccessProps {
   children?: React.ReactNode; 
 }
 
-
 const ModalSuccess: React.FC<ModalSuccessProps> = ({
   isVisible,
   modalType,

@@ -82,7 +82,6 @@ export const Navbar = ({
       }
 
       const generatedLink = `${window.location.origin}/?token=${userToken}`;
-      await navigator.clipboard.writeText(generatedLink);
 
       setShareLink(generatedLink);
   
