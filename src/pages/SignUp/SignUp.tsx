@@ -120,6 +120,7 @@ const SignUp: React.FC<SignupProps> = ({
           "https://eternalai.fly.dev/user/register",
           {
             googleToken: googleAccessToken,
+            email,
             name: userName,
             shareToken,
           }

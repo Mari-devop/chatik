@@ -30,47 +30,6 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [emailForLogin, setEmailForLogin] = useState("");
 
-  // const checkTokenValidity = async () => {
-  //   const users = await dbInstance.getData("users");
-  //   const userWithToken = users.find((user: any) => user.token);
-    
-  //   if (!userWithToken) {
-  //     return false;
-  //   }
-  
-  //   try {
-  //     const response = await axios.get("https://eternalai.fly.dev/user/check-token", {
-  //       headers: {
-  //         Authorization: `Bearer ${userWithToken.token}`,
-  //       },
-  //     });
-      
-  //     if (response.status === 200) {
-  //       return true;
-  //     }
-  //   } catch (error: any) {
-  //     if (error.response?.status === 401) {
-  //       await dbInstance.deleteData("users", userWithToken.id);
-  //       return false;
-  //     }
-  //   }
-  
-  //   return false;
-  // };
-  
-  // useEffect(() => {
-  //   const authenticateUser = async () => {
-  //     const isAuthenticated = await checkTokenValidity();
-  //     setIsAuthenticated(isAuthenticated);
-
-  //     if (!isAuthenticated) {
-  //       navigate("/");
-  //     }
-  //   };
-
-  //   authenticateUser();
-  // }, []);
-
   const checkAuthentication = async (): Promise<boolean> => {
     const users = await dbInstance.getData("users");
     const userWithToken = users.find((user: any) => user.token);

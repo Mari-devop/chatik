@@ -61,6 +61,9 @@ export const PersonShadow = styled.img`
   z-index: 0;
   top: 0;
   left: 0;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
 
   @media (max-width: 980px) {
     width: 340px;
@@ -81,6 +84,9 @@ export const PersonPhoto = styled.img`
   left: 100px;
   border-radius: 30%;
   z-index: 1;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
 
   @media (max-width: 980px) {
     width: 180px;
@@ -125,6 +131,9 @@ export const Title = styled.h2`
   margin: 0px;
   color: #ffffff;
   text-transform: uppercase;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
 
   @media (max-width: 850px) {
     font-size: 14px;
@@ -142,6 +151,9 @@ export const Subtitle = styled.h3`
   margin-top: 10px;
   color: var(--border-color-hover);
   text-transform: uppercase;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
 
   @media (max-width: 900px) {
     font-size: 11px;
@@ -300,6 +312,9 @@ export const Icon = styled.img`
   border-radius: 50%;
   z-index: 1;
   object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
 `;
 
 export const RespondBox = styled.div`
@@ -313,6 +328,9 @@ export const RespondBox = styled.div`
   border-radius: 10px;
   padding: 12px;
   width: 100%;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
 
   @media (max-width: 1200px) {
     width: 400px;

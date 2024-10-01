@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { validateToken } from "../../utils/authUtils";
 import { useNavigate } from "react-router-dom";
 import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 import { ColorRing } from "react-loader-spinner";
@@ -119,6 +120,19 @@ const Paywall = () => {
       if (!userToken) {
         console.error("No token found for the user");
         setIsLoading(false);
+        return;
+      }
+
+      const tokenIsValid = await validateToken();
+      if (!tokenIsValid) {
+        setModalType("failure");
+        setModalMessage("Your session has expired. Please login again.");
+        setIsModalVisible(true);
+
+        setTimeout(() => {
+          setIsModalVisible(false);
+          navigate("/");
+        }, 3000);
         return;
       }
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { dbInstance } from "../../db";
+import { validateToken } from "../../utils/authUtils";
 import { User } from "../../components/menu/types";
 import {
   ChatContainer,
@@ -144,19 +145,44 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
     try {
       const users = await dbInstance.getData("users");
       const lastUser = users[users.length - 1];
-      const userToken = lastUser?.token;
+      const token = lastUser?.token;
 
-      if (!userToken) {
-        console.error("Token is missing or user is not authenticated");
+      if (!token) {
         setModalType("failure");
-        setModalMessage("Please login to use this feature");
+        setModalMessage("Your session has expired. Please login again.");
         setShowModal(true);
+
+        setTimeout(() => {
+          setShowModal(false);
+          navigate("/");
+        }, 3000);
+        return;
+      }
+
+      const tokenIsValid = await validateToken();
+      if (!tokenIsValid) {
+        setModalType("failure");
+        setModalMessage("Your session has expired. Please login again.");
+        setShowModal(true);
+
+        setTimeout(() => {
+          setShowModal(false);
+          navigate("/");
+        }, 3000);
         return;
       }
 
       setIsLoading(true);
       setIsDialogStarted(true);
-      
+      // setChatHistory((prev) => [...prev, { text: message, isUser: true }]);
+      if (currentResponse && currentResponse.trim() !== "") {
+        setChatHistory((prev) => [
+          ...prev,
+          { text: currentResponse, isUser: false, smallImage: individual?.smallImage }
+        ]);
+        setCurrentResponse(null);
+      }
+
       setChatHistory((prev) => [...prev, { text: message, isUser: true }]);
 
       const body = {
@@ -170,22 +196,34 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${userToken}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
 
-      const smallImage = individual?.smallImage || await fetchSmallImageForResponse(individualId);
-      setChatHistory((prev) => [
-        ...prev,
-        { text: response.data.response, isUser: false, smallImage }
-      ]);
-      setFilteredResponses((prev) => [
-        ...prev,
-        { text: response.data.response, smallImage, individualId }
-      ]);
+      // const smallImage =
+      //   individual?.smallImage ||
+      //   (await fetchSmallImageForResponse(individualId));
+      // setChatHistory((prev) => [
+      //   ...prev,
+      //   { text: response.data.response, isUser: false, smallImage },
+      // ]);
+      // setCurrentResponse(response.data.response);
+
+      const smallImage = await fetchSmallImageForResponse(individualId);
       setCurrentResponse(response.data.response);
+      setFilteredResponses((prev) => [...prev, { text: response.data.response, smallImage, individualId }]);
+      
       setMessage("");
+ 
+
+      const input = document.querySelector("textarea") as HTMLTextAreaElement;
+      if (input) {
+        input.style.height = "auto"; 
+      }
+      
+      setIsGrowing(false); 
+
       setQuestionVisible(false);
       setIsLoading(false);
     } catch (error: any) {
@@ -199,27 +237,30 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
 
         try {
           const users = await dbInstance.getData("users");
-          const currentUser = users.find((user: User) => user.token);
+          const tokensToDelete: number[] = [];
 
-          if (currentUser) {
-            await dbInstance.deleteData("users", currentUser.id);
+          users.forEach((user: User) => {
+            if (user.token) {
+              tokensToDelete.push(user.id);
+            }
+          });
 
-            setModalType("failure");
-            setModalMessage("Please login to use this feature");
-            setShowModal(true);
-
-            setTimeout(() => {
-              setShowModal(false);
-              navigate("/");
-            }, 3000);
-          } else {
-            console.error("No user with token found to delete");
+          for (const userId of tokensToDelete) {
+            await dbInstance.deleteData("users", userId);
           }
-        } catch (error) {
-          console.error("Error deleting token:", error);
+
+          setModalType("failure");
+          setModalMessage("Your session has expired. Please login again.");
+          setShowModal(true);
+
+          setTimeout(() => {
+            setShowModal(false);
+            navigate("/");
+          }, 3000);
+        } catch (deleteError) {
+          console.error("Error deleting token:", deleteError);
         }
       }
-
       if (
         error.response?.status === 500 &&
         error.response?.data?.message.includes(
@@ -265,10 +306,12 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
           return {
             isUser: entry.sender === "user",
             text: entry.content,
-            smallImage, // Attach smallImage
+            smallImage,
           };
         })
       );
+     
+      
       setChatHistory(updatedChatHistory);
     } catch (error) {
       console.error("Error fetching chat history:", error);
@@ -282,10 +325,33 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
   }, [individual, fetchChatHistory]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && isAuthenticated) {
-      handleSendMessage();
+    const target = e.target as HTMLTextAreaElement; 
+    
+    if (e.key === "Enter") {
+      if (e.shiftKey) {
+        e.preventDefault();
+
+        const { selectionStart, selectionEnd } = target;
+        
+        const newValue = message.slice(0, selectionStart) + "\n" + message.slice(selectionEnd);
+        setMessage(newValue);
+  
+      
+        setTimeout(() => {
+        target.style.height = "auto"; // Reset height to auto to calculate new height
+        target.style.height = `${target.scrollHeight}px`; // Set height based on content
+      }, 0);
+      } else {
+ 
+        e.preventDefault();
+
+        handleSendMessage();
+        setMessage("");
+        target.style.height = "auto";
+      }
     }
   };
+  
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value);
@@ -374,7 +440,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
             </AnswerBox>
           </RespondContainer>
           <QuestionContainer>
-            {(isDialogStarted || !!individual?.questionText) && (
+            {((isDialogStarted && currentResponse) || !!individual?.questionText) && (
               <PersonAnswer>
                 <Text>{currentResponse || <LoadingDots />}</Text>
               </PersonAnswer>

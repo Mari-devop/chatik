@@ -90,10 +90,10 @@ const Login: React.FC<LoginProps> = ({
       if (response && response.token) {
         setModalType("success");
         setModalMessage("Login Successful!");
-        await dbInstance.addData("users", {
-          email: response.email,
-          token: response.token,
-        });
+        // await dbInstance.addData("users", {
+        //   email: response.email,
+        //   token: response.token,
+        // });
         setIsAuthenticated(true);
         setIsModalVisible(true);
 

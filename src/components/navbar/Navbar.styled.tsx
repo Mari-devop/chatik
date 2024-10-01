@@ -121,7 +121,6 @@ export const RightContainer = styled.div`
   }
 `;
 
-
 export const ButtonMenu = styled.button`
   background: none;
   border: none;
@@ -129,16 +128,16 @@ export const ButtonMenu = styled.button`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 36px; 
-  height: 24px; 
+  width: 36px;
+  height: 24px;
   padding: 0;
   margin-top: 36px;
   position: relative;
 
   div {
-    background-color: white; 
-    height: 3px; 
-    border-radius: 1px; 
+    background-color: white;
+    height: 3px;
+    border-radius: 1px;
     transition: all 0.3s ease;
   }
 
@@ -147,9 +146,9 @@ export const ButtonMenu = styled.button`
   }
 
   @media (max-width: 900px) {
-    position: absolute; 
-    right: 40px; 
-    top: 14px; 
+    position: absolute;
+    right: 40px;
+    top: 14px;
     height: 20px;
   }
 
@@ -160,14 +159,13 @@ export const ButtonMenu = styled.button`
 `;
 
 export const Line = styled.div`
-  width: 100%; 
+  width: 100%;
   margin-left: 8px;
 `;
 
 export const LineShort = styled.div`
-  width: 100%; 
+  width: 100%;
 `;
-
 
 export const Icon = styled.img`
   width: 36px;
@@ -186,7 +184,7 @@ export const ButtonLogin = styled.button`
   font-size: 13px;
   line-height: 14px;
   letter-spacing: 0.3em;
-  padding: 15px 30px; 
+  padding: 15px 30px;
 
   &::before {
     content: "";
@@ -195,23 +193,20 @@ export const ButtonLogin = styled.button`
     left: 0;
     right: 0;
     bottom: 0;
-    border: 1px solid transparent; 
-    border-radius: 120px; 
-    background: linear-gradient(90deg, #f82d98, #5833ef); 
-    -webkit-mask: 
-      linear-gradient(#fff 0 0) padding-box, 
+    border: 1px solid transparent;
+    border-radius: 120px;
+    background: linear-gradient(90deg, #f82d98, #5833ef);
+    -webkit-mask: linear-gradient(#fff 0 0) padding-box,
       linear-gradient(#fff 0 0);
-    mask: 
-      linear-gradient(#fff 0 0) padding-box, 
-      linear-gradient(#fff 0 0);
-    mask-composite: exclude; 
-    pointer-events: none; 
+    mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
     transition: opacity 0.3s ease;
-    opacity: 0; 
+    opacity: 0;
   }
 
   &:hover::before {
-    opacity: 1; 
+    opacity: 1;
   }
 
   a {
@@ -223,7 +218,6 @@ export const ButtonLogin = styled.button`
     display: none;
   }
 `;
-
 
 export const ButtonStart = styled.button`
   background: var(--primary-gradient);
@@ -293,6 +287,13 @@ export const ButtonShare = styled.button`
     mask-composite: exclude;
     -webkit-mask-composite: xor;
     z-index: -1;
+  }
+  &:hover::before {
+    background: linear-gradient(45deg, #f82d98, #5833ef);
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
   }
 
   @media (max-width: 900px) {

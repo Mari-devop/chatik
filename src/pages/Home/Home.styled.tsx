@@ -100,10 +100,10 @@ export const Subtitle = styled.p`
 `;
 
 export const TextRow = styled.p`
-display: flex;
-flex-direction: row;
-justify-content: center;
-align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
   font-family: "Avenir";
   font-weight: 400;
   font-size: 14px;
@@ -138,10 +138,11 @@ export const Row = styled.div<{ $isActive: boolean }>`
   &::before {
     content: "";
     position: absolute;
-    top: -1px;
-    left: -1px;
-    right: -1px;
-    bottom: -1px;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    padding: 1px;
     border-radius: inherit;
     background: linear-gradient(45deg, #5833ef, #f82d98);
     z-index: -1;
@@ -186,7 +187,6 @@ export const Row = styled.div<{ $isActive: boolean }>`
   }
   z-index: 15;
 `;
-
 
 export const PhotoContainer = styled.div`
   display: flex;
@@ -237,7 +237,6 @@ export const Image1 = styled.img`
     right: -80px;
     bottom: 20px;
   }
-
 `;
 
 export const Image2 = styled.img`
@@ -346,6 +345,9 @@ export const Image6 = styled.img`
   bottom: -1px;
   left: 50%;
   transform: translateX(-50%);
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
 `;
 
 export const Image7 = styled.img`
@@ -356,6 +358,9 @@ export const Image7 = styled.img`
   bottom: 90px;
   left: 50%;
   transform: translateX(-50%);
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
 
   @media (max-width: 900px) {
     right: 350px;
@@ -380,6 +385,9 @@ export const Image8 = styled.img`
   transform: translateX(-50%);
   width: 800px;
   height: 600px;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
 
   @media (max-width: 900px) {
     height: 500px;
@@ -405,6 +413,9 @@ export const Image9 = styled.img`
   height: 400px;
   left: 50%;
   transform: translateX(-50%);
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
 
   @media (max-width: 900px) {
     height: 500px;
@@ -420,6 +431,9 @@ export const Image10 = styled.img`
   height: 800px;
   left: 50%;
   transform: translateX(-50%);
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
 
   @media (max-width: 900px) {
     height: 500px;

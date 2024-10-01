@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { validateToken } from "../../utils/authUtils";
 import axios from "axios";
 import InputMask from "react-input-mask";
 import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
@@ -121,6 +122,19 @@ const AccountDetails = () => {
 
   const fetchUserProfile = async () => {
     try {
+      const tokenIsValid = await validateToken();
+      if (!tokenIsValid) {
+        setModalType("failure");
+        setModalMessage("Your session has expired. Please login again.");
+        setIsModalVisible(true);
+
+        setTimeout(() => {
+          setIsModalVisible(false);
+          navigate("/");
+        }, 3000);
+        return;
+      }
+
       const users = await dbInstance.getData("users");
       if (!users || users.length === 0) {
         console.error("No user data found in IndexedDB");
@@ -213,6 +227,19 @@ const AccountDetails = () => {
 
       if (!userToken) {
         console.error("No token found for the user");
+        return;
+      }
+
+      const tokenIsValid = await validateToken();
+      if (!tokenIsValid) {
+        setModalType("failure");
+        setModalMessage("Your session has expired. Please login again.");
+        setIsModalVisible(true);
+
+        setTimeout(() => {
+          setIsModalVisible(false);
+          navigate("/");
+        }, 3000);
         return;
       }
 
@@ -553,11 +580,8 @@ const AccountDetails = () => {
               <img src={check} alt="check" />
             </CheckBox>
             <AvenirH4 style={{ color: "white", margin: "12px 0" }}>
-              You have successfully subscribed!
+              Your billing date is being successfully updated!
             </AvenirH4>
-            <Text style={{ color: "white" }}>
-              A receipt was sent to your email
-            </Text>
             <SaveButton onClick={handleStartChatting}>
               START CHATTING
             </SaveButton>
