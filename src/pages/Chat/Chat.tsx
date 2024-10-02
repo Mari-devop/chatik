@@ -344,7 +344,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
             return {
               isUser: entry.sender === "user",
               text: entry.content,
-              smallImage: entry.sender === "user" ? userImage : smallImage,
+              smallImage: entry.sender === "user" ? lastUser.image : smallImage,
             };
           })
         );
