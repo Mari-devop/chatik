@@ -55,6 +55,10 @@ export const Row = styled.div`
     text-decoration: none;
     color: var(--white-color);
   }
+
+  @media (max-width: 500px) {
+    margin-top: 16px;
+  }
 `;
 
 export const Divider = styled.div`
@@ -105,11 +109,11 @@ export const CloseIcon = styled.div`
     left: auto;
   }
 
-  @media (max-width: 375px) {
-    width: 48px;
-    height: 48px;
-    top: 12px;
+ @media (max-width: 600px) {
+    top: 15px;
     right: 16px;
+    width: 36px;
+    height: 36px;
   }
 
   &::before,
@@ -164,7 +168,7 @@ export const RightContainer = styled.div`
 
   @media (max-width: 900px) {
     top: auto;
-    bottom: 32px;
+    bottom: 15px;
     left: 50%;
     transform: translateX(-50%);
     flex-direction: column;
@@ -200,7 +204,7 @@ export const ButtonStart = styled.button`
 
   @media (max-width: 900px) {
     width: 100%;
-    margin: 12px;
+    margin: 10px;
   }
 
   a {
@@ -270,7 +274,7 @@ export const StyledLink = styled(Link)`
   line-height: 48px;
   letter-spacing: -0.01em;
 
-  @media (max-width: 375px) {
+  @media (max-width: 500px) {
     span {
       font-size: 24px;
       line-height: 24px;

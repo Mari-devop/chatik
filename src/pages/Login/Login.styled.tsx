@@ -76,6 +76,7 @@ export const CustomGoogleButton = styled.button`
     order: 2;
     margin-top: 16px;
     font-size: 12px;
+    height: 48px;
   }
 
 

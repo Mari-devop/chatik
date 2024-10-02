@@ -38,7 +38,7 @@ export const ImageContainer = styled.div`
     width: 144px;
   }
 
-  @media (max-width: 375px) {
+  @media (max-width: 600px) {
     top: 10px;
   }
 `;
@@ -89,11 +89,11 @@ export const CloseIcon = styled.div`
     height: 43px;
   }
 
-  @media (max-width: 375px) {
-    top: 12px;
+  @media (max-width: 600px) {
+    top: 15px;
     right: 16px;
-    width: 43px;
-    height: 43px;
+    width: 36px;
+    height: 36px;
   }
 `;
 
@@ -153,7 +153,7 @@ export const ButtonMenu = styled.button`
     height: 20px;
   }
 
-  @media (max-width: 375px) {
+  @media (max-width: 600px) {
     top: -10px;
     width: 24px;
     right: 23px;

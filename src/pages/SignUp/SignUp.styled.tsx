@@ -102,6 +102,12 @@ export const Row = styled.div`
     letter-spacing: -1%;
     color: #ffffff80;
     padding: 15px 16px;
+
+    @media (max-width: 500px) {
+      font-size: 14px;
+      line-height: 21px;
+      height: 18px;
+    }
   }
 
   input:focus {
@@ -151,7 +157,7 @@ export const Button = styled.button`
 
   @media (max-width: 500px) {
     width: 100%;
-    // margin-top: 16px;
+    height: 48px;
   }
 `;
 
