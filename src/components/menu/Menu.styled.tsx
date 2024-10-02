@@ -157,6 +157,10 @@ export const ButtonSignOut = styled.button`
     justify-content: center;
     width: 90%;
   }
+
+  @media (max-width: 500px) {
+    bottom: 70px;
+  }
 `;
 
 export const RightContainer = styled.div`
@@ -177,8 +181,8 @@ export const RightContainer = styled.div`
     width: 90%;
   }
 
-  @media (max-width: 375px) {
-    bottom: 10px;
+  @media (max-width: 500px) {
+    bottom: 30px;
   }
 `;
 

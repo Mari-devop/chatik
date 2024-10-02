@@ -306,7 +306,7 @@ export const ButtonShare = styled.button`
     margin-right: 46px;
   }
 
-  @media (max-width: 375px) {
+  @media (max-width: 500px) {
     top: -25px;
     width: auto;
     height: auto;
