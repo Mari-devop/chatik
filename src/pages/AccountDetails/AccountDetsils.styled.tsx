@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import InputMask from "react-input-mask"; 
+import InputMask from "react-input-mask";
 
 export const Container = styled.div`
   display: flex;
@@ -295,18 +295,17 @@ export const SaveButtonPay = styled.button`
   }
 `;
 
-
 export const Button = styled.button<{ disabled: boolean }>`
   width: 48%;
   height: 56px;
   background: ${({ disabled }) =>
     disabled
-      ? 'linear-gradient(90deg, #6a6868d4, #d3d3d3)' 
-      : 'var(--primary-gradient)'};
-  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+      ? "linear-gradient(90deg, #6a6868d4, #d3d3d3)"
+      : "var(--primary-gradient)"};
+  cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
   border-radius: 120px;
   border: none;
-  font-family: 'Arquitecta';
+  font-family: "Arquitecta";
   font-weight: 700;
   font-size: 13px;
   line-height: 14px;
@@ -316,8 +315,8 @@ export const Button = styled.button<{ disabled: boolean }>`
   &:hover {
     background: ${({ disabled }) =>
       disabled
-        ? 'linear-gradient(90deg, #6a6868d4, #d3d3d3)' 
-        : 'var(--primary-gradient-hover)'};
+        ? "linear-gradient(90deg, #6a6868d4, #d3d3d3)"
+        : "var(--primary-gradient-hover)"};
   }
 
   @media (max-width: 500px) {

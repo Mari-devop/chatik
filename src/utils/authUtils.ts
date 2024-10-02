@@ -1,5 +1,5 @@
 import axios from "axios";
-import { dbInstance } from "../db"; 
+import { dbInstance } from "../db";
 
 export const validateToken = async (): Promise<boolean> => {
   const users = await dbInstance.getData("users");

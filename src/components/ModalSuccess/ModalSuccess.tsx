@@ -1,18 +1,10 @@
 import React, { useEffect } from "react";
+import { ModalSuccessProps } from "./types";
 import { ModalContainer, Social, SocialContainer } from "./ModalSuccess.styled";
 import facebook from "../../assets/images/menu/facebook.png";
 import instagram from "../../assets/images/menu/instagram.png";
 import telegram from "../../assets/images/paywall/telegram-brands-solid.svg";
 import twitter from "../../assets/images/menu/x-twitter-brands-solid.svg";
-
-interface ModalSuccessProps {
-  isVisible: boolean;
-  modalType: "success" | "failure" | "share" | "confirm";
-  message: string;
-  shareLink?: string; 
-  onClose: () => void;
-  children?: React.ReactNode; 
-}
 
 const ModalSuccess: React.FC<ModalSuccessProps> = ({
   isVisible,

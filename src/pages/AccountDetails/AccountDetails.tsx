@@ -18,7 +18,6 @@ import {
   ButtonUpdate,
   ButtonContainer,
   ButtonCancel,
-  ImageUp,
   ImageDown,
   CardInputContainer,
   CardDetails,
@@ -39,7 +38,6 @@ import {
 } from "../../assets/css/Global.styled";
 import Footer from "../../components/footer/Footer";
 import ModalSuccess from "../../components/ModalSuccess/ModalSuccess";
-import up from "../../assets/images/accountDetails/up.png";
 import down from "../../assets/images/accountDetails/down.png";
 import check from "../../assets/images/paywall/check 1.png";
 
@@ -262,7 +260,6 @@ const AccountDetails = () => {
       );
 
       if (response.status === 200) {
-        // await dbInstance.addData("users", updatedData);
         console.log(response.data);
         setModalType("success");
         setModalMessage("User data updated successfully");
@@ -485,13 +482,27 @@ const AccountDetails = () => {
         <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
           <button
             onClick={handleConfirmCancel}
-            style={{ padding: "10px", backgroundColor: "transparent", color: "#fff", borderRadius: '30px', border: '1px solid #777', cursor: 'pointer' }}
+            style={{
+              padding: "10px",
+              backgroundColor: "transparent",
+              color: "#fff",
+              borderRadius: "30px",
+              border: "1px solid #777",
+              cursor: "pointer",
+            }}
           >
             Yes
           </button>
           <button
             onClick={() => setIsCancelModalVisible(false)}
-            style={{ padding: "10px", backgroundColor: "transparent", color: "#fff", borderRadius: '30px', border: '1px solid #777', cursor: 'pointer' }}
+            style={{
+              padding: "10px",
+              backgroundColor: "transparent",
+              color: "#fff",
+              borderRadius: "30px",
+              border: "1px solid #777",
+              cursor: "pointer",
+            }}
           >
             No
           </button>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Question, IndividualWithoutFullImage } from "./types";
+import { Question, IndividualWithoutFullImage, MainProps } from "./types";
 import { ColorRing } from "react-loader-spinner";
 import { dbInstance } from "../../db";
 import {
@@ -49,9 +49,6 @@ import bigshadow from "../../assets/images/main-page/bigbrightshadow.png";
 import brightpinkshadow from "../../assets/images/main-page/pink-shadow.png";
 import pinkshadow from "../../assets/images/main-page/bright-pinkshadow.png";
 
-interface MainProps {
-  isAuthenticated: boolean;
-}
 const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [individuals, setIndividuals] = useState<
@@ -65,7 +62,9 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalType, setModalType] = useState<"success" | "failure">("success");
   const [modalMessage, setModalMessage] = useState("");
-  const [loadingQuestionId, setLoadingQuestionId] = useState<number | null>(null); 
+  const [loadingQuestionId, setLoadingQuestionId] = useState<number | null>(
+    null
+  );
   const navigate = useNavigate();
   const location = useLocation();
   const gridRef = useRef<HTMLDivElement>(null);
@@ -88,7 +87,7 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
         if (storedQuestions.length > 0) {
           setQuestions(storedQuestions);
           return;
-        } 
+        }
         const response = await axios.get(
           "https://eternalai.fly.dev/individuals/questions",
           {
@@ -168,8 +167,6 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
     individualId: number
   ): Promise<string | null> => {
     try {
-      console.log("Fetching full image for individualId:", individualId);
-
       const response = await axios.get(
         `https://eternalai.fly.dev/individuals/image/${individualId}`,
         {
@@ -180,7 +177,6 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
       );
 
       const individualData = response.data;
-      console.log("Received individual data:", individualData);
 
       if (
         individualData &&
@@ -191,7 +187,6 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
         const fullImageStr = arrayBufferToBase64(
           individualData.imageBuffer.data
         );
-        console.log("Full image converted to base64:", fullImageStr);
         return base64Flag + fullImageStr;
       } else {
         console.error("Full image data not found");
@@ -218,7 +213,6 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
       const filtered = responses.filter(
         (resp: any) => resp.questionId === questionId
       );
-      console.log("Filtered responses:", filtered);
       return filtered;
     },
     []
@@ -234,7 +228,6 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
       individualId,
       text: response,
     };
-    console.log("Saving response to IndexedDB:", responseData);
     await dbInstance.addData("responses", responseData);
   };
 
@@ -371,7 +364,14 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
                     handleQuestionClick(question.questionId, question.question);
                   }}
                 >
-                  <TextRow style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
+                  <TextRow
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      width: "100%",
+                    }}
+                  >
                     {question.question}
                     {loadingQuestionId === question.questionId && (
                       <ColorRing
@@ -379,7 +379,13 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
                         height="35"
                         width="35"
                         ariaLabel="color-ring-loading"
-                        colors={["#5833EF", "#5833EF", "#F82D98", "#F82D98", "#db5ff1"]}
+                        colors={[
+                          "#5833EF",
+                          "#5833EF",
+                          "#F82D98",
+                          "#F82D98",
+                          "#db5ff1",
+                        ]}
                       />
                     )}
                   </TextRow>

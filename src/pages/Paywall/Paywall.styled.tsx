@@ -220,15 +220,15 @@ export const IconCheck = styled.img`
 `;
 
 export const SubscribeButton = styled.button<DisabledProps>`
-    background-image: ${({ disabled }) =>
+  background-image: ${({ disabled }) =>
     disabled
-      ? 'linear-gradient(to right, #303030, #929292)'
-      : 'linear-gradient(to right, #6a00f4, #c900ff)'};
+      ? "linear-gradient(to right, #303030, #929292)"
+      : "linear-gradient(to right, #6a00f4, #c900ff)"};
   color: white;
   border: none;
   padding: 15px 20px;
   border-radius: 30px;
-  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
   margin-top: 12px;
   font-family: "Arquitecta";
   font-weight: 700;
@@ -242,7 +242,9 @@ export const SubscribeButton = styled.button<DisabledProps>`
 
   &:hover {
     background: ${({ disabled }) =>
-      disabled ? 'linear-gradient(to right, #303030, #929292)' : 'var(--primary-gradient-hover)'};
+      disabled
+        ? "linear-gradient(to right, #303030, #929292)"
+        : "var(--primary-gradient-hover)"};
   }
 `;
 

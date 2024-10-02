@@ -66,7 +66,7 @@ const Login: React.FC<LoginProps> = ({
   const handleContainerClick = () => {
     setIsLoginOpen(false);
     setIsSignupOpen(false);
-    navigate("/"); 
+    navigate("/");
   };
 
   const handleInnerClick = (event: React.MouseEvent) => {
@@ -135,7 +135,7 @@ const Login: React.FC<LoginProps> = ({
         const userProfile = profileResponse.data;
         const userEmail = userProfile.email;
         const userName = userProfile.name;
-        const userImage = userProfile.picture; 
+        const userImage = userProfile.picture;
 
         const res = await axios.post("https://eternalai.fly.dev/user/login", {
           googleToken: googleAccessToken,
@@ -227,10 +227,6 @@ const Login: React.FC<LoginProps> = ({
     }
   }, [email]);
 
-  useEffect(() => {
-    console.log("Modal visibility state:", isModalVisible);
-  }, [isModalVisible]);
-
   return (
     <FocusTrap>
       <div role="dialog" aria-modal="true">
@@ -266,9 +262,9 @@ const Login: React.FC<LoginProps> = ({
               <label htmlFor="password">
                 Password
                 <StyledIcon
-                icon={isPasswordVisible ? faEye : faEyeSlash}
-                onClick={() => setIsPasswordVisible(!isPasswordVisible)}
-              />
+                  icon={isPasswordVisible ? faEye : faEyeSlash}
+                  onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+                />
               </label>
               <input
                 type={isPasswordVisible ? "text" : "password"}

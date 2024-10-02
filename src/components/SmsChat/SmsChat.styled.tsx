@@ -1,45 +1,48 @@
 import styled from "styled-components";
 
 export const BoxContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    background: linear-gradient(45deg, rgba(4,4,16,1) 0%, rgba(15,3,6,1) 100%);
-    width: 500px;
-    height: auto;
-    box-sizing: border-box;
-    position: relative;
-    border-radius: 32px;
-    padding: 48px;
-    margin-top: auto;
-    margin-bottom: auto;
-    z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  background: linear-gradient(
+    45deg,
+    rgba(4, 4, 16, 1) 0%,
+    rgba(15, 3, 6, 1) 100%
+  );
+  width: 500px;
+  height: auto;
+  box-sizing: border-box;
+  position: relative;
+  border-radius: 32px;
+  padding: 48px;
+  margin-top: auto;
+  margin-bottom: auto;
+  z-index: 1;
 
-    &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        border-radius: inherit;
-        padding: 1px; 
-        background: linear-gradient(45deg, #5833EF, #F82D98);
-        -webkit-mask: 
-        linear-gradient(#fff 0 0) content-box, 
-        linear-gradient(#fff 0 0);
-        -webkit-mask-composite: destination-out;
-                mask-composite: exclude;
-        z-index: -1;
-    }
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(45deg, #5833ef, #f82d98);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: destination-out;
+    mask-composite: exclude;
+    z-index: -1;
+  }
 
-    @media (max-width: 767px) {
-        width: calc(100% - 48px); 
-        margin-left: 16px;
-        margin-right: 16px;
-        padding: 32px;
-    }
+  @media (max-width: 767px) {
+    width: calc(100% - 48px);
+    margin-left: 16px;
+    margin-right: 16px;
+    padding: 32px;
+  }
 `;
 
 export const Button = styled.button`

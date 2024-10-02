@@ -33,7 +33,7 @@ export const OTPContainer = styled.div`
 
   @media (max-width: 450px) {
     input {
-      max-width: 35px; 
+      max-width: 35px;
       height: 45px;
     }
     gap: 8px;
@@ -41,7 +41,7 @@ export const OTPContainer = styled.div`
 
   @media (max-width: 344px) {
     input {
-      max-width: 25px; 
+      max-width: 25px;
       height: 40px;
     }
     gap: 5px;

@@ -37,8 +37,8 @@ export const ButtonSecondary = styled.button`
   }
 
   @media (max-height: 740px) {
-  font-size: 14px;
-  line-height: 21px;
+    font-size: 14px;
+    line-height: 21px;
   }
 `;
 
@@ -78,8 +78,6 @@ export const CustomGoogleButton = styled.button`
     font-size: 12px;
     height: 48px;
   }
-
-
 `;
 
 export const StyledIcon = styled(FontAwesomeIcon)`

@@ -45,7 +45,6 @@ import {
   CheckBoxText,
 } from "./Paywall.styled";
 import {
-  AvenirH2,
   AvenirH6,
   AvenirH4,
   TextMedium,
@@ -87,7 +86,6 @@ const Paywall = () => {
     };
     checkAuthStatus();
   }, []);
-  
 
   const handleMakePayment = () => {
     if (!isAuthenticated) {
@@ -98,7 +96,6 @@ const Paywall = () => {
     }
     setIsMakePayment(false);
   };
-  
 
   const handlePaymentSubmit = async () => {
     if (!stripe || !elements) {
@@ -389,7 +386,7 @@ const Paywall = () => {
                           Access to all characters
                         </TextSmall>
                       </Row>
-                      <SubscribeButton 
+                      <SubscribeButton
                         onClick={handleMakePayment}
                         disabled={!isAuthenticated}
                       >

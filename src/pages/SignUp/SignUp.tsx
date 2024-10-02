@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import FocusTrap from "focus-trap-react";
 import axios from "axios";
 import { useGoogleLogin } from "@react-oauth/google";
-
 import { register } from "../../auth/auth";
 import { dbInstance } from "../../db";
 import { SignupProps } from "./types";
@@ -113,7 +112,7 @@ const SignUp: React.FC<SignupProps> = ({
         const userProfile = profileResponse.data;
         const userEmail = userProfile.email;
         const userName = userProfile.name;
-        const userImage = userProfile.picture; 
+        const userImage = userProfile.picture;
 
         const users = await dbInstance.getData("users");
         const shareToken = users?.[0]?.shareToken;
@@ -168,7 +167,7 @@ const SignUp: React.FC<SignupProps> = ({
   const handleContainerClick = () => {
     setIsLoginOpen(false);
     setIsSignupOpen(false);
-    navigate("/"); 
+    navigate("/");
   };
 
   const handleInnerClick = (event: React.MouseEvent) => {

@@ -21,7 +21,6 @@ export const FooterContainer = styled.div`
   }
 `;
 
-
 export const LogoContainer = styled.div`
     width: 211px;
     height: 44px;

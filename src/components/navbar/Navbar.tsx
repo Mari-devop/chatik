@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { dbInstance } from "../../db";
+import { NavbarProps } from "./types";
 import {
   NavbarContainer,
   ImageContainer,
@@ -8,7 +9,6 @@ import {
   ButtonMenu,
   ButtonLogin,
   ButtonStart,
-  Icon,
   Box,
   RightContainer,
   ButtonShare,
@@ -22,13 +22,7 @@ import Login from "../../pages/Login/Login";
 import SignUp from "../../pages/SignUp/SignUp";
 import ModalSuccess from "../ModalSuccess/ModalSuccess";
 import logo from "../../assets/images/logo.png";
-import menu from "../../assets/images/main-page/menu.png";
 import share from "../../assets/images/share 1.png";
-
-interface NavbarProps {
-  isAuthenticated: boolean;
-  setIsAuthenticated: (value: boolean) => void;
-}
 
 export const Navbar = ({
   isAuthenticated,

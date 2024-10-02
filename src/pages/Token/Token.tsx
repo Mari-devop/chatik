@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { TokenProps } from "./types";
 import { Container, BoxContainer } from "../About/About.styled";
 import { TextArea, Button, Text } from "../Token/Token.styled";
 import ModalSuccess from "../../components/ModalSuccess/ModalSuccess";
 import { dbInstance } from "../../db";
-
-interface TokenProps {
-  setIsLoginOpen: (value: boolean) => void;
-}
 
 const Token: React.FC<TokenProps> = ({ setIsLoginOpen }) => {
   const [token, setToken] = useState("");
@@ -35,7 +32,7 @@ const Token: React.FC<TokenProps> = ({ setIsLoginOpen }) => {
       const { email } = response.data;
 
       if (response) {
-        await dbInstance.addData("users", {email, token});
+        await dbInstance.addData("users", { email, token });
         setModalType("success");
         setModalMessage("Successful verifacation!");
         setIsModalVisible(false);
@@ -61,7 +58,7 @@ const Token: React.FC<TokenProps> = ({ setIsLoginOpen }) => {
         isVisible={isModalVisible}
         modalType={modalType}
         message={modalMessage}
-        onClose={() => setIsModalVisible(false)} 
+        onClose={() => setIsModalVisible(false)}
       />
       <Container>
         <BoxContainer>

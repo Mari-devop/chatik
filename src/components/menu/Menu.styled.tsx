@@ -109,7 +109,7 @@ export const CloseIcon = styled.div`
     left: auto;
   }
 
- @media (max-width: 600px) {
+  @media (max-width: 600px) {
     top: 15px;
     right: 16px;
     width: 36px;
@@ -228,7 +228,7 @@ export const ButtonLogin = styled.button`
   font-size: 13px;
   line-height: 14px;
   letter-spacing: 0.3em;
-  padding: 15px 30px; 
+  padding: 15px 30px;
 
   &::before {
     content: "";
@@ -237,23 +237,20 @@ export const ButtonLogin = styled.button`
     left: 0;
     right: 0;
     bottom: 0;
-    border: 1px solid transparent; 
-    border-radius: 120px; 
-    background: linear-gradient(90deg, #f82d98, #5833ef); 
-    -webkit-mask: 
-      linear-gradient(#fff 0 0) padding-box, 
+    border: 1px solid transparent;
+    border-radius: 120px;
+    background: linear-gradient(90deg, #f82d98, #5833ef);
+    -webkit-mask: linear-gradient(#fff 0 0) padding-box,
       linear-gradient(#fff 0 0);
-    mask: 
-      linear-gradient(#fff 0 0) padding-box, 
-      linear-gradient(#fff 0 0);
-    mask-composite: exclude; 
-    pointer-events: none; 
+    mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
     transition: opacity 0.3s ease;
-    opacity: 0; 
+    opacity: 0;
   }
 
   &:hover::before {
-    opacity: 1; 
+    opacity: 1;
   }
 
   a {
@@ -271,7 +268,6 @@ export const ButtonLogin = styled.button`
 export const StyledLink = styled(Link)`
   text-decoration: none;
   color: var(--white-color);
-
   font-family: "Avenir";
   font-weight: 500;
   font-size: 32px;

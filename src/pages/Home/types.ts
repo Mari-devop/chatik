@@ -8,4 +8,8 @@ export interface IndividualWithoutFullImage {
     name: string;
     title: string;
     smallImage: string;
+};
+
+export interface MainProps {
+    isAuthenticated: boolean;
 }

@@ -41,10 +41,9 @@ export const Box = styled.div`
     width: 90%;
   }
 
-
   @media (max-width: 425px) {
     padding: 24px;
-    margin-top:0px;
+    margin-top: 0px;
     height: 100%;
   }
 `;
@@ -63,17 +62,17 @@ export const Row = styled.div`
 `;
 
 export const AvenirH4Title = styled.h4`
-    font-family: 'Avenir';
-    font-weight: 800;
-    font-size: 24px;
-    line-height: 36px;
-    letter-spacing: -0.01em;
-    color: white;
-    margin-top: 12px;
-    margin-bottom: 12px;
+  font-family: "Avenir";
+  font-weight: 800;
+  font-size: 24px;
+  line-height: 36px;
+  letter-spacing: -0.01em;
+  color: white;
+  margin-top: 12px;
+  margin-bottom: 12px;
 
-    @media (max-width: 425px) {
-        font-size: 14px;
-        line-height: 21px;
-    }
- `;
+  @media (max-width: 425px) {
+    font-size: 14px;
+    line-height: 21px;
+  }
+`;
