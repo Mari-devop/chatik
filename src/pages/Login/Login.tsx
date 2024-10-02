@@ -135,6 +135,7 @@ const Login: React.FC<LoginProps> = ({
         const userProfile = profileResponse.data;
         const userEmail = userProfile.email;
         const userName = userProfile.name;
+        const userImage = userProfile.picture; 
 
         const res = await axios.post("https://eternalai.fly.dev/user/login", {
           googleToken: googleAccessToken,
@@ -150,6 +151,7 @@ const Login: React.FC<LoginProps> = ({
             email: userEmail,
             token,
             name: userName,
+            image: userImage,
           });
           setModalType("success");
           setModalMessage("Google Login Successful!");
