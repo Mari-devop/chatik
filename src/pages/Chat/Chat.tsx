@@ -36,6 +36,7 @@ import ModalSuccess from "../../components/ModalSuccess/ModalSuccess";
 import LoadingDots from "../../components/LoadingDots/LoadingDots";
 import shadow from "../../assets/images/chat/shadow.png";
 import share from "../../assets/images/chat/Frame 143725072.png";
+import profile from '../../assets/images/profile-user.png';
 
 interface Message {
   isUser: boolean;
@@ -64,7 +65,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
   const [currentResponse, setCurrentResponse] = useState<string | null>(
     initialResponse
   );
-  const [userImage, setUserImage] = useState<string>(shadow); //может и не надо
+  const [userImage, setUserImage] = useState<string>(profile); 
   const [message, setMessage] = useState<string>("");
   const [isGrowing, setIsGrowing] = useState(false);
   const [chatHistory, setChatHistory] = useState<Message[]>([]);
@@ -87,12 +88,41 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
       const users = await dbInstance.getData("users");
       const lastUser = users[users.length - 1];
       if (lastUser?.image) {
-        setUserImage(lastUser.image);  // Store the user's image
+        setUserImage(lastUser.image || profile);  
       }
     };
     fetchUserData();
   }, []);
 
+  const handleShare = async (text: string, individualId: number) => {
+    try {
+      const individuals = await dbInstance.getData("individuals");
+      const individual = individuals.find((ind: any) => ind.id === individualId);
+      const individualName = individual?.name || "Shared Response"; 
+  
+      if (navigator.share) {
+        navigator
+          .share({
+            title: `Response from ${individualName}`,
+            text: text,
+          })
+          .then(() => console.log("Successfully shared!"))
+          .catch((error) => console.error("Error sharing:", error));
+      } else {
+        navigator.clipboard.writeText(text).then(
+          () => {
+            alert(`Response from ${individualName} copied to clipboard!`);
+          },
+          (error) => {
+            console.error("Could not copy text: ", error);
+          }
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching individual name:", error);
+    }
+  };
+  
   useEffect(() => {
     const { filteredResponses } = location.state;
 
@@ -104,7 +134,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
   const fetchSmallImageForResponse = async (individualId: number) => {
     const individuals = await dbInstance.getData("individuals");
     const individual = individuals.find((ind: any) => ind.id === individualId);
-    return individual?.smallImage || shadow;
+    return individual?.smallImage || profile;
   };
 
   useEffect(() => {
@@ -174,7 +204,6 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
       const users = await dbInstance.getData("users");
       const lastUser = users[users.length - 1];
       const token = lastUser?.token;
-      // const userImage = lastUser?.image || shadow; 
 
       if (!token) {
         setModalType("failure");
@@ -203,10 +232,10 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
 
       setIsLoading(true);
       setIsDialogStarted(true);
-      setChatHistory((prev) => [...prev, { text: formattedMessage, isUser: true, smallImage: userImage }]);
+      setChatHistory((prev) => [...prev, { text: formattedMessage, isUser: true, smallImage: userImage || profile }]);
 
       const formattedMessage = breakLongWords(message, 32); 
-      // setChatHistory((prev) => [...prev, { text: message, isUser: true }]);
+      
       if (currentResponse && currentResponse.trim() !== "") {
         setChatHistory((prev) => [
           ...prev,
@@ -344,7 +373,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
             return {
               isUser: entry.sender === "user",
               text: entry.content,
-              smallImage: entry.sender === "user" ? lastUser.image : smallImage,
+              smallImage: entry.sender === "user" ? (lastUser.image || profile) : smallImage,
             };
           })
         );
@@ -449,14 +478,17 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
                 filteredResponses.map((resp: any, index: number) => (
                   <Respond key={index}>
                     <IconBox>
-                      <Icon src={resp?.smallImage || shadow} />
+                      <Icon src={resp?.smallImage || profile} />
                     </IconBox>
                     <RespondBox>
                       <TextRespond>
                         {resp?.text || "No response available"}
                       </TextRespond>
                       <Social>
-                        <IconSocial src={share} />
+                        <IconSocial 
+                          src={share} 
+                          onClick={() => handleShare(resp?.text, resp?.individualId)}
+                        />
                       </Social>
                     </RespondBox>
                   </Respond>
@@ -466,12 +498,15 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
                 chatHistory.map((chat, index) => (
                   <Respond key={index}>
                     <IconBox>
-                    <Icon src={chat.isUser ? chat.smallImage : individual?.smallImage || shadow} />
+                    <Icon src={chat.isUser ? chat.smallImage : individual?.smallImage || profile} />
                     </IconBox>
                     <RespondBox>
                       <TextRespond>{chat.text}</TextRespond>
                       <Social>
-                        <IconSocial src={share} />
+                        <IconSocial 
+                          src={share} 
+                          onClick={() => handleShare(chat?.text, chat?.isUser ? 0 : individualId)} 
+                        />
                       </Social>
                     </RespondBox>
                   </Respond>

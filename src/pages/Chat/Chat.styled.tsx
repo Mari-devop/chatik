@@ -211,15 +211,14 @@ export const Question = styled.div<{ $isVisible: boolean }>`
   border-radius: 10px;
   padding: 12px;
   width: auto;
-  min-height: 20px; 
-  visibility: ${({ $isVisible }) => ($isVisible ? "visible" : "hidden")}; 
+  min-height: 20px;
+  visibility: ${({ $isVisible }) => ($isVisible ? "visible" : "hidden")};
   transition: visibility 0.3s ease;
 
   @media (max-width: 850px) {
     display: none;
   }
 `;
-
 
 export const Text = styled.h3`
   font-family: "Avenir";
@@ -231,10 +230,9 @@ export const Text = styled.h3`
   margin: 0px;
   padding-right: 10px;
 
-   @media (max-width: 375px) {
-      font-size: 12px;
-     
-    }
+  @media (max-width: 375px) {
+    font-size: 12px;
+  }
 `;
 
 export const AnswerBox = styled.div`
@@ -243,18 +241,18 @@ export const AnswerBox = styled.div`
   height: 400px;
   padding-right: 16px;
 
-   mask-image: linear-gradient(
-    to bottom, 
-    rgba(0, 0, 0, 0), 
-    rgba(0, 0, 0, 1) 20%, 
-    rgba(0, 0, 0, 1) 80%, 
+  mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0),
+    rgba(0, 0, 0, 1) 20%,
+    rgba(0, 0, 0, 1) 80%,
     rgba(0, 0, 0, 0)
   );
   -webkit-mask-image: linear-gradient(
-    to bottom, 
-    rgba(0, 0, 0, 0), 
-    rgba(0, 0, 0, 1) 20%, 
-    rgba(0, 0, 0, 1) 80%, 
+    to bottom,
+    rgba(0, 0, 0, 0),
+    rgba(0, 0, 0, 1) 20%,
+    rgba(0, 0, 0, 1) 80%,
     rgba(0, 0, 0, 0)
   );
 
@@ -322,7 +320,6 @@ export const RespondBox = styled.div`
   width: 100%;
   user-select: none;
   -webkit-user-drag: none;
-  pointer-events: none;
 
   @media (max-width: 1200px) {
     width: 400px;
@@ -370,6 +367,9 @@ export const Social = styled.div`
   flex-direction: row;
   justify-content: flex-end;
   gap: 8px;
+  cursor: pointer;
+  z-index: 1000;
+  pointer-events: auto;
 `;
 
 export const IconSocial = styled.img`
@@ -436,11 +436,11 @@ export const PersonAnswer = styled.div`
     z-index: 1;
 
     @media (max-width: 1100px) {
-      padding: 4px; 
+      padding: 4px;
     }
 
     @media (max-width: 850px) {
-      padding: 2px; 
+      padding: 2px;
     }
   }
 
@@ -513,7 +513,6 @@ export const InputBox = styled.div`
 
   @media (max-width: 950px) {
     width: 420px;
-    
   }
 
   @media (max-width: 850px) {
@@ -558,12 +557,12 @@ export const Input = styled.textarea<DisabledProps & { isGrowing: boolean }>`
   outline: none;
   position: relative;
   cursor: ${({ disabled }) => (disabled ? "not-allowed" : "text")};
-  resize: none; 
-  overflow: auto; 
-  height: auto; 
-  min-height: 45px; 
-  max-height: 200px; 
-  transition: border-radius 0.3s ease; 
+  resize: none;
+  overflow: auto;
+  height: auto;
+  min-height: 45px;
+  max-height: 200px;
+  transition: border-radius 0.3s ease;
   box-sizing: border-box;
 
   @media (max-width: 375px) {
@@ -571,7 +570,6 @@ export const Input = styled.textarea<DisabledProps & { isGrowing: boolean }>`
     font-size: 14px;
   }
 `;
-
 
 export const Button = styled.button<DisabledProps>`
   background: ${({ disabled }) =>
