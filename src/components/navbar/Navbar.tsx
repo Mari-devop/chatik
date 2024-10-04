@@ -78,7 +78,7 @@ export const Navbar = ({
       const generatedLink = `${window.location.origin}/?token=${userToken}`;
 
       setShareLink(generatedLink);
-  
+
       setShowModal(true);
       console.log("Modal should be shown, showModal:", true);
     } catch (error) {
@@ -95,7 +95,13 @@ export const Navbar = ({
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        handleLogoClick();
+        if (isMenuOpen) {
+          setIsMenuOpen(false);
+        } else if (isLoginOpen) {
+          setIsLoginOpen(false);
+        } else if (isSignupOpen) {
+          setIsSignupOpen(false);
+        }
       }
     };
 
@@ -104,7 +110,7 @@ export const Navbar = ({
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [isMenuOpen, isLoginOpen, isSignupOpen]);
 
   return (
     <div>
@@ -171,6 +177,12 @@ export const Navbar = ({
           </Box>
         )}
         {location.pathname === "/paywall" && (
+          <CloseIcon onClick={handleLogoClick} />
+        )}
+        {location.pathname === "/about" && (
+          <CloseIcon onClick={handleLogoClick} />
+        )}
+        {location.pathname === "/how" && (
           <CloseIcon onClick={handleLogoClick} />
         )}
       </NavbarContainer>

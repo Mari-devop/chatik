@@ -70,6 +70,9 @@ export const Text = styled.div`
 `;
 
 export const Button = styled.button`
+    display: flex;
+    justify-content: center;
+    align-items: center;
     background: var(--primary-gradient);
     border: none;
     border-radius: 50%;

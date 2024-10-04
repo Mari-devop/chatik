@@ -14,7 +14,7 @@ export const MenuContainer = styled.div`
   z-index: 9999;
   pointer-events: auto;
   background: rgba(25, 23, 42, 0.2);
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(40px);
   -webkit-backdrop-filter: blur(20px);
   isolation: isolate;
 `;
@@ -104,6 +104,10 @@ export const CloseIcon = styled.div`
   z-index: 10000;
   pointer-events: auto;
 
+  &:hover {
+    border-image: linear-gradient(90deg, #f82d98, #5833ef) 1;
+  }
+
   @media (max-width: 900px) {
     right: 24px;
     left: auto;
@@ -130,6 +134,12 @@ export const CloseIcon = styled.div`
 
   &::after {
     transform: translate(-50%, -50%) rotate(-45deg);
+  }
+
+  &:hover::before,
+  &:hover::after {
+    background-color: unset;
+    background-image: linear-gradient(90deg, #f82d98, #5833ef);
   }
 `;
 
@@ -222,6 +232,7 @@ export const ButtonLogin = styled.button`
   background-color: transparent;
   color: var(--white-color);
   border: none;
+  border-radius: 120px;
   cursor: pointer;
   font-family: "Arquitecta";
   font-weight: 700;
@@ -237,20 +248,21 @@ export const ButtonLogin = styled.button`
     left: 0;
     right: 0;
     bottom: 0;
-    border: 1px solid transparent;
-    border-radius: 120px;
-    background: linear-gradient(90deg, #f82d98, #5833ef);
-    -webkit-mask: linear-gradient(#fff 0 0) padding-box,
+    border-radius: inherit;
+    padding: 2px;
+    background: linear-gradient(45deg, #5833ef, #f82d98);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box,
       linear-gradient(#fff 0 0);
-    mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
     mask-composite: exclude;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-    opacity: 0;
+    -webkit-mask-composite: xor;
+    z-index: -1;
   }
-
   &:hover::before {
-    opacity: 1;
+    background: linear-gradient(45deg, #f82d98, #5833ef);
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
   }
 
   a {

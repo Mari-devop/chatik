@@ -446,11 +446,11 @@ const Paywall = () => {
                             wrapperStyle={{}}
                             wrapperClass="color-ring-wrapper"
                             colors={[
-                              "#5833EF",
-                              "#5833EF",
+                              "#f82d98",
+                              "#f82d98",
                               "#F82D98",
-                              "#F82D98",
-                              "#B5E42E",
+                              "#5833ef",
+                              "#5833ef",
                             ]}
                           />
                         </div>

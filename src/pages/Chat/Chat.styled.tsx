@@ -208,16 +208,18 @@ export const RespondContainer = styled.div`
 export const Question = styled.div<{ $isVisible: boolean }>`
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
   background: #ffffff;
   border-radius: 10px;
   padding: 12px;
-  width: auto;
+  width: fit-content;
   min-height: 20px;
   visibility: ${({ $isVisible }) => ($isVisible ? "visible" : "hidden")};
   transition: visibility 0.3s ease;
 
   @media (max-width: 850px) {
-    display: none;
+    margin-right: 15px;
   }
 `;
 
@@ -241,25 +243,27 @@ export const AnswerBox = styled.div`
   overflow-x: hidden;
   height: 400px;
   padding-right: 16px;
-
-  mask-image: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0),
-    rgba(0, 0, 0, 1) 20%,
-    rgba(0, 0, 0, 1) 80%,
-    rgba(0, 0, 0, 0)
-  );
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0),
-    rgba(0, 0, 0, 1) 20%,
-    rgba(0, 0, 0, 1) 80%,
-    rgba(0, 0, 0, 0)
-  );
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 
   @media (max-width: 850px) {
     height: 150px;
     padding-right: 0px;
+    mask-image: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0),
+      rgba(0, 0, 0, 1) 20%,
+      rgba(0, 0, 0, 1) 80%,
+      rgba(0, 0, 0, 0)
+    );
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0),
+      rgba(0, 0, 0, 1) 20%,
+      rgba(0, 0, 0, 1) 80%,
+      rgba(0, 0, 0, 0)
+    );
   }
 
   @media (min-height: 740px) {
@@ -419,6 +423,7 @@ export const PersonAnswer = styled.div`
   border: none;
   width: 100%;
   min-width: 700px;
+  text-align: center;
 
   &::before {
     content: "";
@@ -588,7 +593,7 @@ export const Button = styled.button<DisabledProps>`
   height: 39px;
   position: fixed;
   right: 65px;
-  bottom: 25px;
+  bottom: 24px;
   z-index: 2;
 
   @media (max-width: 1100px) {

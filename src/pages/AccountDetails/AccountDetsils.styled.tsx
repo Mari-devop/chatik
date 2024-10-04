@@ -25,7 +25,7 @@ export const FirstBox = styled.div`
   border-radius: 32px;
   padding: 48px;
   margin-top: 100px;
-  margin-bottom: 48px;
+  margin-bottom: 80px;
   z-index: 1;
 
   &::before {
@@ -70,7 +70,7 @@ export const SecondBox = styled.div`
   border-radius: 32px;
   padding: 48px;
   margin-top: 0px;
-  margin-bottom: 80px;
+  margin-bottom: 120px;
   z-index: 1;
 
   &::before {

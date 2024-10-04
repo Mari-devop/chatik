@@ -18,6 +18,7 @@ import NewPassword from "./pages/NewPassword/NewPassword";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import Paywall from "./pages/Paywall/Paywall";
 import HowItWorks from "./pages/HowItWorks/HowItWorks";
+import Loader from "./components/Loader/Loader";
 
 const stripePromise = loadStripe(
   "pk_test_51PqIRMRxh50Nc0qLf4KgICJ8Gb4lP7e4iOqZp0SJFlG9rIABwbfH0u09I708ArEEkN3VJ3lzojlUcuvwZ0IYXpcU00E7LfZZkG"
@@ -28,6 +29,7 @@ function App() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isSignupOpen, setIsSignupOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [emailForLogin, setEmailForLogin] = useState("");
 
   const checkAuthentication = async (): Promise<boolean> => {
@@ -36,9 +38,20 @@ function App() {
     setIsAuthenticated(!!userWithToken);
     return !!userWithToken;
   };
+
   useEffect(() => {
     checkAuthentication();
+
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
   }, []);
+
+  if (isLoading) {
+    return <Loader />;
+  }
 
   return (
     <GoogleOAuthProvider clientId="297917996967-5i0m39clbr19umnqtclsg7gken22896e.apps.googleusercontent.com">

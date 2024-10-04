@@ -3,7 +3,7 @@ import styled from "styled-components";
 export const BoxContainer = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   background: linear-gradient(
     45deg,

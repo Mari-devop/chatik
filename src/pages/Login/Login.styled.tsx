@@ -71,6 +71,15 @@ export const CustomGoogleButton = styled.button`
     background-color: rgba(66, 133, 244, 0.1);
   }
 
+  &:focus {
+    outline: none; 
+  }
+
+  &:active {
+    outline: none; 
+    background-color: transparent;
+  }
+
   @media (max-width: 500px) {
     width: 100%;
     order: 2;

@@ -155,6 +155,16 @@ export const Button = styled.button`
     background: var(--primary-gradient-hover);
   }
 
+  &:focus {
+    outline: none;
+    box-shadow: none;
+  }
+
+  &:active {
+    outline: none;
+    background-color: transparent;
+  }
+
   @media (max-width: 500px) {
     width: 100%;
     height: 48px;

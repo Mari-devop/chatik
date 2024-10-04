@@ -70,7 +70,13 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
   const [userIsScrolling, setUserIsScrolling] = useState(false);
   const answerBoxRef = useRef<HTMLDivElement | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
-  const [previousResponse, setPreviousResponse] = useState<string | null>(null);
+
+  const handleInputClick = () => {
+    if (!isAuthenticated) {
+      setModalMessage("Please login to use this feature.");
+      setShowModal(true);
+    }
+  };
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -195,6 +201,24 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
       .join(" ");
   };
 
+  const simulateResponse = async (response: string) => {
+    setCurrentResponse(null); 
+    await new Promise((resolve) => setTimeout(resolve, 2000)); 
+    setCurrentResponse(response); 
+  
+    await new Promise((resolve) => setTimeout(resolve, 2000)); 
+    setChatHistory((prev) => [
+      ...prev,
+      { text: response, isUser: false, smallImage: individual?.smallImage || profile },
+    ]);
+  
+
+    setCurrentResponse(null);
+    setIsDialogStarted(false); 
+    setQuestionVisible(false); 
+  };
+  
+
   const handleSendMessage = async () => {
     if (!message.trim() || isLoading) return;
 
@@ -270,11 +294,11 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
           },
         }
       );
-
+      await simulateResponse(response.data.response);
       const smallImage = await fetchSmallImageForResponse(individualId);
 
-      setPreviousResponse(currentResponse);
-      setCurrentResponse(response.data.response);
+      // setPreviousResponse(currentResponse);
+      // setCurrentResponse(response.data.response);
 
       setIsLoading(false);
       answerBoxRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -466,15 +490,15 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
         </PersonContainer>
         <DialogContainer>
           <RespondContainer>
-            {(isDialogStarted || !!individual?.questionText) && (
-              <Question
-                $isVisible={questionVisible && !!individual?.questionText}
-                onClick={handleQuestionClick}
-              >
-                <Text>{individual?.questionText}</Text>
-              </Question>
-            )}
             <AnswerBox id="scrollContainer" ref={scrollContainerRef}>
+              {(isDialogStarted || !!individual?.questionText) && (
+                <Question
+                  $isVisible={questionVisible && !!individual?.questionText}
+                  onClick={handleQuestionClick}
+                >
+                  <Text>{individual?.questionText}</Text>
+                </Question>
+              )}
               {filteredResponses.length > 0 &&
                 filteredResponses.map((resp: any, index: number) => (
                   <Respond key={index}>
@@ -529,19 +553,18 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
             </AnswerBox>
           </RespondContainer>
           <QuestionContainer>
-            {((isDialogStarted && currentResponse) ||
-              !!individual?.questionText) && (
+            {isDialogStarted && (
               <PersonAnswer>
                 <Text>{currentResponse || <LoadingDots />}</Text>
               </PersonAnswer>
             )}
           </QuestionContainer>
           <InputBox>
-            <InputWrapper isGrowing={isGrowing}>
+            <InputWrapper isGrowing={isGrowing} onClick={handleInputClick}>
               <Input
                 as="textarea"
                 placeholder="Enter your message..."
-                disabled={!isAuthenticated}
+                style={{ pointerEvents: isAuthenticated ? "auto" : "none" }}
                 value={message}
                 onChange={handleInputChange}
                 onFocus={handleInputFocus}

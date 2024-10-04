@@ -164,7 +164,7 @@ export const Row = styled.div<{ $isActive: boolean }>`
   ${({ $isActive }) =>
     $isActive &&
     `
-    background: linear-gradient(45deg, #F82D98, #5833EF);
+    background: linear-gradient(45deg, #08081e 0%, #21050c 100%);
     &::before {
       top: 0;
       left: 0;

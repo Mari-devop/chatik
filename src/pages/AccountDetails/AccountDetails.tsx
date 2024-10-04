@@ -26,6 +26,7 @@ import {
   VerificationIcon,
   EmailContainer,
 } from "./AccountDetsils.styled";
+import { StyledIcon } from "../Login/Login.styled";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheckCircle,
@@ -38,8 +39,10 @@ import {
 } from "../../assets/css/Global.styled";
 import Footer from "../../components/footer/Footer";
 import ModalSuccess from "../../components/ModalSuccess/ModalSuccess";
+import ModalCancel from "../../components/ModalCancel/ModalCancel";
 import down from "../../assets/images/accountDetails/down.png";
 import check from "../../assets/images/paywall/check 1.png";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 const AccountDetails = () => {
   const [userData, setUserData] = useState({
@@ -52,8 +55,11 @@ const AccountDetails = () => {
     nextBillingDate: "",
   });
   const [initialEmail, setInitialEmail] = useState("");
+  const [isEmailLoaded, setIsEmailLoaded] = useState(false);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isPaymentUpdated, setIsPaymentUpdated] = useState(false);
   const [showCardInput, setShowCardInput] = useState(false);
+  const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalType, setModalType] = useState<"success" | "failure">("success");
   const [modalMessage, setModalMessage] = useState("");
@@ -62,7 +68,6 @@ const AccountDetails = () => {
   const [phoneError, setPhoneError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);
-  const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
 
   const stripe = useStripe();
   const elements = useElements();
@@ -77,23 +82,17 @@ const AccountDetails = () => {
     setShowCardInput(true);
   };
 
-  useEffect(() => {
-    validateForm();
-  }, [userData]);
-
   const validateEmail = (email: string) => {
     const gmailRegex = /^[^\s@]+@gmail\.com$/;
     return gmailRegex.test(email);
   };
 
   const validatePhone = (phone: string) => {
-    if (!phone) return true;
     const phoneRegex = /^\+380 \d{2} \d{3} \d{2} \d{2}$/;
     return phoneRegex.test(phone);
   };
 
   const validatePassword = (password: string) => {
-    if (!password) return true;
     return password ? password.length >= 8 : false;
   };
 
@@ -108,6 +107,12 @@ const AccountDetails = () => {
 
     setIsFormValid(isEmailValid && isPhoneValid && isPasswordValid);
   };
+
+  useEffect(() => {
+    if (isEmailLoaded) {
+      validateForm();
+    }
+  }, [userData, isEmailLoaded]);
 
   const formattedDate = new Date(userData.nextBillingDate).toLocaleDateString(
     "en-US",
@@ -156,7 +161,7 @@ const AccountDetails = () => {
 
       const profileData = response.data;
       setInitialEmail(response.data.email);
-
+      setIsEmailLoaded(true);
       if (!profileData.isVerified) {
         setTimeout(() => {
           setModalType("success");
@@ -381,6 +386,7 @@ const AccountDetails = () => {
       const result = await response.json();
       if (response.status === 200) {
         setIsPaymentUpdated(true);
+        setShowCardInput(false);
       }
       if (result.error) {
         setModalType("failure");
@@ -424,6 +430,9 @@ const AccountDetails = () => {
     setIsCancelModalVisible(true);
   };
 
+  const handleCloseCancelModal = () => {
+    setIsCancelModalVisible(false);
+  };
   const handleConfirmCancel = async () => {
     try {
       const users = await dbInstance.getData("users");
@@ -456,6 +465,7 @@ const AccountDetails = () => {
         setModalMessage("Subscription cancelled successfully");
         setIsModalVisible(true);
       }
+      setIsCancelModalVisible(false);
     } catch (error) {
       setModalType("failure");
       setModalMessage("An error occurred while cancelling subscription");
@@ -473,41 +483,14 @@ const AccountDetails = () => {
         message={modalMessage}
         onClose={() => setIsModalVisible(false)}
       />
-      <ModalSuccess
-        isVisible={isCancelModalVisible}
-        modalType="confirm"
-        message="Are you sure you want to cancel your subscription?"
-        onClose={() => setIsCancelModalVisible(false)}
-      >
-        <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
-          <button
-            onClick={handleConfirmCancel}
-            style={{
-              padding: "10px",
-              backgroundColor: "transparent",
-              color: "#fff",
-              borderRadius: "30px",
-              border: "1px solid #777",
-              cursor: "pointer",
-            }}
-          >
-            Yes
-          </button>
-          <button
-            onClick={() => setIsCancelModalVisible(false)}
-            style={{
-              padding: "10px",
-              backgroundColor: "transparent",
-              color: "#fff",
-              borderRadius: "30px",
-              border: "1px solid #777",
-              cursor: "pointer",
-            }}
-          >
-            No
-          </button>
-        </div>
-      </ModalSuccess>
+      {isCancelModalVisible && (
+        <>
+          <ModalCancel
+            onConfirm={handleConfirmCancel}
+            onClose={handleCloseCancelModal}
+          />
+        </>
+      )}
 
       <Container>
         <FirstBox>
@@ -552,7 +535,7 @@ const AccountDetails = () => {
             <InputMask
               mask="+380 99 999 99 99"
               value={userData.phone || ""}
-              placeholder="+380 99 999 99 99"
+              placeholder="add your phone number"
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setUserData({ ...userData, phone: e.target.value })
               }
@@ -564,11 +547,17 @@ const AccountDetails = () => {
             </InputMask>
           </Row>
           <Row>
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">
+              Password
+              <StyledIcon
+                icon={isPasswordVisible ? faEye : faEyeSlash}
+                onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+              />
+            </label>
             <input
               type="password"
               id="password"
-              placeholder="********"
+              placeholder="add your password"
               value={userData.password}
               onChange={(e) =>
                 setUserData({ ...userData, password: e.target.value })
@@ -585,87 +574,60 @@ const AccountDetails = () => {
           </ButtonContainer>
         </FirstBox>
 
-        {isPaymentUpdated ? (
-          <SecondBox>
-            <CheckBox>
-              <img src={check} alt="check" />
-            </CheckBox>
-            <AvenirH4 style={{ color: "white", margin: "12px 0" }}>
-              Your billing date is being successfully updated!
-            </AvenirH4>
-            <SaveButton onClick={handleStartChatting}>
-              START CHATTING
-            </SaveButton>
-          </SecondBox>
-        ) : (
-          userData.hasSubscription && (
-            <SecondBox>
-              <Boxik>
-                <ArquitectaH5 style={{ color: "white" }}>PRO</ArquitectaH5>
-              </Boxik>
-              <AvenirH4
-                style={{
-                  color: "white",
-                  marginTop: "12px",
-                  marginBottom: "12px",
-                }}
-              >
-                $10 / month
-              </AvenirH4>
-              <Text>
-                Next payment will be processed on {formattedDate || "N/A"}
-              </Text>
-              {!showCardInput ? (
-                <div style={{ width: "100%" }}>
-                  <ButtonUpdate onClick={handleSubmit}>
-                    UPDATE PAYMENT
-                  </ButtonUpdate>
-
-                  <ButtonCancel onClick={handleCancelSubscription}>
-                    CANCEL SUBSCRIPTION
-                  </ButtonCancel>
+        {userData.hasSubscription ? (
+        <SecondBox>
+          <Boxik>
+            <ArquitectaH5 style={{ color: "white" }}>PRO</ArquitectaH5>
+          </Boxik>
+          <AvenirH4 style={{ color: "white", marginTop: "12px", marginBottom: "12px" }}>
+            $10 / month
+          </AvenirH4>
+          <Text>
+            Next payment will be processed on {formattedDate || "N/A"}
+          </Text>
+          {!showCardInput ? (
+            <div style={{ width: "100%" }}>
+              <ButtonUpdate onClick={handleSubmit}>UPDATE PAYMENT</ButtonUpdate>
+              <ButtonCancel onClick={handleCancelSubscription}>
+                CANCEL SUBSCRIPTION
+              </ButtonCancel>
+            </div>
+          ) : (
+            <CardInputContainer>
+              <CardDetails>
+                <div style={{ marginBottom: "0px", width: "100%", overflow: "hidden" }}>
+                  <CardElement options={cardElementOptions} />
+                </div>
+              </CardDetails>
+              {isLoading ? (
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                  <ColorRing
+                    visible={true}
+                    height="80"
+                    width="80"
+                    ariaLabel="color-ring-loading"
+                    wrapperClass="color-ring-wrapper"
+                    colors={["#f82d98", "#f82d98", "#F82D98", "#5833ef", "#5833ef"]}
+                  />
                 </div>
               ) : (
-                <CardInputContainer>
-                  <CardDetails>
-                    <div
-                      style={{
-                        marginBottom: "0px",
-                        width: "100%",
-                        overflow: "hidden",
-                      }}
-                    >
-                      <CardElement options={cardElementOptions} />
-                    </div>
-                  </CardDetails>
-                  {isLoading ? (
-                    <div style={{ display: "flex", justifyContent: "center" }}>
-                      <ColorRing
-                        visible={true}
-                        height="80"
-                        width="80"
-                        ariaLabel="color-ring-loading"
-                        wrapperStyle={{}}
-                        wrapperClass="color-ring-wrapper"
-                        colors={[
-                          "#5833EF",
-                          "#5833EF",
-                          "#F82D98",
-                          "#F82D98",
-                          "#B5E42E",
-                        ]}
-                      />
-                    </div>
-                  ) : (
-                    <SaveButtonPay onClick={handleUpdatePayment}>
-                      SAVE
-                    </SaveButtonPay>
-                  )}
-                </CardInputContainer>
+                <SaveButtonPay onClick={handleUpdatePayment}>SAVE</SaveButtonPay>
               )}
-            </SecondBox>
-          )
-        )}
+            </CardInputContainer>
+          )}
+        </SecondBox>
+      ) : (
+        <SecondBox>
+          <Boxik>
+            <ArquitectaH5 style={{ color: "white" }}>PRO</ArquitectaH5>
+          </Boxik>
+          <AvenirH4 style={{ color: "white", marginTop: "12px", marginBottom: "12px" }}>
+            $10 / month
+          </AvenirH4>
+          <Text>No active subscription</Text>
+        </SecondBox>
+      )}
+
 
         <ImageDown src={down} />
         <Footer />

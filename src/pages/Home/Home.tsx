@@ -380,11 +380,11 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
                         width="35"
                         ariaLabel="color-ring-loading"
                         colors={[
-                          "#5833EF",
-                          "#5833EF",
+                          "#f82d98",
+                          "#f82d98",
                           "#F82D98",
-                          "#F82D98",
-                          "#db5ff1",
+                          "#5833ef",
+                          "#5833ef",
                         ]}
                       />
                     )}
