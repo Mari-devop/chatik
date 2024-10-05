@@ -104,6 +104,9 @@ const Login: React.FC<LoginProps> = ({
         if (error.response.status === 401) {
           setModalType("failure");
           setModalMessage("Invalid email or password");
+        } else if (error.response.status === 404) {
+          setModalType("failure");
+          setModalMessage("Email not found. Sign up first.");
         } else if (error.response.status === 500) {
           setModalType("failure");
           setModalMessage("Server error. Please try again later.");

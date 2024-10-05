@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Row,
@@ -24,14 +24,27 @@ const About = () => {
     }
   };
 
-  const handleContainerClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleContainerClick = () => {
     navigate("/");
   };
 
   const handleInnerClick = (event: React.MouseEvent) => {
     event.stopPropagation();
   };
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        handleContainerClick();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   return (
     <Container onClick={handleContainerClick}>

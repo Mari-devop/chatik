@@ -299,14 +299,27 @@ const Paywall = () => {
     };
   }, [isMakePayment, isPaymentConfirmed]);
 
-  const handleContainerClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleContainerClick = () => {
     navigate("/");
   };
 
   const handleInnerClick = (event: React.MouseEvent) => {
     event.stopPropagation();
   };
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        handleContainerClick();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   return (
     <>

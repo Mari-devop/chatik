@@ -39,19 +39,19 @@ function App() {
     return !!userWithToken;
   };
 
-  useEffect(() => {
-    checkAuthentication();
+  // useEffect(() => {
+  //   checkAuthentication();
 
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 3000);
+  //   const timer = setTimeout(() => {
+  //     setIsLoading(false);
+  //   }, 5000);
 
-    return () => clearTimeout(timer);
-  }, []);
+  //   return () => clearTimeout(timer);
+  // }, []);
 
-  if (isLoading) {
-    return <Loader />;
-  }
+  // if (isLoading) {
+  //   return <Loader />;
+  // }
 
   return (
     <GoogleOAuthProvider clientId="297917996967-5i0m39clbr19umnqtclsg7gken22896e.apps.googleusercontent.com">
@@ -88,7 +88,7 @@ function App() {
               <Route
                 path="/accountDetails"
                 element={
-                  <ProtectedRoute isAuthenticated={isAuthenticated}>
+                  <ProtectedRoute>
                     <Elements stripe={stripePromise}>
                       <AccountDetails />
                     </Elements>

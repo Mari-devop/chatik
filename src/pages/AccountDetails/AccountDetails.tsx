@@ -9,7 +9,7 @@ import { ColorRing } from "react-loader-spinner";
 import { dbInstance } from "../../db";
 import { Container } from "../Home/Home.styled";
 import { Row } from "../SignUp/SignUp.styled";
-import { CheckBox, SaveButton } from "../Paywall/Paywall.styled";
+import Loader from "../../components/Loader/Loader";
 import {
   FirstBox,
   SecondBox,
@@ -41,7 +41,6 @@ import Footer from "../../components/footer/Footer";
 import ModalSuccess from "../../components/ModalSuccess/ModalSuccess";
 import ModalCancel from "../../components/ModalCancel/ModalCancel";
 import down from "../../assets/images/accountDetails/down.png";
-import check from "../../assets/images/paywall/check 1.png";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 const AccountDetails = () => {
@@ -54,9 +53,11 @@ const AccountDetails = () => {
     isVerified: false,
     nextBillingDate: "",
   });
+  const [dataLoaded, setDataLoaded] = useState(true);
   const [initialEmail, setInitialEmail] = useState("");
   const [isEmailLoaded, setIsEmailLoaded] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [passwordHint, setPasswordHint] = useState("");
   const [isPaymentUpdated, setIsPaymentUpdated] = useState(false);
   const [showCardInput, setShowCardInput] = useState(false);
   const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
@@ -93,7 +94,20 @@ const AccountDetails = () => {
   };
 
   const validatePassword = (password: string) => {
-    return password ? password.length >= 8 : false;
+    if (password.length < 8) {
+      setPasswordHint("Password should be at least 8 characters"); // подсказка, если меньше 8 символов
+      setPasswordError(true); // делаем поле невалидным
+      return false;
+    }
+    setPasswordHint(""); // скрываем подсказку
+    setPasswordError(false); // делаем поле валидным
+    return true;
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const password = e.target.value;
+    setUserData((prev) => ({ ...prev, password }));
+    validatePassword(password); // Валидируем при каждом изменении
   };
 
   const validateForm = () => {
@@ -161,7 +175,7 @@ const AccountDetails = () => {
 
       const profileData = response.data;
       setInitialEmail(response.data.email);
-      setIsEmailLoaded(true);
+
       if (!profileData.isVerified) {
         setTimeout(() => {
           setModalType("success");
@@ -174,8 +188,6 @@ const AccountDetails = () => {
         nextBillingDate: profileData.nextBillingDate,
         isVerified: false,
       });
-
-      console.log(response.data);
     } catch (error: any) {
       console.error("Error fetching user profile:", error);
 
@@ -475,6 +487,18 @@ const AccountDetails = () => {
     }
   };
 
+  useEffect(() => {
+    const loadData = async () => {
+      await Promise.all([fetchUserProfile()]);
+      setDataLoaded(false);
+    };
+    loadData();
+  }, []);
+
+  if (dataLoaded) {
+    return <Loader />;
+  }
+
   return (
     <>
       <ModalSuccess
@@ -525,6 +549,7 @@ const AccountDetails = () => {
               onChange={(e) =>
                 setUserData({ ...userData, email: e.target.value })
               }
+              disabled={isLoading}
               style={{
                 borderColor: emailError ? "red" : "",
               }}
@@ -553,15 +578,19 @@ const AccountDetails = () => {
                 icon={isPasswordVisible ? faEye : faEyeSlash}
                 onClick={() => setIsPasswordVisible(!isPasswordVisible)}
               />
+              {passwordHint && (
+                <span style={{ color: "red", fontSize: "12px", marginLeft: '10px' }}>
+                  {passwordHint}
+                </span>
+              )}
             </label>
+
             <input
-              type="password"
+              type={isPasswordVisible ? "text" : "password"}
               id="password"
               placeholder="add your password"
               value={userData.password}
-              onChange={(e) =>
-                setUserData({ ...userData, password: e.target.value })
-              }
+              onChange={handlePasswordChange}
               style={{
                 borderColor: passwordError ? "red" : "",
               }}
@@ -575,59 +604,86 @@ const AccountDetails = () => {
         </FirstBox>
 
         {userData.hasSubscription ? (
-        <SecondBox>
-          <Boxik>
-            <ArquitectaH5 style={{ color: "white" }}>PRO</ArquitectaH5>
-          </Boxik>
-          <AvenirH4 style={{ color: "white", marginTop: "12px", marginBottom: "12px" }}>
-            $10 / month
-          </AvenirH4>
-          <Text>
-            Next payment will be processed on {formattedDate || "N/A"}
-          </Text>
-          {!showCardInput ? (
-            <div style={{ width: "100%" }}>
-              <ButtonUpdate onClick={handleSubmit}>UPDATE PAYMENT</ButtonUpdate>
-              <ButtonCancel onClick={handleCancelSubscription}>
-                CANCEL SUBSCRIPTION
-              </ButtonCancel>
-            </div>
-          ) : (
-            <CardInputContainer>
-              <CardDetails>
-                <div style={{ marginBottom: "0px", width: "100%", overflow: "hidden" }}>
-                  <CardElement options={cardElementOptions} />
-                </div>
-              </CardDetails>
-              {isLoading ? (
-                <div style={{ display: "flex", justifyContent: "center" }}>
-                  <ColorRing
-                    visible={true}
-                    height="80"
-                    width="80"
-                    ariaLabel="color-ring-loading"
-                    wrapperClass="color-ring-wrapper"
-                    colors={["#f82d98", "#f82d98", "#F82D98", "#5833ef", "#5833ef"]}
-                  />
-                </div>
-              ) : (
-                <SaveButtonPay onClick={handleUpdatePayment}>SAVE</SaveButtonPay>
-              )}
-            </CardInputContainer>
-          )}
-        </SecondBox>
-      ) : (
-        <SecondBox>
-          <Boxik>
-            <ArquitectaH5 style={{ color: "white" }}>PRO</ArquitectaH5>
-          </Boxik>
-          <AvenirH4 style={{ color: "white", marginTop: "12px", marginBottom: "12px" }}>
-            $10 / month
-          </AvenirH4>
-          <Text>No active subscription</Text>
-        </SecondBox>
-      )}
-
+          <SecondBox>
+            <Boxik>
+              <ArquitectaH5 style={{ color: "white" }}>PRO</ArquitectaH5>
+            </Boxik>
+            <AvenirH4
+              style={{
+                color: "white",
+                marginTop: "12px",
+                marginBottom: "12px",
+              }}
+            >
+              $10 / month
+            </AvenirH4>
+            <Text>
+              Next payment will be processed on {formattedDate || "N/A"}
+            </Text>
+            {!showCardInput ? (
+              <div style={{ width: "100%" }}>
+                <ButtonUpdate onClick={handleSubmit}>
+                  UPDATE PAYMENT
+                </ButtonUpdate>
+                <ButtonCancel onClick={handleCancelSubscription}>
+                  CANCEL SUBSCRIPTION
+                </ButtonCancel>
+              </div>
+            ) : (
+              <CardInputContainer>
+                <CardDetails>
+                  <div
+                    style={{
+                      marginBottom: "0px",
+                      width: "100%",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <CardElement options={cardElementOptions} />
+                  </div>
+                </CardDetails>
+                {isLoading ? (
+                  <div style={{ display: "flex", justifyContent: "center" }}>
+                    <ColorRing
+                      visible={true}
+                      height="80"
+                      width="80"
+                      ariaLabel="color-ring-loading"
+                      wrapperClass="color-ring-wrapper"
+                      colors={[
+                        "#f82d98",
+                        "#f82d98",
+                        "#F82D98",
+                        "#5833ef",
+                        "#5833ef",
+                      ]}
+                    />
+                  </div>
+                ) : (
+                  <SaveButtonPay onClick={handleUpdatePayment}>
+                    SAVE
+                  </SaveButtonPay>
+                )}
+              </CardInputContainer>
+            )}
+          </SecondBox>
+        ) : (
+          <SecondBox>
+            <Boxik>
+              <ArquitectaH5 style={{ color: "white" }}>PRO</ArquitectaH5>
+            </Boxik>
+            <AvenirH4
+              style={{
+                color: "white",
+                marginTop: "12px",
+                marginBottom: "12px",
+              }}
+            >
+              $10 / month
+            </AvenirH4>
+            <Text>No active subscription</Text>
+          </SecondBox>
+        )}
 
         <ImageDown src={down} />
         <Footer />

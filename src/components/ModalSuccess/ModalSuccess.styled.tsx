@@ -4,14 +4,17 @@ export const ModalContainer = styled.div<{
   type: "success" | "failure" | "share" | "confirm";
 }>`
   position: fixed;
-  top: 25px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 16px;
   border-radius: 32px;
   box-sizing: border-box;
   border: none;
-  z-index: 10000;
+  z-index: 10001; 
   width: 100%;
   max-width: 400px;
   text-align: center;
@@ -50,8 +53,19 @@ export const ModalContainer = styled.div<{
   @media (min-width: 375px) {
     max-width: 400px;
     width: 90%;
-    top: 3px;
+    top: 50%;
   }
+`;
+
+export const ModalBackdrop = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  z-index: 10000;
 `;
 
 export const SocialContainer = styled.div`
@@ -66,4 +80,52 @@ export const Social = styled.img`
   width: 24px;
   height: 24px;
   cursor: pointer;
+`;
+
+export const CloseIcon = styled.div`
+  position: absolute;
+  top: 14px;
+  right: 35px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  pointer-events: auto;
+
+  &:hover {
+    border-image: linear-gradient(90deg, #f82d98, #5833ef) 1;
+  }
+
+  @media (max-width: 400px) {
+    top: 15px;
+    right: 16px;
+  }
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    width: 30%;
+    height: 1px;
+    background-color: var(--white-color);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+
+  &::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
+  }
+
+  &:hover::before,
+  &:hover::after {
+    background-color: unset;
+    background-image: linear-gradient(90deg, #f82d98, #5833ef);
+  }
 `;

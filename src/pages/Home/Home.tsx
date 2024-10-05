@@ -38,6 +38,7 @@ import {
 } from "./Home.styled";
 import Footer from "../../components/footer/Footer";
 import ModalSuccess from "../../components/ModalSuccess/ModalSuccess";
+import Loader from "../../components/Loader/Loader";
 import mask from "../../assets/images/main-page/left2.png";
 import jobs from "../../assets/images/main-page/left.png";
 import luter from "../../assets/images/main-page/center.png";
@@ -65,6 +66,7 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
   const [loadingQuestionId, setLoadingQuestionId] = useState<number | null>(
     null
   );
+  const [dataLoaded, setDataLoaded] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const gridRef = useRef<HTMLDivElement>(null);
@@ -79,89 +81,81 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
     }
   }, []);
 
-  useEffect(() => {
-    const fetchQuestions = async () => {
-      try {
-        const storedQuestions = await dbInstance.getData("questions");
+  const fetchQuestions = async () => {
+    try {
+      const storedQuestions = await dbInstance.getData("questions");
 
-        if (storedQuestions.length > 0) {
-          setQuestions(storedQuestions);
-          return;
+      if (storedQuestions.length > 0) {
+        setQuestions(storedQuestions);
+        return;
+      }
+      const response = await axios.get(
+        "https://eternalai.fly.dev/individuals/questions",
+        {
+          headers: { "Content-Type": "application/json" },
         }
+      );
+      const fetchedQuestions = response.data;
+
+      const addedData = await Promise.all(
+        fetchedQuestions.map(async (question: Question) => {
+          const existingQuestion = await dbInstance.getData("questions");
+          if (existingQuestion.length === 0) {
+            await dbInstance.addData("questions", question);
+          }
+        })
+      );
+      setQuestions(fetchedQuestions);
+
+      return;
+    } catch (error) {
+      console.error("Error fetching questions:", error);
+    }
+  };
+
+  const fetchIndividuals = async () => {
+    const storedIndividuals = await dbInstance.getData("individuals");
+    if (storedIndividuals.length) {
+      setIndividuals(storedIndividuals);
+    } else {
+      try {
         const response = await axios.get(
-          "https://eternalai.fly.dev/individuals/questions",
+          "https://eternalai.fly.dev/individuals?page=1&pageSize=15",
           {
             headers: { "Content-Type": "application/json" },
           }
         );
-        const fetchedQuestions = response.data;
 
-        const addedData = await Promise.all(
-          fetchedQuestions.map(async (question: Question) => {
-            const existingQuestion = await dbInstance.getData("questions");
-            if (existingQuestion.length === 0) {
-              await dbInstance.addData("questions", question);
-            }
-          })
-        );
-        setQuestions(fetchedQuestions);
+        if (Array.isArray(response.data)) {
+          const individualsWithSmallImages = response.data.map(
+            (individual: any) => {
+              const base64Flag = "data:image/jpeg;base64,";
+              const smallImageStr = arrayBufferToBase64(
+                individual.smallImage.data
+              );
+              const smallImageSrc = base64Flag + smallImageStr;
 
-        return;
-      } catch (error) {
-        console.error("Error fetching questions:", error);
-      }
-    };
-
-    fetchQuestions();
-  }, []);
-
-  useEffect(() => {
-    const fetchIndividuals = async () => {
-      const storedIndividuals = await dbInstance.getData("individuals");
-      if (storedIndividuals.length) {
-        setIndividuals(storedIndividuals);
-      } else {
-        try {
-          const response = await axios.get(
-            "https://eternalai.fly.dev/individuals?page=1&pageSize=15",
-            {
-              headers: { "Content-Type": "application/json" },
+              return {
+                id: individual.id,
+                name: individual.name,
+                title: individual.title,
+                smallImage: smallImageSrc,
+              };
             }
           );
 
-          if (Array.isArray(response.data)) {
-            const individualsWithSmallImages = response.data.map(
-              (individual: any) => {
-                const base64Flag = "data:image/jpeg;base64,";
-                const smallImageStr = arrayBufferToBase64(
-                  individual.smallImage.data
-                );
-                const smallImageSrc = base64Flag + smallImageStr;
-
-                return {
-                  id: individual.id,
-                  name: individual.name,
-                  title: individual.title,
-                  smallImage: smallImageSrc,
-                };
-              }
-            );
-
-            setIndividuals(individualsWithSmallImages);
-            individualsWithSmallImages.forEach((individual) =>
-              dbInstance.addData("individuals", individual)
-            );
-          } else {
-            console.error("Expected array but got:", response.data);
-          }
-        } catch (error) {
-          console.error("Error fetching individuals:", error);
+          setIndividuals(individualsWithSmallImages);
+          individualsWithSmallImages.forEach((individual) =>
+            dbInstance.addData("individuals", individual)
+          );
+        } else {
+          console.error("Expected array but got:", response.data);
         }
+      } catch (error) {
+        console.error("Error fetching individuals:", error);
       }
-    };
-
-    fetchIndividuals();
-  }, []);
+    }
+  };
 
   const fetchFullImage = async (
     individualId: number
@@ -301,6 +295,8 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
 
   const handleIndividualClick = async (individualId: number) => {
     if (isAuthenticated) {
+      setDataLoaded(true);
+    try {
       const fullImage = await fetchFullImage(individualId);
 
       if (fullImage) {
@@ -322,7 +318,12 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
           console.error("Individual not found in stored data");
         }
       }
-    } else {
+    } catch (error) {
+      console.error("Error fetching individual data:", error);
+    } finally {
+      setDataLoaded(false); 
+    }
+   } else {
       setModalType("failure");
       setModalMessage("Please, log in to chat with individuals");
       setIsModalVisible(true);
@@ -339,6 +340,20 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
     }
   }, [location]);
 
+  useEffect(() => {
+    const loadData = async () => {
+      setDataLoaded(true);
+      await Promise.all([fetchQuestions(), fetchIndividuals()]);
+      setDataLoaded(false); 
+    };
+    loadData();
+  }, []);
+  
+
+  if (dataLoaded) {
+    return <Loader />;
+  }
+  
   return (
     <>
       <ModalSuccess
@@ -347,6 +362,7 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
         message={modalMessage}
         onClose={() => setIsModalVisible(false)}
       />
+      {dataLoaded && <Loader />}
       <Container>
         <MainContainer>
           <Section>

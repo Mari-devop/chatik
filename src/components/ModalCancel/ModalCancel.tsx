@@ -41,8 +41,8 @@ const ModalCancel: React.FC<ModalCancelProps> = ({ onClose, onConfirm }) => {
         <CloseIcon onClick={onClose} />
         <Title>Are you sure you want to cancel?</Title>
         <BtnContainer>
-          <Button onClick={onClose}>CANCEL</Button>
-          <Button onClick={onConfirm}>CONTINUE</Button>
+          <Button onClick={onConfirm}>YES</Button>
+          <Button onClick={onClose}>NO</Button>
         </BtnContainer>
       </BoxContainer>
     </ModalContainer>

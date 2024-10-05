@@ -73,6 +73,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
 
   const handleInputClick = () => {
     if (!isAuthenticated) {
+      setModalType("failure");
       setModalMessage("Please login to use this feature.");
       setShowModal(true);
     }
@@ -202,22 +203,24 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
   };
 
   const simulateResponse = async (response: string) => {
-    setCurrentResponse(null); 
-    await new Promise((resolve) => setTimeout(resolve, 2000)); 
-    setCurrentResponse(response); 
-  
-    await new Promise((resolve) => setTimeout(resolve, 2000)); 
+    setCurrentResponse(null);
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    setCurrentResponse(response);
+
+    await new Promise((resolve) => setTimeout(resolve, 2000));
     setChatHistory((prev) => [
       ...prev,
-      { text: response, isUser: false, smallImage: individual?.smallImage || profile },
+      {
+        text: response,
+        isUser: false,
+        smallImage: individual?.smallImage || profile,
+      },
     ]);
-  
 
     setCurrentResponse(null);
-    setIsDialogStarted(false); 
-    setQuestionVisible(false); 
+    setIsDialogStarted(false);
+    setQuestionVisible(false);
   };
-  
 
   const handleSendMessage = async () => {
     if (!message.trim() || isLoading) return;
@@ -346,13 +349,9 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
         } catch (deleteError) {
           console.error("Error deleting token:", deleteError);
         }
-      }
-      if (
-        error.response?.status === 500 &&
-        error.response?.data?.message.includes(
-          "Please subscribe to use this feature"
-        )
-      ) {
+      } else if (error.response?.status === 500) {
+        setModalType("failure");
+        setModalMessage("Please subscribe to use this feature.");
         setShowModal(true);
         setTimeout(() => {
           setShowModal(false);
@@ -473,7 +472,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
       <ModalSuccess
         isVisible={showModal}
         modalType="failure"
-        message="Please subscribe to use this feature"
+        message={modalMessage}
         onClose={() => setShowModal(false)}
       />
 
@@ -584,3 +583,4 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
 };
 
 export default Chat;
+

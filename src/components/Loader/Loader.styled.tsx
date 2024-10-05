@@ -6,7 +6,10 @@ export const LoaderContainer = styled.div`
   align-items: center;
   height: 100vh;
   width: 100%;
-  background-color: var(--dark-color);
+  background-color: transparent;
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  isolation: isolate;
 `;
 
 export const PictureContainer = styled.div`

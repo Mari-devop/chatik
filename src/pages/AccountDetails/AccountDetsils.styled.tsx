@@ -164,7 +164,8 @@ export const ButtonCancel = styled.button`
   height: 56px;
   background: transparent;
   cursor: pointer;
-  border: none;
+  border: 1px solid transparent;
+  border-radius: 120px;
   font-family: "Arquitecta";
   font-weight: 700;
   font-size: 13px;

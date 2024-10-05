@@ -99,7 +99,7 @@ export const BtnContainer = styled.div`
 export const CloseIcon = styled.div`
   position: absolute;
   top: 24px;
-  left: 24px;
+  right: 24px;
   width: 34px;
   height: 34px;
   cursor: pointer;

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Container } from "../Home/Home.styled";
 import { Box, Row, AvenirH4Title } from "./HowItWorks.styled";
@@ -7,14 +7,28 @@ import { Boxik } from "../AccountDetails/AccountDetsils.styled";
 
 const HowItWorks = () => {
   const navigate = useNavigate();
-  const handleContainerClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
+
+  const handleContainerClick = () => {
     navigate("/");
   };
 
   const handleInnerClick = (event: React.MouseEvent) => {
     event.stopPropagation();
   };
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        handleContainerClick();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   return (
     <Container onClick={handleContainerClick}>
