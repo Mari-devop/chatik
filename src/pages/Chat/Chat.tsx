@@ -5,6 +5,7 @@ import { dbInstance } from "../../db";
 import { validateToken } from "../../utils/authUtils";
 import { ChatProps, Message } from "./types";
 import { User } from "../../components/menu/types";
+import { ColorRing } from "react-loader-spinner";
 import {
   ChatContainer,
   PersonContainer,
@@ -49,7 +50,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
     name,
     title,
   } = location.state;
-  const [scrolled, setScrolled] = useState(false);
+
   const [filteredResponses, setFilteredResponses] = useState<any[]>(
     location.state.filteredResponses || []
   );
@@ -60,6 +61,8 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
   const [message, setMessage] = useState<string>("");
   const [isGrowing, setIsGrowing] = useState(false);
   const [chatHistory, setChatHistory] = useState<Message[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 6;
   const [questionVisible, setQuestionVisible] = useState(true);
   const [isDialogStarted, setIsDialogStarted] = useState(false);
   const [wasQuestionClicked, setWasQuestionClicked] = useState(false);
@@ -67,9 +70,10 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [modalType, setModalType] = useState<"success" | "failure">("success");
   const [modalMessage, setModalMessage] = useState("");
-  const [userIsScrolling, setUserIsScrolling] = useState(false);
   const answerBoxRef = useRef<HTMLDivElement | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+  const isFetching = useRef(false);
+  const currentPageRef = useRef<number | null>(null);
 
   const handleInputClick = () => {
     if (!isAuthenticated) {
@@ -155,38 +159,6 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
     }
   }, [location.state.filteredResponses]);
 
-  const handleScroll = (e: Event) => {
-    const target = e.target as HTMLElement;
-    const top = target.scrollTop;
-    const height = target.scrollHeight - target.clientHeight;
-    setScrolled(top > 0);
-
-    if (top < height - 100) {
-      setUserIsScrolling(true);
-    } else {
-      setUserIsScrolling(false);
-    }
-  };
-
-  useEffect(() => {
-    const scrollContainer = document.getElementById("scrollContainer");
-    if (scrollContainer) {
-      scrollContainer.addEventListener("scroll", handleScroll);
-    }
-
-    return () => {
-      if (scrollContainer) {
-        scrollContainer.removeEventListener("scroll", handleScroll);
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!userIsScrolling && answerBoxRef.current) {
-      answerBoxRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [filteredResponses, chatHistory]);
-
   const breakLongWords = (message: string, maxLength: number = 32): string => {
     return message
       .split(" ")
@@ -244,10 +216,27 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
 
       const tokenIsValid = await validateToken();
       if (!tokenIsValid) {
+        try {
+          const users = await dbInstance.getData("users");
+          const tokensToDelete: number[] = [];
+  
+          users.forEach((user: User) => {
+            if (user.token) {
+              tokensToDelete.push(user.id);
+            }
+          });
+  
+          for (const userId of tokensToDelete) {
+            await dbInstance.deleteData("users", userId);
+          }
+        } catch (deleteError) {
+          console.error("Error deleting token:", deleteError);
+        }
+  
         setModalType("failure");
         setModalMessage("Your session has expired. Please login again.");
         setShowModal(true);
-
+  
         setTimeout(() => {
           setShowModal(false);
           navigate("/");
@@ -361,26 +350,20 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
     }
   };
 
-  const fetchAllChatHistory = useCallback(async () => {
-    if (!individualId) return;
+  const fetchChatHistory = useCallback(
+    async (page: number) => {
+      try {
+        const users = await dbInstance.getData("users");
+        const lastUser = users[users.length - 1];
+        const userToken = lastUser?.token;
 
-    try {
-      const users = await dbInstance.getData("users");
-      const lastUser = users[users.length - 1];
-      const userToken = lastUser?.token;
+        if (!userToken) {
+          console.error("Token is missing or user is not authenticated");
+          return;
+        }
 
-      if (!userToken) {
-        console.error("Token is missing or user is not authenticated");
-        return;
-      }
-
-      let allChatHistory: Message[] = [];
-      let page = 1;
-      let totalPages = 1;
-
-      while (page <= totalPages) {
         const response = await axios.get(
-          `https://eternalai.fly.dev/api/chatHistory/${individualId}?page=${page}`,
+          `https://eternalai.fly.dev/api/chatHistory/${individualId}?page=${page}&pageSize=6`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -391,7 +374,6 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
 
         const { chat, totalPages: fetchedTotalPages } =
           response.data.chatHistory;
-        totalPages = fetchedTotalPages;
 
         const updatedChatHistory = await Promise.all(
           chat.map(async (entry: any) => {
@@ -407,22 +389,73 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
           })
         );
 
-        allChatHistory = [...allChatHistory, ...updatedChatHistory];
-
-        page += 1;
+        setChatHistory((prev) =>
+          page === fetchedTotalPages
+            ? updatedChatHistory
+            : [...updatedChatHistory, ...prev]
+        );
+        setTotalPages(fetchedTotalPages);
+        currentPageRef.current = page;
+      } catch (error) {
+        console.error("Error fetching chat history:", error);
       }
+    },
+    [individualId]
+  );
 
-      setChatHistory(allChatHistory);
-    } catch (error) {
-      console.error("Error fetching chat history:", error);
+  const handleScroll = useCallback(() => {
+    if (
+      !scrollContainerRef.current ||
+      isFetching.current ||
+      currentPageRef.current === 1
+    )
+      return;
+
+    const { scrollTop } = scrollContainerRef.current;
+
+    if (
+      scrollTop === 0 &&
+      currentPageRef.current &&
+      currentPageRef.current > 1
+    ) {
+      isFetching.current = true;
+      setIsLoading(true);
+
+      fetchChatHistory(currentPageRef.current - 1).then(() => {
+        isFetching.current = false;
+        setIsLoading(false);
+      });
     }
-  }, [individualId, userImage]);
+  }, [fetchChatHistory]);
 
   useEffect(() => {
-    if (individual) {
-      fetchAllChatHistory();
+    const initFetch = async () => {
+      if (!isFetching.current) {
+        isFetching.current = true;
+        setIsLoading(true);
+
+        await fetchChatHistory(totalPages);
+        setIsLoading(false);
+        isFetching.current = false;
+      }
+    };
+
+    initFetch();
+  }, [fetchChatHistory, totalPages]);
+
+  useEffect(() => {
+    const scrollContainer = scrollContainerRef.current;
+
+    if (scrollContainer) {
+      scrollContainer.addEventListener("scroll", handleScroll);
     }
-  }, [individual, fetchAllChatHistory]);
+
+    return () => {
+      if (scrollContainer) {
+        scrollContainer.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, [handleScroll]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     const target = e.target as HTMLTextAreaElement;
@@ -489,7 +522,24 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
         </PersonContainer>
         <DialogContainer>
           <RespondContainer>
-            <AnswerBox id="scrollContainer" ref={scrollContainerRef}>
+            <AnswerBox ref={scrollContainerRef}>
+              {isLoading && (
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                  <ColorRing
+                    visible={true}
+                    height="35"
+                    width="35"
+                    ariaLabel="color-ring-loading"
+                    colors={[
+                      "#f82d98",
+                      "#f82d98",
+                      "#F82D98",
+                      "#5833ef",
+                      "#5833ef",
+                    ]}
+                  />
+                </div>
+              )}
               {(isDialogStarted || !!individual?.questionText) && (
                 <Question
                   $isVisible={questionVisible && !!individual?.questionText}
@@ -583,4 +633,3 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
 };
 
 export default Chat;
-

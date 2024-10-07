@@ -38,6 +38,8 @@ const SignUp: React.FC<SignupProps> = ({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [passwordHint, setPasswordHint] = useState("");
+  const [passwordError, setPasswordError] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalType, setModalType] = useState<"success" | "failure">("success");
   const [modalMessage, setModalMessage] = useState("");
@@ -48,6 +50,21 @@ const SignUp: React.FC<SignupProps> = ({
     setIsLoginOpen(false);
   };
 
+  const validatePassword = (password: string) => {
+    if (password.length < 8) {
+      setPasswordHint("Password should be at least 8 characters");
+      setPasswordError(true);
+      return false;
+    }
+    setPasswordHint("");
+    setPasswordError(false);
+    return true;
+  };
+
+  useEffect(() => {
+    validatePassword(password);
+  })
+  
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -210,6 +227,13 @@ const SignUp: React.FC<SignupProps> = ({
                   icon={isPasswordVisible ? faEye : faEyeSlash}
                   onClick={() => setIsPasswordVisible(!isPasswordVisible)}
                 />
+                {passwordHint && (
+                <span
+                  style={{ color: "red", fontSize: "12px", marginLeft: "10px" }}
+                >
+                  {passwordHint}
+                </span>
+              )}
               </label>
               <input
                 type={isPasswordVisible ? "text" : "password"}

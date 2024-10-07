@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import FocusTrap from "focus-trap-react";
 import axios from "axios";
 import { useGoogleLogin } from "@react-oauth/google";
+import { ColorRing } from "react-loader-spinner";
 import { login } from "../../auth/auth";
 import { dbInstance } from "../../db";
 import { LoginProps } from "./types";
@@ -47,6 +48,7 @@ const Login: React.FC<LoginProps> = ({
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalType, setModalType] = useState<"success" | "failure">("success");
   const [modalMessage, setModalMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -84,6 +86,7 @@ const Login: React.FC<LoginProps> = ({
   };
 
   const handleLogin = async () => {
+    setIsLoading(true);
     try {
       const response = await login(email, password);
 
@@ -101,7 +104,7 @@ const Login: React.FC<LoginProps> = ({
       console.log("Error details:", error);
 
       if (error.response) {
-        if (error.response.status === 401) {
+        if (error.response.status === 400) {
           setModalType("failure");
           setModalMessage("Invalid email or password");
         } else if (error.response.status === 404) {
@@ -121,6 +124,8 @@ const Login: React.FC<LoginProps> = ({
       setIsModalVisible(true);
       console.log("Modal should now be visible");
       setIsAuthenticated(false);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -287,7 +292,25 @@ const Login: React.FC<LoginProps> = ({
                 SIGN IN WITH GOOGLE
               </CustomGoogleButton>
               <Button onClick={handleLogin} tabIndex={0}>
+                
                 SIGN IN
+                {isLoading && (
+                  
+                  <ColorRing
+                    visible={true}
+                    height="35"
+                    width="35"
+                    ariaLabel="color-ring-loading"
+                    colors={[
+                      "#f82d98",
+                      "#f82d98",
+                      "#F82D98",
+                      "#5833ef",
+                      "#5833ef",
+                    ]}
+                  />
+                )}
+                
               </Button>
             </ButtonContainer>
             <Divider />

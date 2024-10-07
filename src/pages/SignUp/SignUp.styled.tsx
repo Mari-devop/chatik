@@ -137,6 +137,10 @@ export const ButtonContainer = styled.div`
 `;
 
 export const Button = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   width: 48%;
   height: 56px;
   background: var(--primary-gradient);

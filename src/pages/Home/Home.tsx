@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
+import { validateToken } from "../../utils/authUtils";
 import { Question, IndividualWithoutFullImage, MainProps } from "./types";
 import { ColorRing } from "react-loader-spinner";
 import { dbInstance } from "../../db";
@@ -80,6 +81,46 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
       console.log(`Share token saved: ${shareToken}`);
     }
   }, []);
+
+  const checkTokenValidation = async () => {
+    try {
+      const users = await dbInstance.getData("users");
+      const lastUser = users[users.length - 1];
+      const token = lastUser?.token;
+
+      if (!token) {
+        return;
+      }
+
+      const tokenIsValid = await validateToken();
+      if (!tokenIsValid) {
+        await deleteTokenAndRedirect();
+      }
+    } catch (error) {
+      console.error("Error during token validation:", error);
+    }
+  };
+
+
+  const deleteTokenAndRedirect = async () => {
+    try {
+      const users = await dbInstance.getData("users");
+      const tokensToDelete: number[] = [];
+
+      users.forEach((user: any) => {
+        if (user.token) {
+          tokensToDelete.push(user.id);
+        }
+      });
+
+      for (const userId of tokensToDelete) {
+        await dbInstance.deleteData("users", userId);
+      }
+
+    } catch (deleteError) {
+      console.error("Error deleting token:", deleteError);
+    }
+  };
 
   const fetchQuestions = async () => {
     try {

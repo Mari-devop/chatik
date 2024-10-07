@@ -84,49 +84,57 @@ const AccountDetails = () => {
   };
 
   const validateEmail = (email: string) => {
-    const gmailRegex = /^[^\s@]+@gmail\.com$/;
-    return gmailRegex.test(email);
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   };
 
   const validatePhone = (phone: string) => {
+    if (!phone) return true;
+
     const phoneRegex = /^\+380 \d{2} \d{3} \d{2} \d{2}$/;
     return phoneRegex.test(phone);
   };
 
-  const validatePassword = (password: string) => {
-    if (password.length < 8) {
-      setPasswordHint("Password should be at least 8 characters"); // подсказка, если меньше 8 символов
-      setPasswordError(true); // делаем поле невалидным
+  const validatePassword = (password: string | undefined) => {
+    if (!password || typeof password !== "string") {
+      setPasswordHint("Password is required");
+      setPasswordError(true);
       return false;
     }
-    setPasswordHint(""); // скрываем подсказку
-    setPasswordError(false); // делаем поле валидным
+
+    if (password.length < 8) {
+      setPasswordHint("Password should be at least 8 characters");
+      setPasswordError(true);
+      return false;
+    }
+
+    setPasswordHint("");
+    setPasswordError(false);
     return true;
   };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const password = e.target.value;
     setUserData((prev) => ({ ...prev, password }));
-    validatePassword(password); // Валидируем при каждом изменении
+    validatePassword(password);
   };
 
   const validateForm = () => {
     const isEmailValid = validateEmail(userData.email);
-    const isPhoneValid = validatePhone(userData.phone);
     const isPasswordValid = validatePassword(userData.password);
+    const isPhoneValid = userData.phone ? validatePhone(userData.phone) : true;
 
     setEmailError(!isEmailValid);
-    setPhoneError(!isPhoneValid);
     setPasswordError(!isPasswordValid);
+    setPhoneError(!isPhoneValid);
 
-    setIsFormValid(isEmailValid && isPhoneValid && isPasswordValid);
+    const isFormValid = isEmailValid && isPasswordValid && isPhoneValid;
+    setIsFormValid(isFormValid);
   };
 
   useEffect(() => {
-    if (isEmailLoaded) {
-      validateForm();
-    }
-  }, [userData, isEmailLoaded]);
+    validateForm();
+  }, [userData]);
 
   const formattedDate = new Date(userData.nextBillingDate).toLocaleDateString(
     "en-US",
@@ -579,7 +587,9 @@ const AccountDetails = () => {
                 onClick={() => setIsPasswordVisible(!isPasswordVisible)}
               />
               {passwordHint && (
-                <span style={{ color: "red", fontSize: "12px", marginLeft: '10px' }}>
+                <span
+                  style={{ color: "red", fontSize: "12px", marginLeft: "10px" }}
+                >
                   {passwordHint}
                 </span>
               )}
