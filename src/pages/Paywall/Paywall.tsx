@@ -70,7 +70,7 @@ const Paywall = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [modalType, setModalType] = useState<"success" | "failure">("success");
+  const [modalType, setModalType] = useState<"success" | "failure" | "share">("success");
   const [modalMessage, setModalMessage] = useState("");
   const [shareLink, setShareLink] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -298,9 +298,10 @@ const Paywall = () => {
       const generatedLink = `${window.location.origin}/?token=${userToken}`;
 
       setShareLink(generatedLink);
+      setModalType("share");
+      setModalMessage("Share this link to get 3 free questions");
 
       setShowModal(true);
-      console.log("Modal should be shown, showModal:", true);
     } catch (error) {
       console.error(error);
     }

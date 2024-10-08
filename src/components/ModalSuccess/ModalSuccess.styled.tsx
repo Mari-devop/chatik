@@ -10,6 +10,7 @@ export const ModalContainer = styled.div<{
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
   padding: 16px;
   border-radius: 22px;
   box-sizing: border-box;
@@ -52,8 +53,9 @@ export const ModalContainer = styled.div<{
 
   p {
     font-weight: 500;
-    padding: 35px;
+    padding-top: 25px;
   }
+
   @media (min-width: 375px) {
     max-width: 400px;
     width: 90%;
