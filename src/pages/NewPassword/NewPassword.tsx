@@ -80,7 +80,6 @@ const NewPassword: React.FC<PasswordProps> = ({
             <input
               type={isPasswordVisible ? "text" : "password"}
               id="password"
-              placeholder="********"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
@@ -101,7 +100,6 @@ const NewPassword: React.FC<PasswordProps> = ({
             <input
               type={isNewPasswordVisible ? "text" : "password"}
               id="password"
-              placeholder="********"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
             />

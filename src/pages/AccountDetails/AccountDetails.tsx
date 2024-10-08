@@ -746,7 +746,7 @@ const AccountDetails = () => {
             </Button>
           </ButtonContainer>
         </FirstBox>
-
+        {userData.hasSubscription && (
         <SecondBox>
           <Boxik>
             <ArquitectaH5 style={{ color: "white" }}>PRO</ArquitectaH5>
@@ -826,7 +826,7 @@ const AccountDetails = () => {
             </>
           )}
         </SecondBox>
-
+        )}
         <ImageDown src={down} />
         <Footer />
       </Container>
