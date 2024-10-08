@@ -31,10 +31,7 @@ export const ButtonSecondary = styled.button`
   cursor: pointer;
   align-items: left;
   display: flex;
-
-  &:focus {
-    outline: 1px solid #b5e42e;
-  }
+  width: fit-content;
 
   @media (max-height: 740px) {
     font-size: 14px;
