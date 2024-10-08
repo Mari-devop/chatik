@@ -97,8 +97,6 @@ const AccountDetails = () => {
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newEmail = e.target.value;
-
-    // If email is changed, mark isVerified as false
     if (newEmail !== initialUserData.email) {
       setUserData((prev) => ({
         ...prev,
@@ -168,8 +166,10 @@ const AccountDetails = () => {
   };
 
   useEffect(() => {
-    validateForm();
-    checkFormChanged();
+    if (isEmailLoaded) {
+      checkFormChanged();
+      validateForm();
+    }
   }, [userData]);
 
   const formattedDate = new Date(userData.nextBillingDate).toLocaleDateString(
@@ -201,12 +201,15 @@ const AccountDetails = () => {
         console.error("No user data found in IndexedDB");
         return;
       }
-      const userToken = users[0]?.token;
 
-      if (!userToken) {
-        console.error("No token found for the user");
+      const verifiedUser = users.find((user: any) => user.token);
+
+      if (!verifiedUser) {
+        console.error("No verified user with token found");
         return;
       }
+
+      const userToken = verifiedUser.token;
 
       const response = await axios.get(
         "https://eternalai.fly.dev/user/profile",
@@ -243,6 +246,7 @@ const AccountDetails = () => {
         isSubscriptionCancelled: false,
       });
 
+      setIsEmailLoaded(true);
       setDataLoaded(false);
     } catch (error: any) {
       console.error("Error fetching user profile:", error);
@@ -294,12 +298,15 @@ const AccountDetails = () => {
         console.error("No user data found in IndexedDB");
         return;
       }
-      const userToken = users[0]?.token;
 
-      if (!userToken) {
-        console.error("No token found for the user");
+      const verifiedUser = users.find((user: any) => user.token);
+
+      if (!verifiedUser) {
+        console.error("No verified user with token found");
         return;
       }
+
+      const userToken = verifiedUser.token;
 
       const tokenIsValid = await validateToken();
       if (!tokenIsValid) {
@@ -398,12 +405,15 @@ const AccountDetails = () => {
         console.error("No user data found in IndexedDB");
         return;
       }
-      const userToken = users[0]?.token;
 
-      if (!userToken) {
-        console.error("No token found for the user");
+      const verifiedUser = users.find((user: any) => user.token);
+
+      if (!verifiedUser) {
+        console.error("No verified user with token found");
         return;
       }
+
+      const userToken = verifiedUser.token;
 
       const response = await axios.put(
         "https://eternalai.fly.dev/payment/renew-subscription",
@@ -447,13 +457,16 @@ const AccountDetails = () => {
         setIsLoading(false);
         return;
       }
-      const userToken = users[0]?.token;
 
-      if (!userToken) {
-        console.error("No token found for the user");
+      const verifiedUser = users.find((user: any) => user.token);
+
+      if (!verifiedUser) {
+        console.error("No verified user with token found");
         setIsLoading(false);
         return;
       }
+
+      const userToken = verifiedUser.token;
 
       const cardElement = elements.getElement(CardElement);
 
@@ -555,12 +568,15 @@ const AccountDetails = () => {
         console.error("No user data found in IndexedDB");
         return;
       }
-      const userToken = users[0]?.token;
 
-      if (!userToken) {
-        console.error("No token found for the user");
+      const verifiedUser = users.find((user: any) => user.token);
+
+      if (!verifiedUser) {
+        console.error("No verified user with token found");
         return;
       }
+
+      const userToken = verifiedUser.token;
 
       const response = await axios.delete(
         "https://eternalai.fly.dev/payment/cancel-subscription",
@@ -745,7 +761,7 @@ const AccountDetails = () => {
             $10 / month
           </AvenirH4>
           <Text>
-            {userData.isSubscriptionCancelled
+            {!userData.isSubscriptionCancelled && !userData.hasSubscription
               ? `Your subscription will expire on ${formattedDate || "N/A"}`
               : `Next payment will be processed on ${formattedDate || "N/A"}`}
           </Text>

@@ -81,7 +81,19 @@ const Paywall = () => {
   useEffect(() => {
     const checkAuthStatus = async () => {
       const users = await dbInstance.getData("users");
-      const userToken = users[0]?.token;
+      if (!users || users.length === 0) {
+        console.error("No user data found in IndexedDB");
+        return;
+      }
+
+      const verifiedUser = users.find((user: any) => user.token);
+
+      if (!verifiedUser) {
+        console.error("No verified user with token found");
+        return;
+      }
+  
+      const userToken = verifiedUser.token;
       setIsAuthenticated(!!userToken);
     };
     checkAuthStatus();
@@ -112,13 +124,15 @@ const Paywall = () => {
         setIsLoading(false);
         return;
       }
-      const userToken = users[0]?.token;
+      const verifiedUser = users.find((user: any) => user.token);
 
-      if (!userToken) {
-        console.error("No token found for the user");
+      if (!verifiedUser) {
+        console.error("No verified user with token found");
         setIsLoading(false);
         return;
       }
+
+      const userToken = verifiedUser.token;
 
       const tokenIsValid = await validateToken();
       if (!tokenIsValid) {
@@ -259,12 +273,20 @@ const Paywall = () => {
 
   const handleShareClick = async () => {
     try {
-      const users: any = await dbInstance.getData("users");
-      const userToken = users?.[0]?.token;
-
-      if (!userToken) {
+      const users = await dbInstance.getData("users");
+      if (!users || users.length === 0) {
+        console.error("No user data found in IndexedDB");
         return;
       }
+
+      const verifiedUser = users.find((user: any) => user.token);
+
+      if (!verifiedUser) {
+        console.error("No verified user with token found");
+        return;
+      }
+  
+      const userToken = verifiedUser.token;
 
       const generatedLink = `${window.location.origin}/?token=${userToken}`;
       setShareLink(generatedLink);

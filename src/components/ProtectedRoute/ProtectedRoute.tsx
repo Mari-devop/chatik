@@ -12,15 +12,13 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   useEffect(() => {
     const checkAuthentication = async () => {
       try {
-        // Получаем данные из IndexedDB
         const users = await dbInstance.getData("users");
-        const token = users && users.length > 0 ? users[0].token : null;
+        const verifiedUser = users.find((user: any) => user.token);
 
-        // Если токен существует, пользователь авторизован
-        setIsAuthenticated(!!token);
+        setIsAuthenticated(!!verifiedUser);
       } catch (error) {
         console.error("Error checking authentication:", error);
-        setIsAuthenticated(false); // В случае ошибки считаем, что пользователь не авторизован
+        setIsAuthenticated(false); 
       }
     };
 
@@ -28,7 +26,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   }, []);
 
   if (isAuthenticated === null) {
-    // Пока идет проверка, показываем лоадер
     return <div>Loading...</div>;
   }
 

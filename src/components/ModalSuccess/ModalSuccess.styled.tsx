@@ -11,7 +11,7 @@ export const ModalContainer = styled.div<{
   justify-content: center;
   align-items: center;
   padding: 16px;
-  border-radius: 32px;
+  border-radius: 22px;
   box-sizing: border-box;
   border: none;
   z-index: 10001; 
@@ -50,6 +50,10 @@ export const ModalContainer = styled.div<{
     z-index: -1;
   }
 
+  p {
+    font-weight: 500;
+    padding: 35px;
+  }
   @media (min-width: 375px) {
     max-width: 400px;
     width: 90%;
@@ -84,8 +88,8 @@ export const Social = styled.img`
 
 export const CloseIcon = styled.div`
   position: absolute;
-  top: -15px;
-  right: 0px;
+  top: 15px;
+  right: 20px;
   width: 30px;
   height: 30px;
   cursor: pointer;

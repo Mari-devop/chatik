@@ -4,6 +4,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import { dbInstance } from "./db";
+import { validateToken } from "./utils/authUtils";
 import SignUp from "./pages/SignUp/SignUp";
 import { MainContainer, ContentContainer } from "./assets/css/Global.styled";
 import Login from "./pages/Login/Login";
@@ -39,19 +40,27 @@ function App() {
     return !!userWithToken;
   };
 
-  // useEffect(() => {
-  //   checkAuthentication();
+  const checkTokenOnLoad = async () => {
+    const users = await dbInstance.getData("users"); 
+    const userWithToken = users.find((user: any) => user.token); 
 
-  //   const timer = setTimeout(() => {
-  //     setIsLoading(false);
-  //   }, 5000);
+    if (userWithToken) {
+      const isValid = await validateToken(); 
+      if (!isValid) {
+        await dbInstance.deleteData("users", userWithToken.id);
+      }
+    }
 
-  //   return () => clearTimeout(timer);
-  // }, []);
+    setIsLoading(false); 
+  };
 
-  // if (isLoading) {
-  //   return <Loader />;
-  // }
+  useEffect(() => {
+    checkTokenOnLoad();
+  }, []);
+
+  if (isLoading) {
+    return <Loader />;
+  }
 
   return (
     <GoogleOAuthProvider clientId="297917996967-5i0m39clbr19umnqtclsg7gken22896e.apps.googleusercontent.com">

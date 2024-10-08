@@ -63,8 +63,8 @@ const SignUp: React.FC<SignupProps> = ({
 
   useEffect(() => {
     validatePassword(password);
-  })
-  
+  });
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -228,12 +228,16 @@ const SignUp: React.FC<SignupProps> = ({
                   onClick={() => setIsPasswordVisible(!isPasswordVisible)}
                 />
                 {passwordHint && (
-                <span
-                  style={{ color: "red", fontSize: "12px", marginLeft: "10px" }}
-                >
-                  {passwordHint}
-                </span>
-              )}
+                  <span
+                    style={{
+                      color: "red",
+                      fontSize: "12px",
+                      marginLeft: "10px",
+                    }}
+                  >
+                    {passwordHint}
+                  </span>
+                )}
               </label>
               <input
                 type={isPasswordVisible ? "text" : "password"}
@@ -247,7 +251,9 @@ const SignUp: React.FC<SignupProps> = ({
                 <img src={googleIcon} alt="google" />
                 SIGN UP WITH GOOGLE
               </CustomGoogleButton>
-              <Button onClick={handleRegister}>SIGN UP</Button>
+              <Button onClick={handleRegister}>
+                <span className="button-text">SIGN UP</span>
+              </Button>
             </ButtonContainer>
             <Divider />
             <TextCenter>

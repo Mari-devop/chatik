@@ -88,37 +88,41 @@ const Login: React.FC<LoginProps> = ({
 
   const handleLogin = async () => {
     setIsLoading(true);
-  
+
     try {
-  
       const users = await dbInstance.getData("users");
-      console.log("Users from IndexedDB:", users); 
-  
+      console.log("Users from IndexedDB:", users);
+
       if (users && users.length > 0) {
         console.log("Users in IndexedDB:", users);
-  
+
         const userFromDB = users.find((user: User) => user.email === email);
-  
+
         if (userFromDB) {
-          console.log("Found user in IndexedDB:", userFromDB); 
-  
+          console.log("Found user in IndexedDB:", userFromDB);
+
           if (userFromDB.isVerified === false) {
             console.log("Unverified user found in IndexedDB:", userFromDB);
             setModalType("failure");
-            setModalMessage("Please, check your email box to verify your email!");
+            setModalMessage(
+              "Please, check your email box to verify your email! If you didn't receive the email, please spam box."
+            );
             setIsModalVisible(true);
             setIsLoading(false);
-            return; 
+            return;
           }
         } else {
           console.log("User not found in IndexedDB.");
         }
       }
-  
-      console.log("Sending login request to server with data:", { email, password });
-  
+
+      console.log("Sending login request to server with data:", {
+        email,
+        password,
+      });
+
       const response = await login(email, password);
-  
+
       if (response && response.token) {
         setIsAuthenticated(true);
         setModalType("success");
@@ -129,7 +133,7 @@ const Login: React.FC<LoginProps> = ({
       }
     } catch (error: any) {
       console.log("Error details:", error);
-  
+
       if (error.response) {
         if (error.response.status === 400) {
           setModalType("failure");
@@ -154,7 +158,6 @@ const Login: React.FC<LoginProps> = ({
       setIsLoading(false);
     }
   };
-  
 
   const googleLogin = useGoogleLogin({
     flow: "implicit",
@@ -319,7 +322,7 @@ const Login: React.FC<LoginProps> = ({
                 SIGN IN WITH GOOGLE
               </CustomGoogleButton>
               <Button onClick={handleLogin} tabIndex={0}>
-                SIGN IN
+              <span className="button-text">SIGN IN</span>
                 {isLoading && (
                   <ColorRing
                     visible={true}

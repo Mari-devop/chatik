@@ -20,6 +20,21 @@ const ModalSuccess: React.FC<ModalSuccessProps> = ({
   onClose,
   children,
 }) => {
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onClose]);
+
   const handleSocialClick = (url: string) => {
     window.open(url, "_blank");
   };
