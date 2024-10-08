@@ -81,21 +81,21 @@ const Paywall = () => {
   useEffect(() => {
     const checkAuthStatus = async () => {
       const users = await dbInstance.getData("users");
-      if (!users || users.length === 0) {
-        console.error("No user data found in IndexedDB");
-        return;
-      }
-
       const verifiedUser = users.find((user: any) => user.token);
 
-      if (!verifiedUser) {
-        console.error("No verified user with token found");
-        return;
+      if (verifiedUser) {
+        const tokenIsValid = await validateToken();
+        if (tokenIsValid) {
+          setIsAuthenticated(true);
+        } else {
+          await dbInstance.deleteData("users", verifiedUser.id);
+          setIsAuthenticated(false);
+        }
+      } else {
+        setIsAuthenticated(false);
       }
-  
-      const userToken = verifiedUser.token;
-      setIsAuthenticated(!!userToken);
     };
+
     checkAuthStatus();
   }, []);
 
@@ -272,6 +272,13 @@ const Paywall = () => {
   };
 
   const handleShareClick = async () => {
+    if (!isAuthenticated) {
+      setModalType("success");
+      setModalMessage("If you want to get 3 free questions, please log in");
+      setShowModal(true);
+      return;
+    }
+
     try {
       const users = await dbInstance.getData("users");
       if (!users || users.length === 0) {
@@ -285,11 +292,13 @@ const Paywall = () => {
         console.error("No verified user with token found");
         return;
       }
-  
+
       const userToken = verifiedUser.token;
 
       const generatedLink = `${window.location.origin}/?token=${userToken}`;
+
       setShareLink(generatedLink);
+
       setShowModal(true);
       console.log("Modal should be shown, showModal:", true);
     } catch (error) {
@@ -347,9 +356,9 @@ const Paywall = () => {
     <>
       <ModalSuccess
         isVisible={showModal}
-        modalType="share"
+        modalType={modalType}
         shareLink={shareLink}
-        message="Share this link to your friend"
+        message={modalMessage}
         onClose={() => setShowModal(false)}
       />
       <Container onClick={handleContainerClick}>
@@ -421,9 +430,23 @@ const Paywall = () => {
                           Access to all characters
                         </TextSmall>
                       </Row>
+
                       <SubscribeButton
-                        onClick={handleMakePayment}
-                        disabled={!isAuthenticated}
+                        onClick={() => {
+                          if (!isAuthenticated) {
+                            setModalType("failure");
+                            setModalMessage("Please log in to subscribe.");
+                            setShowModal(true);
+                          } else {
+                            handleMakePayment();
+                          }
+                        }}
+                        style={{
+                          backgroundImage: isAuthenticated
+                            ? "linear-gradient(to right, #6a00f4, #c900ff)"
+                            : "linear-gradient(to right, #303030, #929292)",
+                          cursor: isAuthenticated ? "pointer" : "not-allowed",
+                        }}
                       >
                         SUBSCRIBE
                       </SubscribeButton>

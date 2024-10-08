@@ -219,16 +219,17 @@ export const IconCheck = styled.img`
   height: 16px;
 `;
 
-export const SubscribeButton = styled.button<DisabledProps>`
-  background-image: ${({ disabled }) =>
-    disabled
+export const SubscribeButton = styled.button`
+  background-image: ${({ 'aria-disabled': ariaDisabled }) =>
+    ariaDisabled === "true"
       ? "linear-gradient(to right, #303030, #929292)"
       : "linear-gradient(to right, #6a00f4, #c900ff)"};
   color: white;
   border: none;
   padding: 15px 20px;
   border-radius: 30px;
-  cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
+  cursor: ${({ 'aria-disabled': ariaDisabled }) =>
+    ariaDisabled === "true" ? "not-allowed" : "pointer"};
   margin-top: 12px;
   font-family: "Arquitecta";
   font-weight: 700;
@@ -241,12 +242,13 @@ export const SubscribeButton = styled.button<DisabledProps>`
   z-index: 10;
 
   &:hover {
-    background: ${({ disabled }) =>
-      disabled
+    background: ${({ 'aria-disabled': ariaDisabled }) =>
+      ariaDisabled === "true"
         ? "linear-gradient(to right, #303030, #929292)"
         : "var(--primary-gradient-hover)"};
   }
 `;
+
 
 export const CardInputContainer = styled.div`
   display: flex;
