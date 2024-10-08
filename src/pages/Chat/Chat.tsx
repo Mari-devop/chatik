@@ -183,16 +183,21 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
       const token = lastUser?.token;
 
       if (!token) {
-        setModalType("failure");
-        setModalMessage("Please login to use this feature.");
-        setShowModal(true);
-        return;
+        console.log("User is not authenticated. Socket won't be initialized.");
+        return; 
+      }
+
+      const tokenIsValid = await validateToken();
+      if (!tokenIsValid) {
+        console.log("Token is invalid. Socket won't be initialized.");
+        return; 
       }
 
       if (socketRef.current) {
         return;
       }
 
+      if (!socketRef.current) {
       socketRef.current = io("https://eternalai.fly.dev", {
         auth: {
           token: token,
@@ -223,12 +228,16 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
         console.error("Error:", error);
       });
 
-      return () => {
-        socketRef.current?.disconnect();
-      };
+      
     };
-
+  }
     initializeSocket();
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
+    };
   }, [individualId, individual?.smallImage]);
 
   useEffect(() => {
@@ -236,7 +245,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
       answerBoxRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [chatHistory, currentResponse]);
-  
+
   const handleSendMessage = async () => {
     if (!message.trim() || isLoading) return;
 
@@ -507,12 +516,11 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
 
   useEffect(() => {
     if (!isDialogStarted && !!individual?.questionText) {
-      setQuestionVisible(true); 
+      setQuestionVisible(true);
     } else {
-      setQuestionVisible(false); 
+      setQuestionVisible(false);
     }
   }, [individualId, individual, isDialogStarted]);
-  
 
   return (
     <>
@@ -553,14 +561,16 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
                   />
                 </div>
               )}
-            {!isDialogStarted && questionVisible && !!individual?.questionText && (
-                <Question
-                  $isVisible={questionVisible && !!individual?.questionText}
-                  onClick={handleQuestionClick}
-                >
-                  <Text>{individual?.questionText}</Text>
-                </Question>
-              )}
+              {!isDialogStarted &&
+                questionVisible &&
+                !!individual?.questionText && (
+                  <Question
+                    $isVisible={questionVisible && !!individual?.questionText}
+                    onClick={handleQuestionClick}
+                  >
+                    <Text>{individual?.questionText}</Text>
+                  </Question>
+                )}
               {showResponses &&
                 filteredResponses.length > 0 &&
                 filteredResponses.map((resp: any, index: number) => (
