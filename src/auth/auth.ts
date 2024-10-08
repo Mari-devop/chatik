@@ -32,6 +32,7 @@ export const login = async (email: string, password: string) => {
     });
 
     const { token } = response.data;
+
     await dbInstance.addData('users', { email, password, token });
     return response.data;
 };

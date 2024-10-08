@@ -8,7 +8,7 @@ const Loader = () => {
     <LoaderContainer>
         <PictureContainer>
             <LoaderImage src={loader} alt="loader" />
-            <LoaderText src={text} alt="loader" />
+            {/* <LoaderText src={text} alt="loader" /> */}
         </PictureContainer>
     </LoaderContainer>
   )

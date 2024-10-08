@@ -20,8 +20,8 @@ export const PictureContainer = styled.div`
 `;
 
 export const LoaderImage = styled.img`
-  width: 269px;
-  height: 269px;
+  width: 350px;
+  height: 350px;
   animation: rotate 2s linear infinite;
 
   @keyframes rotate {

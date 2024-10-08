@@ -51,9 +51,17 @@ const AccountDetails = () => {
     password: "",
     hasSubscription: false,
     isVerified: false,
+    isSubscriptionCancelled: false,
     nextBillingDate: "",
   });
+  const [initialUserData, setInitialUserData] = useState({
+    email: "",
+    name: "",
+    phone: "",
+    password: "",
+  });
   const [dataLoaded, setDataLoaded] = useState(true);
+  const [isFormChanged, setIsFormChanged] = useState(false);
   const [initialEmail, setInitialEmail] = useState("");
   const [isEmailLoaded, setIsEmailLoaded] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -73,7 +81,6 @@ const AccountDetails = () => {
   const stripe = useStripe();
   const elements = useElements();
   const navigate = useNavigate();
-  const isEmailChanged = userData.email !== initialEmail;
 
   const handleStartChatting = () => {
     navigate("/", { state: { scrollToIndividuals: true } });
@@ -88,18 +95,36 @@ const AccountDetails = () => {
     return emailRegex.test(email);
   };
 
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newEmail = e.target.value;
+
+    // If email is changed, mark isVerified as false
+    if (newEmail !== initialUserData.email) {
+      setUserData((prev) => ({
+        ...prev,
+        email: newEmail,
+        isVerified: false,
+      }));
+    } else {
+      setUserData((prev) => ({
+        ...prev,
+        email: newEmail,
+        isVerified: true,
+      }));
+    }
+  };
+
   const validatePhone = (phone: string) => {
     if (!phone) return true;
-
     const phoneRegex = /^\+380 \d{2} \d{3} \d{2} \d{2}$/;
     return phoneRegex.test(phone);
   };
 
   const validatePassword = (password: string | undefined) => {
-    if (!password || typeof password !== "string") {
-      setPasswordHint("Password is required");
-      setPasswordError(true);
-      return false;
+    if (!password) {
+      setPasswordError(false);
+      setPasswordHint("");
+      return true;
     }
 
     if (password.length < 8) {
@@ -119,6 +144,16 @@ const AccountDetails = () => {
     validatePassword(password);
   };
 
+  const checkFormChanged = () => {
+    const hasChanged =
+      userData.email !== initialUserData.email ||
+      (userData.name || "") !== (initialUserData.name || "") ||
+      (userData.phone || "") !== (initialUserData.phone || "") ||
+      (userData.password || "") !== (initialUserData.password || "");
+
+    setIsFormChanged(hasChanged);
+  };
+
   const validateForm = () => {
     const isEmailValid = validateEmail(userData.email);
     const isPasswordValid = validatePassword(userData.password);
@@ -134,6 +169,7 @@ const AccountDetails = () => {
 
   useEffect(() => {
     validateForm();
+    checkFormChanged();
   }, [userData]);
 
   const formattedDate = new Date(userData.nextBillingDate).toLocaleDateString(
@@ -182,7 +218,8 @@ const AccountDetails = () => {
       );
 
       const profileData = response.data;
-      setInitialEmail(response.data.email);
+
+      setInitialEmail(profileData.email);
 
       if (!profileData.isVerified) {
         setTimeout(() => {
@@ -191,11 +228,22 @@ const AccountDetails = () => {
           setIsModalVisible(true);
         }, 3000);
       }
+
+      setInitialUserData({
+        email: profileData.email,
+        name: profileData.name,
+        phone: profileData.phone,
+        password: "",
+      });
+
       setUserData({
         ...profileData,
         nextBillingDate: profileData.nextBillingDate,
         isVerified: false,
+        isSubscriptionCancelled: false,
       });
+
+      setDataLoaded(false);
     } catch (error: any) {
       console.error("Error fetching user profile:", error);
 
@@ -271,6 +319,7 @@ const AccountDetails = () => {
         name: userData.name,
         phone: userData.phone,
         password: userData.password,
+        isVerified: userData.isVerified,
       };
 
       const response = await axios.put(
@@ -285,7 +334,7 @@ const AccountDetails = () => {
       );
 
       if (response.status === 200) {
-        console.log(response.data);
+        await dbInstance.addData("users", { ...updatedData });
         setModalType("success");
         setModalMessage("User data updated successfully");
         setIsModalVisible(true);
@@ -334,7 +383,53 @@ const AccountDetails = () => {
         } catch (error) {
           console.error("Error deleting token:", error);
         }
+      } else if (error.response?.status === 500) {
+        setModalType("failure");
+        setModalMessage("Email already exists");
+        setIsModalVisible(true);
       }
+    }
+  };
+
+  const handleResumeSubscription = async () => {
+    try {
+      const users = await dbInstance.getData("users");
+      if (!users || users.length === 0) {
+        console.error("No user data found in IndexedDB");
+        return;
+      }
+      const userToken = users[0]?.token;
+
+      if (!userToken) {
+        console.error("No token found for the user");
+        return;
+      }
+
+      const response = await axios.put(
+        "https://eternalai.fly.dev/payment/renew-subscription",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        setUserData((prevData) => ({
+          ...prevData,
+          hasSubscription: true,
+          isSubscriptionCancelled: false,
+        }));
+        setModalType("success");
+        setModalMessage("Subscription resumed successfully");
+        setIsModalVisible(true);
+      }
+    } catch (error) {
+      console.error("Error resuming subscription:", error);
+      setModalType("failure");
+      setModalMessage("An error occurred while resuming the subscription");
+      setIsModalVisible(true);
     }
   };
 
@@ -544,9 +639,29 @@ const AccountDetails = () => {
               <label htmlFor="email">Email</label>
               <VerificationIcon>
                 <FontAwesomeIcon
-                  icon={isEmailChanged ? faTimesCircle : faCheckCircle}
-                  style={{ color: isEmailChanged ? "red" : "green" }}
+                  icon={
+                    userData.email !== initialUserData.email
+                      ? faTimesCircle
+                      : faCheckCircle
+                  }
+                  style={{
+                    color:
+                      userData.email !== initialUserData.email
+                        ? "red"
+                        : "green",
+                  }}
                 />
+                {userData.email !== initialUserData.email && (
+                  <span
+                    style={{
+                      color: "red",
+                      marginLeft: "8px",
+                      fontSize: "12px",
+                    }}
+                  >
+                    Unverified email
+                  </span>
+                )}
               </VerificationIcon>
             </EmailContainer>
             <input
@@ -607,30 +722,36 @@ const AccountDetails = () => {
             />
           </Row>
           <ButtonContainer>
-            <Button onClick={handleUpdateUserData} disabled={!isFormValid}>
+            <Button
+              onClick={handleUpdateUserData}
+              disabled={!isFormChanged || !isFormValid}
+            >
               SAVE
             </Button>
           </ButtonContainer>
         </FirstBox>
 
-        {userData.hasSubscription ? (
-          <SecondBox>
-            <Boxik>
-              <ArquitectaH5 style={{ color: "white" }}>PRO</ArquitectaH5>
-            </Boxik>
-            <AvenirH4
-              style={{
-                color: "white",
-                marginTop: "12px",
-                marginBottom: "12px",
-              }}
-            >
-              $10 / month
-            </AvenirH4>
-            <Text>
-              Next payment will be processed on {formattedDate || "N/A"}
-            </Text>
-            {!showCardInput ? (
+        <SecondBox>
+          <Boxik>
+            <ArquitectaH5 style={{ color: "white" }}>PRO</ArquitectaH5>
+          </Boxik>
+          <AvenirH4
+            style={{
+              color: "white",
+              marginTop: "12px",
+              marginBottom: "12px",
+            }}
+          >
+            $10 / month
+          </AvenirH4>
+          <Text>
+            {userData.isSubscriptionCancelled
+              ? `Your subscription will expire on ${formattedDate || "N/A"}`
+              : `Next payment will be processed on ${formattedDate || "N/A"}`}
+          </Text>
+
+          {!userData.isSubscriptionCancelled && userData.hasSubscription ? (
+            !showCardInput ? (
               <div style={{ width: "100%" }}>
                 <ButtonUpdate onClick={handleSubmit}>
                   UPDATE PAYMENT
@@ -675,25 +796,20 @@ const AccountDetails = () => {
                   </SaveButtonPay>
                 )}
               </CardInputContainer>
-            )}
-          </SecondBox>
-        ) : (
-          <SecondBox>
-            <Boxik>
-              <ArquitectaH5 style={{ color: "white" }}>PRO</ArquitectaH5>
-            </Boxik>
-            <AvenirH4
-              style={{
-                color: "white",
-                marginTop: "12px",
-                marginBottom: "12px",
-              }}
-            >
-              $10 / month
-            </AvenirH4>
-            <Text>No active subscription</Text>
-          </SecondBox>
-        )}
+            )
+          ) : (
+            <>
+              <ButtonUpdate onClick={handleResumeSubscription}>
+                RESUME SUBSCRIPTION
+              </ButtonUpdate>
+              {userData.hasSubscription && userData.isSubscriptionCancelled && (
+                <ButtonCancel onClick={handleCancelSubscription}>
+                  CANCEL SUBSCRIPTION
+                </ButtonCancel>
+              )}
+            </>
+          )}
+        </SecondBox>
 
         <ImageDown src={down} />
         <Footer />

@@ -7,6 +7,7 @@ import { ColorRing } from "react-loader-spinner";
 import { login } from "../../auth/auth";
 import { dbInstance } from "../../db";
 import { LoginProps } from "./types";
+import { User } from "../../components/menu/types";
 import {
   BoxContainer,
   Row,
@@ -87,22 +88,48 @@ const Login: React.FC<LoginProps> = ({
 
   const handleLogin = async () => {
     setIsLoading(true);
+  
     try {
+  
+      const users = await dbInstance.getData("users");
+      console.log("Users from IndexedDB:", users); 
+  
+      if (users && users.length > 0) {
+        console.log("Users in IndexedDB:", users);
+  
+        const userFromDB = users.find((user: User) => user.email === email);
+  
+        if (userFromDB) {
+          console.log("Found user in IndexedDB:", userFromDB); 
+  
+          if (userFromDB.isVerified === false) {
+            console.log("Unverified user found in IndexedDB:", userFromDB);
+            setModalType("failure");
+            setModalMessage("Please, check your email box to verify your email!");
+            setIsModalVisible(true);
+            setIsLoading(false);
+            return; 
+          }
+        } else {
+          console.log("User not found in IndexedDB.");
+        }
+      }
+  
+      console.log("Sending login request to server with data:", { email, password });
+  
       const response = await login(email, password);
-
+  
       if (response && response.token) {
         setIsAuthenticated(true);
-
         setModalType("success");
         setModalMessage("Login Successful!");
         setIsModalVisible(true);
-
         setIsLoginOpen(false);
         navigate("/");
       }
     } catch (error: any) {
       console.log("Error details:", error);
-
+  
       if (error.response) {
         if (error.response.status === 400) {
           setModalType("failure");
@@ -122,12 +149,12 @@ const Login: React.FC<LoginProps> = ({
         setModalMessage("Network error. Please check your connection.");
       }
       setIsModalVisible(true);
-      console.log("Modal should now be visible");
       setIsAuthenticated(false);
     } finally {
       setIsLoading(false);
     }
   };
+  
 
   const googleLogin = useGoogleLogin({
     flow: "implicit",
@@ -292,10 +319,8 @@ const Login: React.FC<LoginProps> = ({
                 SIGN IN WITH GOOGLE
               </CustomGoogleButton>
               <Button onClick={handleLogin} tabIndex={0}>
-                
                 SIGN IN
                 {isLoading && (
-                  
                   <ColorRing
                     visible={true}
                     height="35"
@@ -310,7 +335,6 @@ const Login: React.FC<LoginProps> = ({
                     ]}
                   />
                 )}
-                
               </Button>
             </ButtonContainer>
             <Divider />

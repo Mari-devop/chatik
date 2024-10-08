@@ -106,16 +106,12 @@ const Menu: React.FC<MenuProps> = ({
   const handleSignOut = async () => {
     try {
       const users = await dbInstance.getData("users");
-      const tokensToDelete: number[] = [];
+      const currentUser = users.find((user: User) => user.token);
 
-      users.forEach((user: User) => {
-        if (user.token) {
-          tokensToDelete.push(user.id);
-        }
-      });
-
-      for (const userId of tokensToDelete) {
-        await dbInstance.deleteData("users", userId);
+      if (currentUser) {
+        await dbInstance.deleteData("users", currentUser.id);
+      } else {
+        console.log("No logged-in user found.");
       }
 
       setIsMenuOpen(false);

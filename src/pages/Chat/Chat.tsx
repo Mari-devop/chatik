@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import { io, Socket } from "socket.io-client";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { dbInstance } from "../../db";
@@ -60,9 +61,9 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
   const [userImage, setUserImage] = useState<string>(profile);
   const [message, setMessage] = useState<string>("");
   const [isGrowing, setIsGrowing] = useState(false);
+  const [showResponses, setShowResponses] = useState(true);
   const [chatHistory, setChatHistory] = useState<Message[]>([]);
   const [totalPages, setTotalPages] = useState(1);
-  const pageSize = 6;
   const [questionVisible, setQuestionVisible] = useState(true);
   const [isDialogStarted, setIsDialogStarted] = useState(false);
   const [wasQuestionClicked, setWasQuestionClicked] = useState(false);
@@ -74,6 +75,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const isFetching = useRef(false);
   const currentPageRef = useRef<number | null>(null);
+  const socketRef = useRef<Socket | null>(null);
 
   const handleInputClick = () => {
     if (!isAuthenticated) {
@@ -174,26 +176,67 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
       .join(" ");
   };
 
-  const simulateResponse = async (response: string) => {
-    setCurrentResponse(null);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setCurrentResponse(response);
+  useEffect(() => {
+    const initializeSocket = async () => {
+      const users = await dbInstance.getData("users");
+      const lastUser = users[users.length - 1];
+      const token = lastUser?.token;
 
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setChatHistory((prev) => [
-      ...prev,
-      {
-        text: response,
-        isUser: false,
-        smallImage: individual?.smallImage || profile,
-      },
-    ]);
+      if (!token) {
+        setModalType("failure");
+        setModalMessage("Please login to use this feature.");
+        setShowModal(true);
+        return;
+      }
 
-    setCurrentResponse(null);
-    setIsDialogStarted(false);
-    setQuestionVisible(false);
-  };
+      if (socketRef.current) {
+        return;
+      }
 
+      socketRef.current = io("https://eternalai.fly.dev", {
+        auth: {
+          token: token,
+        },
+        transports: ["websocket"],
+      });
+
+      socketRef.current.on("chatResponse", (response: any) => {
+        const newMessage = response.response;
+        const smallImage = individual?.smallImage || profile;
+
+        setCurrentResponse(newMessage);
+
+        setChatHistory((prev) => [
+          ...prev,
+          {
+            text: newMessage,
+            isUser: false,
+            smallImage: smallImage,
+          },
+        ]);
+
+        setIsLoading(false);
+        setIsDialogStarted(false);
+      });
+
+      socketRef.current.on("error", (error: any) => {
+        console.error("Error:", error);
+      });
+
+      return () => {
+        socketRef.current?.disconnect();
+      };
+    };
+
+    initializeSocket();
+  }, [individualId, individual?.smallImage]);
+
+  useEffect(() => {
+    if (answerBoxRef.current) {
+      answerBoxRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [chatHistory, currentResponse]);
+  
   const handleSendMessage = async () => {
     if (!message.trim() || isLoading) return;
 
@@ -216,27 +259,10 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
 
       const tokenIsValid = await validateToken();
       if (!tokenIsValid) {
-        try {
-          const users = await dbInstance.getData("users");
-          const tokensToDelete: number[] = [];
-  
-          users.forEach((user: User) => {
-            if (user.token) {
-              tokensToDelete.push(user.id);
-            }
-          });
-  
-          for (const userId of tokensToDelete) {
-            await dbInstance.deleteData("users", userId);
-          }
-        } catch (deleteError) {
-          console.error("Error deleting token:", deleteError);
-        }
-  
         setModalType("failure");
         setModalMessage("Your session has expired. Please login again.");
         setShowModal(true);
-  
+
         setTimeout(() => {
           setShowModal(false);
           navigate("/");
@@ -249,17 +275,6 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
 
       const formattedMessage = breakLongWords(message, 32);
 
-      if (currentResponse) {
-        setChatHistory((prev) => [
-          ...prev,
-          {
-            text: currentResponse,
-            isUser: false,
-            smallImage: individual?.smallImage || profile,
-          },
-        ]);
-      }
-
       setChatHistory((prev) => [
         ...prev,
         {
@@ -269,28 +284,13 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
         },
       ]);
 
-      setMessage("");
-
-      const body = {
+      socketRef.current?.emit("userChat", {
         characterId: individualId,
         message: formattedMessage,
-      };
-
-      const response = await axios.post(
-        "https://eternalai.fly.dev/api/chat",
-        body,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      await simulateResponse(response.data.response);
-      const smallImage = await fetchSmallImageForResponse(individualId);
-
-      // setPreviousResponse(currentResponse);
-      // setCurrentResponse(response.data.response);
+      });
+      console.log("Message sent to server:", formattedMessage);
+      setMessage("");
+      setCurrentResponse(null);
 
       setIsLoading(false);
       answerBoxRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -301,9 +301,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
       }
 
       setIsGrowing(false);
-
       setQuestionVisible(false);
-      setIsLoading(false);
     } catch (error: any) {
       setIsLoading(false);
       console.error("Error sending message:", error);
@@ -490,15 +488,31 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
     e.target.style.height = `${e.target.scrollHeight}px`;
     setIsGrowing(e.target.scrollHeight > 45);
     setQuestionVisible(false);
+
+    if (e.target.value.trim()) {
+      setShowResponses(false);
+    } else {
+      setShowResponses(true);
+    }
   };
 
   const handleInputFocus = () => {
     setQuestionVisible(false);
+    setShowResponses(false);
   };
 
   const handleQuestionClick = () => {
     setWasQuestionClicked(true);
   };
+
+  useEffect(() => {
+    if (!isDialogStarted && !!individual?.questionText) {
+      setQuestionVisible(true); 
+    } else {
+      setQuestionVisible(false); 
+    }
+  }, [individualId, individual, isDialogStarted]);
+  
 
   return (
     <>
@@ -508,7 +522,6 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
         message={modalMessage}
         onClose={() => setShowModal(false)}
       />
-
       <ChatContainer>
         <PersonContainer>
           <PersonBox>
@@ -540,7 +553,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
                   />
                 </div>
               )}
-              {(isDialogStarted || !!individual?.questionText) && (
+            {!isDialogStarted && questionVisible && !!individual?.questionText && (
                 <Question
                   $isVisible={questionVisible && !!individual?.questionText}
                   onClick={handleQuestionClick}
@@ -548,7 +561,8 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
                   <Text>{individual?.questionText}</Text>
                 </Question>
               )}
-              {filteredResponses.length > 0 &&
+              {showResponses &&
+                filteredResponses.length > 0 &&
                 filteredResponses.map((resp: any, index: number) => (
                   <Respond key={index}>
                     <IconBox>
