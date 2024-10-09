@@ -222,16 +222,33 @@ const ChatIndividuals: React.FC<ChatProps> = ({ isAuthenticated }) => {
           ]);
 
           setIsLoading(false);
-          setIsDialogStarted(false);
+
+          setTimeout(() => {
+            setIsDialogStarted(false);
+          }, 2000);
         });
-        answerBoxRef.current?.scrollIntoView({ behavior: "smooth" });
-        
+
         socketRef.current.on("error", (error: any) => {
           console.error("Error:", error);
+          if (
+            error.message ===
+            "Failed to get start chat: Please subscribe to use this feature"
+          ) {
+            setModalType("failure");
+            setModalMessage("Please subscribe to use this feature.");
+            setShowModal(true);
+
+            setTimeout(() => {
+              setShowModal(false);
+              navigate("/paywall");
+            }, 3000);
+            return;
+          }
         });
       }
     };
     initializeSocket();
+
     return () => {
       if (socketRef.current) {
         socketRef.current.disconnect();
@@ -240,11 +257,16 @@ const ChatIndividuals: React.FC<ChatProps> = ({ isAuthenticated }) => {
     };
   }, [individualId, individual?.smallImage]);
 
+  useEffect(() => {
+    if (answerBoxRef.current) {
+      answerBoxRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [chatHistory]);
+  
   const handleSendMessage = async () => {
     if (!message.trim() || isLoading) return;
 
     if (questionCount >= 5) {
-      
       setModalType("failure");
       setModalMessage("Please subscribe to use this feature.");
       setShowModal(true);
@@ -255,6 +277,7 @@ const ChatIndividuals: React.FC<ChatProps> = ({ isAuthenticated }) => {
       }, 3000);
       return;
     }
+
     try {
       const users = await dbInstance.getData("users");
       const lastUser = users[users.length - 1];
@@ -316,7 +339,6 @@ const ChatIndividuals: React.FC<ChatProps> = ({ isAuthenticated }) => {
       }
 
       setIsGrowing(false);
-      answerBoxRef.current?.scrollIntoView({ behavior: "smooth" });
     } catch (error: any) {
       setIsLoading(false);
       console.error("Error sending message:", error);
@@ -542,7 +564,7 @@ const ChatIndividuals: React.FC<ChatProps> = ({ isAuthenticated }) => {
         </PersonContainer>
         <DialogContainer>
           <RespondContainer>
-          <AnswerBox ref={scrollContainerRef}>
+            <AnswerBox ref={scrollContainerRef}>
               {isLoading && (
                 <div style={{ display: "flex", justifyContent: "center" }}>
                   <ColorRing

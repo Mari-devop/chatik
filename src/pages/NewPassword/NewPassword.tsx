@@ -6,6 +6,7 @@ import { StyledIcon } from "../../pages/Login/Login.styled";
 import { AvenirH2 } from "../../assets/css/Global.styled";
 import { Row } from "../SignUp/SignUp.styled";
 import ModalSuccess from "../../components/ModalSuccess/ModalSuccess";
+import { ColorRing } from "react-loader-spinner";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 interface PasswordProps {
@@ -27,6 +28,7 @@ const NewPassword: React.FC<PasswordProps> = ({
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [modalType, setModalType] = useState<"success" | "failure">("success");
+  const [isLoading, setIsLoading] = useState(false);
   const resetToken = new URLSearchParams(window.location.search).get("token");
 
   const validatePassword = (password: string | undefined) => {
@@ -67,6 +69,7 @@ const NewPassword: React.FC<PasswordProps> = ({
   };
 
   const handleSubmit = async () => {
+    setIsLoading(true);
     try {
       const response = await axios.post(
         `https://eternalai.fly.dev/user/reset-pass`,
@@ -90,6 +93,8 @@ const NewPassword: React.FC<PasswordProps> = ({
       setTimeout(() => {
         setIsModalVisible(false);
       }, 5000);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -151,7 +156,16 @@ const NewPassword: React.FC<PasswordProps> = ({
             />
           </Row>
           <Button disabled={isButtonDisabled} onClick={handleSubmit}>
-            SUBMIT
+            <span className="button-text">SUBMIT</span>
+            {isLoading && (
+              <ColorRing
+                visible={true}
+                height="35"
+                width="35"
+                ariaLabel="color-ring-loading"
+                colors={["#f82d98", "#f82d98", "#F82D98", "#5833ef", "#5833ef"]}
+              />
+            )}
           </Button>
         </BoxContainer>
       </Container>

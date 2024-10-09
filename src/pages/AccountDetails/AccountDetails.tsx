@@ -45,13 +45,13 @@ import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 const AccountDetails = () => {
   const [userData, setUserData] = useState({
-    email: "",
+    email: localStorage.getItem("userEmail") || "",
     name: "",
     phone: "",
     password: "",
     hasSubscription: false,
     isVerified: false,
-    isSubscriptionCancelled: false,
+    isSubscriptionCanceled: false,
     nextBillingDate: "",
   });
   const [initialUserData, setInitialUserData] = useState({
@@ -97,19 +97,14 @@ const AccountDetails = () => {
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newEmail = e.target.value;
-    if (newEmail !== initialUserData.email) {
-      setUserData((prev) => ({
-        ...prev,
-        email: newEmail,
-        isVerified: false,
-      }));
-    } else {
-      setUserData((prev) => ({
-        ...prev,
-        email: newEmail,
-        isVerified: true,
-      }));
-    }
+   
+    setUserData((prev) => ({
+      ...prev,
+      email: newEmail,
+      isVerified: newEmail === initialEmail, 
+    }));
+    localStorage.setItem("userEmail", newEmail); 
+    setIsFormChanged(newEmail !== initialEmail); 
   };
 
   const validatePhone = (phone: string) => {
@@ -143,8 +138,11 @@ const AccountDetails = () => {
   };
 
   const checkFormChanged = () => {
+    const hasEmailChanged = userData.email !== localStorage.getItem("newEmailInput");
+    
     const hasChanged =
-      userData.email !== initialUserData.email ||
+      // userData.email !== initialUserData.email || 
+      hasEmailChanged ||
       (userData.name || "") !== (initialUserData.name || "") ||
       (userData.phone || "") !== (initialUserData.phone || "") ||
       (userData.password || "") !== (initialUserData.password || "");
@@ -170,7 +168,7 @@ const AccountDetails = () => {
       checkFormChanged();
       validateForm();
     }
-  }, [userData]);
+  }, [userData, initialUserData]);
 
   const formattedDate = new Date(userData.nextBillingDate).toLocaleDateString(
     "en-US",
@@ -222,6 +220,12 @@ const AccountDetails = () => {
 
       const profileData = response.data;
 
+      const storedEmail = localStorage.getItem("userEmail");
+
+      const updatedEmail = storedEmail || profileData.email;
+
+      localStorage.setItem('newEmailInput', profileData.email);
+
       setInitialEmail(profileData.email);
 
       if (!profileData.isVerified) {
@@ -241,6 +245,7 @@ const AccountDetails = () => {
 
       setUserData({
         ...profileData,
+        email: updatedEmail,
         nextBillingDate: profileData.nextBillingDate,
         isVerified: false,
         isSubscriptionCancelled: false,
@@ -340,7 +345,21 @@ const AccountDetails = () => {
         }
       );
 
+      const { email, name, phone } = response.data;
+
+      setInitialUserData({
+        email: email,
+        name: name,
+        phone: phone,
+        password: ""
+      })
+     
       if (response.status === 200) {
+        setInitialEmail(userData.email);
+
+
+        localStorage.setItem('newEmailInput', userData.email);
+
         await dbInstance.addData("users", { ...updatedData });
         setModalType("success");
         setModalMessage("User data updated successfully");
@@ -429,7 +448,7 @@ const AccountDetails = () => {
         setUserData((prevData) => ({
           ...prevData,
           hasSubscription: true,
-          isSubscriptionCancelled: false,
+          isSubscriptionCanceled: false,
         }));
         setModalType("success");
         setModalMessage("Subscription resumed successfully");
@@ -591,7 +610,8 @@ const AccountDetails = () => {
       if (response.status === 200) {
         setUserData((prevData) => ({
           ...prevData,
-          hasSubscription: false,
+          hasSubscription: true,
+          isSubscriptionCanceled: true,
         }));
         setModalType("success");
         setModalMessage("Subscription cancelled successfully");
@@ -614,6 +634,7 @@ const AccountDetails = () => {
     };
     loadData();
   }, []);
+  
 
   if (dataLoaded) {
     return <Loader />;
@@ -686,9 +707,7 @@ const AccountDetails = () => {
               id="email"
               placeholder={userData.email || ""}
               value={userData.email || ""}
-              onChange={(e) =>
-                setUserData({ ...userData, email: e.target.value })
-              }
+              onChange={handleEmailChange}
               disabled={isLoading}
               style={{
                 borderColor: emailError ? "red" : "",
@@ -763,13 +782,12 @@ const AccountDetails = () => {
               $10 / month
             </AvenirH4>
             <Text>
-              {!userData.isSubscriptionCancelled 
+              {!userData.isSubscriptionCanceled
                 ? `Next payment will be processed on ${formattedDate || "N/A"}`
-                : `Your subscription will expire on ${formattedDate || "N/A"}` 
-              }
+                : `Your subscription will expire on ${formattedDate || "N/A"}`}
             </Text>
 
-            {!userData.hasSubscription ? (
+            {userData.hasSubscription && !userData.isSubscriptionCanceled ? (
               !showCardInput ? (
                 <div style={{ width: "100%" }}>
                   <ButtonUpdate onClick={handleSubmit}>
@@ -816,15 +834,13 @@ const AccountDetails = () => {
                   )}
                 </CardInputContainer>
               )
-            ) : (
+            ) : userData.hasSubscription && userData.isSubscriptionCanceled ? (
               <>
-                {!userData.isSubscriptionCancelled ? null : (
-                  <ButtonCancel onClick={handleCancelSubscription}>
-                    CANCEL SUBSCRIPTION
-                  </ButtonCancel>
-                )}
+                <ButtonUpdate onClick={handleResumeSubscription}>
+                  RESUME SUBSCRIPTION
+                </ButtonUpdate>
               </>
-            )}
+            ) : null}
           </SecondBox>
         )}
         <ImageDown src={down} />
