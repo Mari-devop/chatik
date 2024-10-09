@@ -67,7 +67,6 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
   const [modalType, setModalType] = useState<"success" | "failure">("success");
   const [modalMessage, setModalMessage] = useState("");
   const answerBoxRef = useRef<HTMLDivElement | null>(null);
-  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
   const handleInputClick = () => {
     if (!isAuthenticated) {
@@ -187,6 +186,12 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
     setWasQuestionClicked(true);
   };
 
+  useEffect(() => {
+    if (answerBoxRef.current) {
+      answerBoxRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [filteredResponses, currentResponse]);
+
   return (
     <>
       <ModalSuccess
@@ -208,7 +213,7 @@ const Chat: React.FC<ChatProps> = ({ isAuthenticated }) => {
         </PersonContainer>
         <DialogContainer>
           <RespondContainer>
-            <AnswerBox ref={scrollContainerRef}>
+            <AnswerBox>
               {isLoading && (
                 <div style={{ display: "flex", justifyContent: "center" }}>
                   <ColorRing
