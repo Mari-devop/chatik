@@ -11,7 +11,10 @@ export const ModalContainer = styled.div<{
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  padding: 16px;
+  padding-bottom: 40px;
+  padding-top: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
   border-radius: 22px;
   box-sizing: border-box;
   border: none;
@@ -80,6 +83,7 @@ export const SocialContainer = styled.div`
   justify-content: space-around;
   gap: 16px;
   margin-top: 16px;
+  margin-bottom: 16px;
 `;
 
 export const Social = styled.img`

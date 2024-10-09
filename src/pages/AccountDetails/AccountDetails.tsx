@@ -747,87 +747,86 @@ const AccountDetails = () => {
             </Button>
           </ButtonContainer>
         </FirstBox>
-      
-        <SecondBox>
-          <Boxik>
-            <ArquitectaH5 style={{ color: "white" }}>PRO</ArquitectaH5>
-          </Boxik>
-          <AvenirH4
-            style={{
-              color: "white",
-              marginTop: "12px",
-              marginBottom: "12px",
-            }}
-          >
-            $10 / month
-          </AvenirH4>
-          <Text>
-            {!userData.isSubscriptionCancelled && !userData.hasSubscription
-              ? `Your subscription will expire on ${formattedDate || "N/A"}`
-              : `Next payment will be processed on ${formattedDate || "N/A"}`}
-          </Text>
 
-          {!userData.isSubscriptionCancelled && userData.hasSubscription ? (
-            !showCardInput ? (
-              <div style={{ width: "100%" }}>
-                <ButtonUpdate onClick={handleSubmit}>
-                  UPDATE PAYMENT
-                </ButtonUpdate>
-                <ButtonCancel onClick={handleCancelSubscription}>
-                  CANCEL SUBSCRIPTION
-                </ButtonCancel>
-              </div>
+        {userData.hasSubscription && (
+          <SecondBox>
+            <Boxik>
+              <ArquitectaH5 style={{ color: "white" }}>PRO</ArquitectaH5>
+            </Boxik>
+            <AvenirH4
+              style={{
+                color: "white",
+                marginTop: "12px",
+                marginBottom: "12px",
+              }}
+            >
+              $10 / month
+            </AvenirH4>
+            <Text>
+              {!userData.isSubscriptionCancelled 
+                ? `Next payment will be processed on ${formattedDate || "N/A"}`
+                : `Your subscription will expire on ${formattedDate || "N/A"}` 
+              }
+            </Text>
+
+            {!userData.hasSubscription ? (
+              !showCardInput ? (
+                <div style={{ width: "100%" }}>
+                  <ButtonUpdate onClick={handleSubmit}>
+                    UPDATE PAYMENT
+                  </ButtonUpdate>
+                  <ButtonCancel onClick={handleCancelSubscription}>
+                    CANCEL SUBSCRIPTION
+                  </ButtonCancel>
+                </div>
+              ) : (
+                <CardInputContainer>
+                  <CardDetails>
+                    <div
+                      style={{
+                        marginBottom: "0px",
+                        width: "100%",
+                        overflow: "hidden",
+                      }}
+                    >
+                      <CardElement options={cardElementOptions} />
+                    </div>
+                  </CardDetails>
+                  {isLoading ? (
+                    <div style={{ display: "flex", justifyContent: "center" }}>
+                      <ColorRing
+                        visible={true}
+                        height="80"
+                        width="80"
+                        ariaLabel="color-ring-loading"
+                        wrapperClass="color-ring-wrapper"
+                        colors={[
+                          "#f82d98",
+                          "#f82d98",
+                          "#F82D98",
+                          "#5833ef",
+                          "#5833ef",
+                        ]}
+                      />
+                    </div>
+                  ) : (
+                    <SaveButtonPay onClick={handleUpdatePayment}>
+                      SAVE
+                    </SaveButtonPay>
+                  )}
+                </CardInputContainer>
+              )
             ) : (
-              <CardInputContainer>
-                <CardDetails>
-                  <div
-                    style={{
-                      marginBottom: "0px",
-                      width: "100%",
-                      overflow: "hidden",
-                    }}
-                  >
-                    <CardElement options={cardElementOptions} />
-                  </div>
-                </CardDetails>
-                {isLoading ? (
-                  <div style={{ display: "flex", justifyContent: "center" }}>
-                    <ColorRing
-                      visible={true}
-                      height="80"
-                      width="80"
-                      ariaLabel="color-ring-loading"
-                      wrapperClass="color-ring-wrapper"
-                      colors={[
-                        "#f82d98",
-                        "#f82d98",
-                        "#F82D98",
-                        "#5833ef",
-                        "#5833ef",
-                      ]}
-                    />
-                  </div>
-                ) : (
-                  <SaveButtonPay onClick={handleUpdatePayment}>
-                    SAVE
-                  </SaveButtonPay>
+              <>
+                {!userData.isSubscriptionCancelled ? null : (
+                  <ButtonCancel onClick={handleCancelSubscription}>
+                    CANCEL SUBSCRIPTION
+                  </ButtonCancel>
                 )}
-              </CardInputContainer>
-            )
-          ) : (
-            <>
-              <ButtonUpdate onClick={handleResumeSubscription}>
-                RESUME SUBSCRIPTION
-              </ButtonUpdate>
-              {userData.hasSubscription && userData.isSubscriptionCancelled && (
-                <ButtonCancel onClick={handleCancelSubscription}>
-                  CANCEL SUBSCRIPTION
-                </ButtonCancel>
-              )}
-            </>
-          )}
-        </SecondBox>
-        
+              </>
+            )}
+          </SecondBox>
+        )}
         <ImageDown src={down} />
         <Footer />
       </Container>

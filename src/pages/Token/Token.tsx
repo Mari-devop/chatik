@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { TokenProps } from "./types";
+import { User } from "../../components/menu/types";
 import { Container, BoxContainer } from "../About/About.styled";
 import { TextArea, Button, Text } from "../Token/Token.styled";
 import ModalSuccess from "../../components/ModalSuccess/ModalSuccess";
@@ -32,11 +33,17 @@ const Token: React.FC<TokenProps> = ({ setIsLoginOpen }) => {
       const { email } = response.data;
 
       if (response) {
-        await dbInstance.addData("users", { email, token });
+        const users = await dbInstance.getData("users");
+        const userToUpdate = users.find((user: User) => user.email === email);
+        if (userToUpdate) {
+          const updatedUser = { ...userToUpdate, isVerified: true };
+          await dbInstance.updateData("users", updatedUser);
+      
         setModalType("success");
         setModalMessage("Successful verifacation!");
         setIsModalVisible(false);
         setIsLoginOpen(true);
+        }
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {

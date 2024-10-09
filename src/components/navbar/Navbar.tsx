@@ -175,6 +175,21 @@ export const Navbar = ({
             </RightContainer>
           </Box>
         )}
+          {location.pathname === "/chatindividuals" && (
+          <Box>
+            <ButtonMenu onClick={handleMenuClick}>
+              <Line />
+              <LineShort />
+              <Line />
+            </ButtonMenu>
+            <RightContainer>
+              <ButtonShare onClick={handleShareClickChat}>
+                <IconShare src={share} />
+                SHARE
+              </ButtonShare>
+            </RightContainer>
+          </Box>
+        )}
         {location.pathname === "/accountDetails" && (
           <Box style={{ justifyContent: "flex-start" }}>
             <ButtonMenu onClick={handleMenuClick}>

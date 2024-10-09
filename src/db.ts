@@ -91,6 +91,19 @@ class DatabaseSingleton {
             console.error('Error deleting data:', error);
         }
     }
+
+    public async updateData(storeName: string, data: any) {
+        try {
+            const db = await this.initDB();
+            const tx = db!.transaction(storeName, 'readwrite');
+            const store = tx.objectStore(storeName);
+            await store.put(data); 
+            await tx.done;
+        } catch (error) {
+            console.error('Error updating data:', error);
+        }
+    }
+    
 }
 
 export const dbInstance = DatabaseSingleton.getInstance();

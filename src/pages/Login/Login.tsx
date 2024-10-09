@@ -105,7 +105,7 @@ const Login: React.FC<LoginProps> = ({
             console.log("Unverified user found in IndexedDB:", userFromDB);
             setModalType("failure");
             setModalMessage(
-              "Please, check your email box to verify your email! If you didn't receive the email, please spam box."
+              "Please, check your email box to verify your email! If you didn't receive the email, please check spam box."
             );
             setIsModalVisible(true);
             setIsLoading(false);
@@ -322,7 +322,7 @@ const Login: React.FC<LoginProps> = ({
                 SIGN IN WITH GOOGLE
               </CustomGoogleButton>
               <Button onClick={handleLogin} tabIndex={0}>
-              <span className="button-text">SIGN IN</span>
+                <span className="button-text">SIGN IN</span>
                 {isLoading && (
                   <ColorRing
                     visible={true}

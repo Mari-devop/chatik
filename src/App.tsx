@@ -20,6 +20,7 @@ import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import Paywall from "./pages/Paywall/Paywall";
 import HowItWorks from "./pages/HowItWorks/HowItWorks";
 import Loader from "./components/Loader/Loader";
+import ChatIndividuals from "./pages/Chat/ChatIndividuals";
 
 const stripePromise = loadStripe(
   "pk_test_51PqIRMRxh50Nc0qLf4KgICJ8Gb4lP7e4iOqZp0SJFlG9rIABwbfH0u09I708ArEEkN3VJ3lzojlUcuvwZ0IYXpcU00E7LfZZkG"
@@ -80,6 +81,10 @@ function App() {
               <Route
                 path="/chat"
                 element={<Chat isAuthenticated={isAuthenticated} />}
+              />
+              <Route
+                path="/chatindividuals"
+                element={<ChatIndividuals isAuthenticated={isAuthenticated} />}
               />
               <Route
                 path="/paywall"

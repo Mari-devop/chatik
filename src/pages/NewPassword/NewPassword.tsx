@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Container, BoxContainer } from "../About/About.styled";
 import { Button } from "./NewPassword.styled";
+import { StyledIcon } from "../../pages/Login/Login.styled";
 import { AvenirH2 } from "../../assets/css/Global.styled";
 import { Row } from "../SignUp/SignUp.styled";
 import ModalSuccess from "../../components/ModalSuccess/ModalSuccess";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 interface PasswordProps {
@@ -17,16 +17,54 @@ const NewPassword: React.FC<PasswordProps> = ({
   setIsLoginOpen,
   setEmailForLogin,
 }) => {
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
+  const [passwordHint, setPasswordHint] = useState("");
   const [isNewPasswordVisible, setIsNewPasswordVisible] = useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [modalType, setModalType] = useState<"success" | "failure">("success");
   const resetToken = new URLSearchParams(window.location.search).get("token");
+
+  const validatePassword = (password: string | undefined) => {
+    if (!password) {
+      setPasswordError(false);
+      setPasswordHint("");
+      return true;
+    }
+
+    if (password.length < 8) {
+      setPasswordHint("Password should be at least 8 characters");
+      setPasswordError(true);
+      return false;
+    }
+
+    setPasswordHint("");
+    setPasswordError(false);
+    return true;
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setPassword(value);
+    validatePassword(value);
+  };
+
+  const handleNewPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setNewPassword(value);
+
+    if (value !== password) {
+      setPasswordHint("Passwords do not match.");
+      setPasswordError(true);
+    } else {
+      setPasswordHint("");
+      setPasswordError(false);
+    }
+  };
 
   const handleSubmit = async () => {
     try {
@@ -76,43 +114,40 @@ const NewPassword: React.FC<PasswordProps> = ({
         <BoxContainer>
           <AvenirH2>Change your password</AvenirH2>
           <Row>
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">
+              Password
+              <StyledIcon
+                icon={isPasswordVisible ? faEye : faEyeSlash}
+                onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+              />
+              {passwordHint && (
+                <span
+                  style={{ color: "red", fontSize: "12px", marginLeft: "10px" }}
+                >
+                  {passwordHint}
+                </span>
+              )}
+            </label>
             <input
               type={isPasswordVisible ? "text" : "password"}
               id="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <FontAwesomeIcon
-              icon={isPasswordVisible ? faEye : faEyeSlash}
-              onClick={() => setIsPasswordVisible(!isPasswordVisible)}
-              style={{
-                position: "absolute",
-                color: "white",
-                cursor: "pointer",
-                bottom: "305px",
-                right: "100px",
-              }}
+              onChange={handlePasswordChange}
             />
           </Row>
           <Row>
-            <label htmlFor="newPassword">Confirm password</label>
+            <label htmlFor="newPassword">
+              Confirm password
+              <StyledIcon
+                icon={isNewPasswordVisible ? faEye : faEyeSlash}
+                onClick={() => setIsNewPasswordVisible(!isNewPasswordVisible)}
+              />
+            </label>
             <input
               type={isNewPasswordVisible ? "text" : "password"}
               id="password"
               value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
-            <FontAwesomeIcon
-              icon={isNewPasswordVisible ? faEye : faEyeSlash}
-              onClick={() => setIsNewPasswordVisible(!isNewPasswordVisible)}
-              style={{
-                position: "absolute",
-                color: "white",
-                cursor: "pointer",
-                bottom: "180px",
-                right: "100px",
-              }}
+              onChange={handleNewPasswordChange}
             />
           </Row>
           <Button disabled={isButtonDisabled} onClick={handleSubmit}>

@@ -311,7 +311,7 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
             fullImage,
           };
 
-          navigate("/chat", {
+          navigate("/chatindividuals", {
             state: { ...selectedIndividual, individualId },
           });
         } else {
