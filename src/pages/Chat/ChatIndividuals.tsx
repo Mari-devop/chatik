@@ -65,6 +65,7 @@ const ChatIndividuals: React.FC<ChatProps> = ({ isAuthenticated }) => {
   const [chatHistory, setChatHistory] = useState<Message[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [questionVisible, setQuestionVisible] = useState(true);
+  const [questionCount, setQuestionCount] = useState<number>(0);
   const [isDialogStarted, setIsDialogStarted] = useState(false);
   const [wasQuestionClicked, setWasQuestionClicked] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -223,7 +224,8 @@ const ChatIndividuals: React.FC<ChatProps> = ({ isAuthenticated }) => {
           setIsLoading(false);
           setIsDialogStarted(false);
         });
-
+        answerBoxRef.current?.scrollIntoView({ behavior: "smooth" });
+        
         socketRef.current.on("error", (error: any) => {
           console.error("Error:", error);
         });
@@ -241,6 +243,18 @@ const ChatIndividuals: React.FC<ChatProps> = ({ isAuthenticated }) => {
   const handleSendMessage = async () => {
     if (!message.trim() || isLoading) return;
 
+    if (questionCount >= 5) {
+      
+      setModalType("failure");
+      setModalMessage("Please subscribe to use this feature.");
+      setShowModal(true);
+
+      setTimeout(() => {
+        setShowModal(false);
+        navigate("/paywall");
+      }, 3000);
+      return;
+    }
     try {
       const users = await dbInstance.getData("users");
       const lastUser = users[users.length - 1];
@@ -289,12 +303,12 @@ const ChatIndividuals: React.FC<ChatProps> = ({ isAuthenticated }) => {
         characterId: individualId,
         message: formattedMessage,
       });
-      console.log("Message sent to server:", formattedMessage);
       setMessage("");
       setCurrentResponse(null);
 
       setIsLoading(false);
-      answerBoxRef.current?.scrollIntoView({ behavior: "smooth" });
+
+      setQuestionCount((prevCount) => prevCount + 1);
 
       const input = document.querySelector("textarea") as HTMLTextAreaElement;
       if (input) {
@@ -302,6 +316,7 @@ const ChatIndividuals: React.FC<ChatProps> = ({ isAuthenticated }) => {
       }
 
       setIsGrowing(false);
+      answerBoxRef.current?.scrollIntoView({ behavior: "smooth" });
     } catch (error: any) {
       setIsLoading(false);
       console.error("Error sending message:", error);
@@ -394,6 +409,7 @@ const ChatIndividuals: React.FC<ChatProps> = ({ isAuthenticated }) => {
         );
         setTotalPages(fetchedTotalPages);
         currentPageRef.current = page;
+        answerBoxRef.current?.scrollIntoView({ behavior: "smooth" });
       } catch (error) {
         console.error("Error fetching chat history:", error);
       }

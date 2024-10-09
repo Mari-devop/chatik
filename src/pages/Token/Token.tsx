@@ -32,18 +32,17 @@ const Token: React.FC<TokenProps> = ({ setIsLoginOpen }) => {
 
       const { email } = response.data;
 
-      if (response) {
+      if (response.status === 200) {
         const users = await dbInstance.getData("users");
         const userToUpdate = users.find((user: User) => user.email === email);
         if (userToUpdate) {
           const updatedUser = { ...userToUpdate, isVerified: true };
-          await dbInstance.updateData("users", updatedUser);
-      
+          await dbInstance.updateData("users", updatedUser); 
+        }
         setModalType("success");
         setModalMessage("Successful verifacation!");
         setIsModalVisible(false);
         setIsLoginOpen(true);
-        }
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
