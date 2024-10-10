@@ -180,19 +180,27 @@ const ChatIndividuals: React.FC<ChatProps> = ({ isAuthenticated }) => {
   useEffect(() => {
     const initializeSocket = async () => {
       const users = await dbInstance.getData("users");
-      const lastUser = users[users.length - 1];
-      const token = lastUser?.token;
-
-      if (!token) {
-        console.log("User is not authenticated. Socket won't be initialized.");
+      if (!users || users.length === 0) {
+        console.error("No user data found in IndexedDB");
         return;
       }
 
-      const tokenIsValid = await validateToken();
-      if (!tokenIsValid) {
-        console.log("Token is invalid. Socket won't be initialized.");
+      const verifiedUser = users.find((user: any) => user.token);
+
+      if (!verifiedUser) {
+        console.error("No verified user with token found");
+        setModalType("failure");
+        setModalMessage("Your session has expired. Please login again.");
+        setShowModal(true);
+
+        setTimeout(() => {
+          setShowModal(false);
+          navigate("/");
+        }, 3000);
         return;
       }
+
+      const userToken = verifiedUser.token;
 
       if (socketRef.current) {
         return;
@@ -201,7 +209,7 @@ const ChatIndividuals: React.FC<ChatProps> = ({ isAuthenticated }) => {
       if (!socketRef.current) {
         socketRef.current = io("https://eternalai.fly.dev", {
           auth: {
-            token: token,
+            token: userToken,
           },
           transports: ["websocket"],
         });
