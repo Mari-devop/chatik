@@ -139,7 +139,7 @@ export const ButtonContainer = styled.div`
 export const Button = styled.button`
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 10px;
   width: 48%;
   height: 56px;
@@ -154,12 +154,14 @@ export const Button = styled.button`
   line-height: 14px;
   letter-spacing: 0.3em;
   color: #ffffff;
+  position: relative;
 
-  .button-text {
-    flex-grow: 1; 
-    text-align: center;
+   .spinner-wrapper {
+    position: absolute;
+    right: 15px; 
+    display: flex;
+    align-items: center;
   }
-
 
   &:hover {
     background: var(--primary-gradient-hover);

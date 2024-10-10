@@ -322,21 +322,23 @@ const Login: React.FC<LoginProps> = ({
                 SIGN IN WITH GOOGLE
               </CustomGoogleButton>
               <Button onClick={handleLogin} tabIndex={0}>
-                <span className="button-text">SIGN IN</span>
+                SIGN IN
                 {isLoading && (
-                  <ColorRing
-                    visible={true}
-                    height="35"
-                    width="35"
-                    ariaLabel="color-ring-loading"
-                    colors={[
-                      "#f82d98",
-                      "#f82d98",
-                      "#F82D98",
-                      "#5833ef",
-                      "#5833ef",
-                    ]}
-                  />
+                  <div className="spinner-wrapper">
+                    <ColorRing
+                      visible={true}
+                      height="35"
+                      width="35"
+                      ariaLabel="color-ring-loading"
+                      colors={[
+                        "#f82d98",
+                        "#f82d98",
+                        "#F82D98",
+                        "#5833ef",
+                        "#5833ef",
+                      ]}
+                    />
+                  </div>
                 )}
               </Button>
             </ButtonContainer>

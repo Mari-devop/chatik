@@ -97,14 +97,14 @@ const AccountDetails = () => {
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newEmail = e.target.value;
-   
+
     setUserData((prev) => ({
       ...prev,
       email: newEmail,
-      isVerified: newEmail === initialEmail, 
+      isVerified: newEmail === initialEmail,
     }));
-    localStorage.setItem("userEmail", newEmail); 
-    setIsFormChanged(newEmail !== initialEmail); 
+    localStorage.setItem("userEmail", newEmail);
+    setIsFormChanged(newEmail !== initialEmail);
   };
 
   const validatePhone = (phone: string) => {
@@ -138,10 +138,11 @@ const AccountDetails = () => {
   };
 
   const checkFormChanged = () => {
-    const hasEmailChanged = userData.email !== localStorage.getItem("newEmailInput");
-    
+    const hasEmailChanged =
+      userData.email !== localStorage.getItem("newEmailInput");
+
     const hasChanged =
-      // userData.email !== initialUserData.email || 
+      // userData.email !== initialUserData.email ||
       hasEmailChanged ||
       (userData.name || "") !== (initialUserData.name || "") ||
       (userData.phone || "") !== (initialUserData.phone || "") ||
@@ -149,6 +150,11 @@ const AccountDetails = () => {
 
     setIsFormChanged(hasChanged);
   };
+
+  useEffect(() => {
+    checkFormChanged();
+  }, [userData]);
+
 
   const validateForm = () => {
     const isEmailValid = validateEmail(userData.email);
@@ -224,7 +230,7 @@ const AccountDetails = () => {
 
       const updatedEmail = storedEmail || profileData.email;
 
-      localStorage.setItem('newEmailInput', profileData.email);
+      localStorage.setItem("newEmailInput", profileData.email);
 
       setInitialEmail(profileData.email);
 
@@ -347,18 +353,24 @@ const AccountDetails = () => {
 
       const { email, name, phone } = response.data;
 
-      setInitialUserData({
-        email: email,
-        name: name,
-        phone: phone,
-        password: ""
-      })
-     
+        setInitialUserData({
+          email: email,
+          name: name,
+          phone: phone,
+          password: "",
+        });
+        setIsFormChanged(false);
+
       if (response.status === 200) {
+        
+        setUserData((prev) => ({
+          ...prev,
+          password: "", 
+        }));
+
         setInitialEmail(userData.email);
 
-
-        localStorage.setItem('newEmailInput', userData.email);
+        localStorage.setItem("newEmailInput", userData.email);
 
         await dbInstance.addData("users", { ...updatedData });
         setModalType("success");
@@ -411,7 +423,7 @@ const AccountDetails = () => {
         }
       } else if (error.response?.status === 500) {
         setModalType("failure");
-        setModalMessage("Email already exists");
+        setModalMessage("Email already in use");
         setIsModalVisible(true);
       }
     }
@@ -634,7 +646,6 @@ const AccountDetails = () => {
     };
     loadData();
   }, []);
-  
 
   if (dataLoaded) {
     return <Loader />;
