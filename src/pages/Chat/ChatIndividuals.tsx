@@ -280,10 +280,15 @@ const ChatIndividuals: React.FC<ChatProps> = ({ isAuthenticated }) => {
 
     try {
       const users = await dbInstance.getData("users");
-      const lastUser = users[users.length - 1];
-      const token = lastUser?.token;
+      if (!users || users.length === 0) {
+        console.error("No user data found in IndexedDB");
+        return;
+      }
 
-      if (!token) {
+      const verifiedUser = users.find((user: any) => user.token);
+
+      if (!verifiedUser) {
+        console.error("No verified user with token found");
         setModalType("failure");
         setModalMessage("Your session has expired. Please login again.");
         setShowModal(true);
@@ -294,6 +299,8 @@ const ChatIndividuals: React.FC<ChatProps> = ({ isAuthenticated }) => {
         }, 3000);
         return;
       }
+
+      const userToken = verifiedUser.token;
 
       const tokenIsValid = await validateToken();
       if (!tokenIsValid) {
@@ -389,13 +396,27 @@ const ChatIndividuals: React.FC<ChatProps> = ({ isAuthenticated }) => {
     async (page: number) => {
       try {
         const users = await dbInstance.getData("users");
-        const lastUser = users[users.length - 1];
-        const userToken = lastUser?.token;
+      if (!users || users.length === 0) {
+        console.error("No user data found in IndexedDB");
+        return;
+      }
 
-        if (!userToken) {
-          console.error("Token is missing or user is not authenticated");
-          return;
-        }
+      const verifiedUser = users.find((user: any) => user.token);
+
+      if (!verifiedUser) {
+        console.error("No verified user with token found");
+        setModalType("failure");
+        setModalMessage("Your session has expired. Please login again.");
+        setShowModal(true);
+
+        setTimeout(() => {
+          setShowModal(false);
+          navigate("/");
+        }, 3000);
+        return;
+      }
+
+      const userToken = verifiedUser.token;
 
         const response = await axios.get(
           `https://eternalai.fly.dev/api/chatHistory/${individualId}?page=${page}&pageSize=6`,
@@ -418,7 +439,7 @@ const ChatIndividuals: React.FC<ChatProps> = ({ isAuthenticated }) => {
               text: entry.content,
               smallImage:
                 entry.sender === "user"
-                  ? lastUser.image || profile
+                  ? verifiedUser.image || profile
                   : smallImage,
             };
           })

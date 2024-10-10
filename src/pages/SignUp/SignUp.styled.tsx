@@ -68,6 +68,7 @@ export const Row = styled.div`
   flex-direction: column;
   margin-top: 32px;
   width: 100%;
+  position: relative;
 
   label {
     font-family: "Avenir";
@@ -114,10 +115,24 @@ export const Row = styled.div`
     outline: none;
   }
 
+  .hint {
+    color: red;
+    font-size: 12px;
+    margin-left: 10px;
+    min-height: 12px; 
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .hint.visible {
+    opacity: 1; 
+  }
+
   @media (max-height: 740px) {
     margin-top: 24px;
   }
 `;
+
 
 export const ButtonContainer = styled.div`
   display: flex;
@@ -156,9 +171,9 @@ export const Button = styled.button`
   color: #ffffff;
   position: relative;
 
-   .spinner-wrapper {
+  .spinner-wrapper {
     position: absolute;
-    right: 15px; 
+    right: 15px;
     display: flex;
     align-items: center;
   }

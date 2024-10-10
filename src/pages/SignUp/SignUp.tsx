@@ -51,6 +51,12 @@ const SignUp: React.FC<SignupProps> = ({
   };
 
   const validatePassword = (password: string) => {
+    if (!password) {
+      setPasswordError(false);
+      setPasswordHint("");
+      return true;
+    }
+    
     if (password.length < 8) {
       setPasswordHint("Password should be at least 8 characters");
       setPasswordError(true);
@@ -235,7 +241,7 @@ const SignUp: React.FC<SignupProps> = ({
                       marginLeft: "10px",
                     }}
                   >
-                    {passwordHint}
+                   <span className={`hint ${passwordHint ? "visible" : ""}`}>{passwordHint}</span> 
                   </span>
                 )}
               </label>

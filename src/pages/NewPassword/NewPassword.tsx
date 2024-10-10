@@ -126,11 +126,7 @@ const NewPassword: React.FC<PasswordProps> = ({
                 onClick={() => setIsPasswordVisible(!isPasswordVisible)}
               />
               {passwordHint && (
-                <span
-                  style={{ color: "red", fontSize: "12px", marginLeft: "10px" }}
-                >
-                  {passwordHint}
-                </span>
+                <span className={`hint ${passwordHint ? "visible" : ""}`}>{passwordHint}</span>
               )}
             </label>
             <input
