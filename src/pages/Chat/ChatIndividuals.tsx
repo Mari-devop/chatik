@@ -201,7 +201,7 @@ const ChatIndividuals: React.FC<ChatProps> = ({ isAuthenticated }) => {
       }
 
       const userToken = verifiedUser.token;
-
+      
       if (socketRef.current) {
         return;
       }

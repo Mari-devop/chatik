@@ -24,6 +24,12 @@ export const Title = styled.h2`
   line-height: 31px;
   letter-spacing: 0.1em;
   color: #ffffff;
+
+  @media (max-width: 375px) {
+    font-size: 20px;
+    text-align: center;
+    margin-top: 30px;
+  }
 `;
 
 export const Button = styled.button`
@@ -85,6 +91,11 @@ export const Button = styled.button`
     width: auto;
     height: auto;
   }
+
+  @media (max-width: 375px) {
+    width: 120px;
+    margin-right: 0;
+  }
 `;
 
 export const BtnContainer = styled.div`
@@ -94,6 +105,10 @@ export const BtnContainer = styled.div`
   align-items: center;
   gap: 20px;
   margin-top: 20px;
+
+  @media (max-width: 375px) {
+    margin-top: 30px;
+  }
 `;
 
 export const CloseIcon = styled.div`
@@ -126,6 +141,13 @@ export const CloseIcon = styled.div`
     right: 16px;
     width: 36px;
     height: 36px;
+  }
+
+  @media (max-width: 375px) {
+    top: 20px;
+    right: 30px;
+    width: 30px;
+    height: 30px;
   }
 
   &::before,
