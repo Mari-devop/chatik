@@ -116,20 +116,21 @@ const Login: React.FC<LoginProps> = ({
         }
       }
 
-      console.log("Sending login request to server with data:", {
-        email,
-        password,
-      });
-
       const response = await login(email, password);
 
       if (response && response.token) {
         setIsAuthenticated(true);
+
+        if (response.hasAcceptedPolicy === false) {
+          navigate("/about"); 
+        } else {
+          navigate("/"); 
+        }
+
         setModalType("success");
         setModalMessage("Login Successful!");
         setIsModalVisible(true);
         setIsLoginOpen(false);
-        navigate("/about"); 
       }
     } catch (error: any) {
       console.log("Error details:", error);

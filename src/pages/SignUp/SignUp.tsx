@@ -40,7 +40,6 @@ const SignUp: React.FC<SignupProps> = ({
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [passwordHint, setPasswordHint] = useState("");
   const [passwordError, setPasswordError] = useState(false);
-  const [isPolicyChecked, setIsPolicyChecked] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalType, setModalType] = useState<"success" | "failure">("success");
   const [modalMessage, setModalMessage] = useState("");
@@ -93,7 +92,7 @@ const SignUp: React.FC<SignupProps> = ({
 
   const handleRegister = async () => {
     try {
-      const response = await register(email, password, isPolicyChecked);
+      const response = await register(email, password );
       if (response && response.token) {
         await dbInstance.addData("users", {
           email: response.email,

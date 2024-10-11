@@ -1,7 +1,7 @@
 import axios from "axios";
 import { dbInstance } from "../db";
 
-export const register = async (email: string, password: string, hasAcceptedPolicy: boolean) => {
+export const register = async (email: string, password: string ) => {
     const users = await dbInstance.getData("users");
     const shareToken: string = users?.[0]?.shareToken;
 
@@ -9,7 +9,6 @@ export const register = async (email: string, password: string, hasAcceptedPolic
         email,
         password,
         shareToken,
-        hasAcceptedPolicy
     };
     const response = await axios.post('https://eternalai.fly.dev/user/register', requestBody, {
         headers: {
@@ -32,8 +31,8 @@ export const login = async (email: string, password: string) => {
         },
     });
 
-    const { token } = response.data;
+    const { token, hasAcceptedPolicy } = response.data;
 
-    await dbInstance.addData('users', { email, password, token });
+    await dbInstance.addData('users', { email, password, token, hasAcceptedPolicy });
     return response.data;
 };

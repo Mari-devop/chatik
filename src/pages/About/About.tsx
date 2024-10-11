@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { dbInstance } from '../../db';
+import { dbInstance } from "../../db";
 import { useNavigate } from "react-router-dom";
 import {
   Row,
@@ -20,41 +20,41 @@ const About = () => {
     setIsChecked(!isChecked);
   };
 
-  const handleContinue = async (): Promise<void> => {
-    try {
-      const users = await dbInstance.getData("users");
-      if (!users || users.length === 0) {
-        console.error("No user data found in IndexedDB");
-        return;
-      }
+  const handleContinue = async () => {
+    if (isChecked) {
+        try {
+          const users = await dbInstance.getData("users");
+          if (!users || users.length === 0) {
+            console.error("No user data found in IndexedDB");
+            return;
+          }
+    
+          const verifiedUser = users.find((user: any) => user.token);
+    
+          if (!verifiedUser) {
+            console.error("No verified user with token found");
+            return;
+          }
+    
+          const userToken = verifiedUser.token;
 
-      const verifiedUser = users.find((user: any) => user.token);
+            await axios.put('https://eternalai.fly.dev/user/ternsOfPolicy', {
+                hasAcceptedPolicy: true, 
+            }, {
+                headers: {
+                    Authorization: `Bearer ${userToken}`, 
+                    'Content-Type': 'application/json'
+                }
+            });
 
-      if (!verifiedUser) {
-        console.error("No verified user with token found");
-        return;
-      }
+            await dbInstance.updateData('users', { hasAcceptedPolicy: true });
 
-      const userToken = verifiedUser.token;
-
-      await axios.put(
-        'https://eternalai.fly.dev/user/ternsOfPolicy', 
-        { hasAcceptedPolicy: isChecked }, 
-        {
-          headers: {
-            'Authorization': `Bearer ${userToken}`,
-            'Content-Type': 'application/json',
-          },
+            navigate("/");
+        } catch (error) {
+            console.error("Failed to update terms of policy:", error);
         }
-      );
-      
-      if (isChecked) {
-        navigate("/");
-      }
-    } catch (error) {
-      console.error("Error updating policy status:", error);
     }
-  };
+};
 
   const handleContainerClick = () => {
     navigate("/");
