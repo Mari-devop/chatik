@@ -1,14 +1,15 @@
 import axios from "axios";
 import { dbInstance } from "../db";
 
-export const register = async (email: string, password: string) => {
+export const register = async (email: string, password: string, hasAcceptedPolicy: boolean) => {
     const users = await dbInstance.getData("users");
     const shareToken: string = users?.[0]?.shareToken;
 
     const requestBody = {
         email,
         password,
-        shareToken
+        shareToken,
+        hasAcceptedPolicy
     };
     const response = await axios.post('https://eternalai.fly.dev/user/register', requestBody, {
         headers: {

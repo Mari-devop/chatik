@@ -40,6 +40,7 @@ const SignUp: React.FC<SignupProps> = ({
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [passwordHint, setPasswordHint] = useState("");
   const [passwordError, setPasswordError] = useState(false);
+  const [isPolicyChecked, setIsPolicyChecked] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalType, setModalType] = useState<"success" | "failure">("success");
   const [modalMessage, setModalMessage] = useState("");
@@ -56,7 +57,7 @@ const SignUp: React.FC<SignupProps> = ({
       setPasswordHint("");
       return true;
     }
-    
+
     if (password.length < 8) {
       setPasswordHint("Password should be at least 8 characters");
       setPasswordError(true);
@@ -92,7 +93,7 @@ const SignUp: React.FC<SignupProps> = ({
 
   const handleRegister = async () => {
     try {
-      const response = await register(email, password);
+      const response = await register(email, password, isPolicyChecked);
       if (response && response.token) {
         await dbInstance.addData("users", {
           email: response.email,
@@ -104,7 +105,6 @@ const SignUp: React.FC<SignupProps> = ({
         setModalMessage("Registration Successful! ");
         setIsModalVisible(true);
         checkAuthentication();
-        navigate("/about");
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -118,6 +118,12 @@ const SignUp: React.FC<SignupProps> = ({
           setIsModalVisible(true);
         }
       }
+    }
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter") {
+      handleRegister();
     }
   };
 
@@ -165,7 +171,11 @@ const SignUp: React.FC<SignupProps> = ({
           setIsModalVisible(true);
           setIsAuthenticated(true);
           setIsSignupOpen(false);
-          navigate("/about");
+          
+          setTimeout(() => {
+            setIsModalVisible(false);
+            navigate("/about"); 
+          }, 3000); 
         }
       } catch (error) {
         setModalType("failure");
@@ -241,7 +251,9 @@ const SignUp: React.FC<SignupProps> = ({
                       marginLeft: "10px",
                     }}
                   >
-                   <span className={`hint ${passwordHint ? "visible" : ""}`}>{passwordHint}</span> 
+                    <span className={`hint ${passwordHint ? "visible" : ""}`}>
+                      {passwordHint}
+                    </span>
                   </span>
                 )}
               </label>
@@ -250,6 +262,7 @@ const SignUp: React.FC<SignupProps> = ({
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                onKeyDown={handleKeyDown}
               />
             </Row>
             <ButtonContainer>

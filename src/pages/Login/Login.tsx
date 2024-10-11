@@ -129,7 +129,7 @@ const Login: React.FC<LoginProps> = ({
         setModalMessage("Login Successful!");
         setIsModalVisible(true);
         setIsLoginOpen(false);
-        navigate("/");
+        navigate("/about"); 
       }
     } catch (error: any) {
       console.log("Error details:", error);
@@ -156,6 +156,12 @@ const Login: React.FC<LoginProps> = ({
       setIsAuthenticated(false);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter") {
+      handleLogin();
     }
   };
 
@@ -309,6 +315,7 @@ const Login: React.FC<LoginProps> = ({
                 id="password"
                 value={password || ""}
                 onChange={(e) => setPassword(e.target.value)}
+                onKeyDown={handleKeyDown}
               />
             </Row>
             <Row>

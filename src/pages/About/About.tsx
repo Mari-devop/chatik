@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { dbInstance } from '../../db';
 import { useNavigate } from "react-router-dom";
 import {
   Row,
@@ -18,9 +20,39 @@ const About = () => {
     setIsChecked(!isChecked);
   };
 
-  const handleContinue = () => {
-    if (isChecked) {
-      navigate("/");
+  const handleContinue = async (): Promise<void> => {
+    try {
+      const users = await dbInstance.getData("users");
+      if (!users || users.length === 0) {
+        console.error("No user data found in IndexedDB");
+        return;
+      }
+
+      const verifiedUser = users.find((user: any) => user.token);
+
+      if (!verifiedUser) {
+        console.error("No verified user with token found");
+        return;
+      }
+
+      const userToken = verifiedUser.token;
+
+      await axios.put(
+        'https://eternalai.fly.dev/user/ternsOfPolicy', 
+        { hasAcceptedPolicy: isChecked }, 
+        {
+          headers: {
+            'Authorization': `Bearer ${userToken}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      
+      if (isChecked) {
+        navigate("/");
+      }
+    } catch (error) {
+      console.error("Error updating policy status:", error);
     }
   };
 

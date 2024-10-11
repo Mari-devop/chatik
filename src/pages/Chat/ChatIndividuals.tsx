@@ -72,6 +72,7 @@ const ChatIndividuals: React.FC<ChatProps> = ({ isAuthenticated }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [modalType, setModalType] = useState<"success" | "failure">("success");
   const [modalMessage, setModalMessage] = useState("");
+  const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true); 
   const answerBoxRef = useRef<HTMLDivElement | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const isFetching = useRef(false);
@@ -216,8 +217,11 @@ const ChatIndividuals: React.FC<ChatProps> = ({ isAuthenticated }) => {
 
         socketRef.current.on("chatResponse", (response: any) => {
           const newMessage = response.response;
+          const questionCount = response.responseCount;
+          const individualId = response.individualId;
           const smallImage = individual?.smallImage || profile;
 
+          setQuestionCount(questionCount);
           setCurrentResponse(newMessage);
 
           setChatHistory((prev) => [
@@ -271,20 +275,16 @@ const ChatIndividuals: React.FC<ChatProps> = ({ isAuthenticated }) => {
     }
   }, [chatHistory]);
   
-  const handleSendMessage = async () => {
-    if (!message.trim() || isLoading) return;
-
-    if (questionCount >= 5) {
-      setModalType("failure");
-      setModalMessage("Please subscribe to use this feature.");
-      setShowModal(true);
-
-      setTimeout(() => {
-        setShowModal(false);
-        navigate("/paywall");
-      }, 3000);
-      return;
+  useEffect(() => {
+    if (message.trim() === "") {
+      setIsButtonDisabled(true); 
+    } else {
+      setIsButtonDisabled(false); 
     }
+  }, [message]);
+
+  const handleSendMessage = async () => {
+    if (!message.trim() || isButtonDisabled || isLoading) return;
 
     try {
       const users = await dbInstance.getData("users");
@@ -674,7 +674,7 @@ const ChatIndividuals: React.FC<ChatProps> = ({ isAuthenticated }) => {
                 isGrowing={isGrowing}
               />
             </InputWrapper>
-            <Button onClick={handleSendMessage} disabled={!isAuthenticated}>
+            <Button onClick={handleSendMessage} disabled={!isAuthenticated || isButtonDisabled}>
               SUBMIT
             </Button>
           </InputBox>

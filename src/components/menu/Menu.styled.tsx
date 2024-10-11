@@ -39,8 +39,7 @@ export const Row = styled.div`
   align-items: center;
   margin-top: 32px;
   margin-bottom: 0px;
-  width: 100%;
-  cursor: pointer;
+  width: auto;
 
   span {
     font-family: "Avenir";
@@ -79,7 +78,7 @@ export const SocialContainer = styled.div`
 
 export const Social = styled.img`
   width: 24px;
-  height: 24px;
+  height: 22px;
   cursor: pointer;
 
   @media (max-width: 375px) {
@@ -290,6 +289,7 @@ export const StyledLink = styled(Link)`
     span {
       font-size: 24px;
       line-height: 24px;
+      cursor: pointer;
     }
   }
 `;

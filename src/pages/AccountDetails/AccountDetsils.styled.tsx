@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import InputMask from "react-input-mask";
 
 export const Container = styled.div`
   display: flex;
@@ -140,6 +139,11 @@ export const Text = styled.p`
   @media (max-width: 767px) {
     text-align: center;
   }
+
+  @media (max-width: 500px) {
+    font-size: 16px;
+    margin-bottom: 16px;
+  }
 `;
 
 export const ButtonUpdate = styled.button`
@@ -208,11 +212,21 @@ export const ImageDown = styled.img`
 
 export const CardInputContainer = styled.div`
   display: flex;
+  flex-direction: row;
   align-items: center;
-  background-color: #000;
+  background-color: transparent;
   padding: 10px;
   border-radius: 30px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+  @media (max-width: 900px) {
+    width: 90%;
+  }
+
+  @media (max-width: 500px) {
+    flex-direction: column;
+    width: 100%;
+  }
 `;
 
 export const CardDetails = styled.div`
@@ -225,52 +239,11 @@ export const CardDetails = styled.div`
   color: #fff;
   width: 529px;
   padding: 0 16px;
-`;
 
-export const CardIcon = styled.div`
-  margin-right: 5px;
-  img {
-    margin-left: 16px;
-    width: 24px;
-    height: 16px;
+  @media (max-width: 500px) {
+    width: 90%;
+    margin-bottom: 16px;
   }
-`;
-
-export const MaskedInput = styled(InputMask)`
-  background-color: transparent;
-  border: none;
-  color: #fff;
-  margin: 0 15px;
-  padding: 10px;
-  width: 100%;
-  font-family: "Avenir";
-  font-weight: 400;
-  font-size: 18px;
-  line-height: 27px;
-  letter-spacing: -0.01em;
-  color: var(--white-color);
-  z-index: 9999;
-  &:focus {
-    outline: none;
-  }
-`;
-
-export const CardNumberInput = styled(MaskedInput)`
-  width: 200px;
-  outline: none;
-  z-index: 9999;
-`;
-
-export const ExpiryInput = styled(MaskedInput)`
-  width: 80px;
-  outline: none;
-  z-index: 9999;
-`;
-
-export const CvcInput = styled(MaskedInput)`
-  width: 60px;
-  outline: none;
-  z-index: 9999;
 `;
 
 export const SaveButtonPay = styled.button`
@@ -293,6 +266,12 @@ export const SaveButtonPay = styled.button`
 
   &:hover {
     opacity: 0.9;
+  }
+
+  @media (max-width: 500px) {
+    width: 100%;
+    height: 56px;
+    margin-left: 0;
   }
 `;
 

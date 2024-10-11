@@ -76,8 +76,9 @@ const Menu: React.FC<MenuProps> = ({
     setIsMenuOpen(false);
   };
 
-  const handleLinkClick = () => {
+  const handleLinkClick = (event: React.MouseEvent) => {
     setIsMenuOpen(false);
+    event.stopPropagation();
   };
 
   const handleLoginClick = () => {
@@ -88,8 +89,9 @@ const Menu: React.FC<MenuProps> = ({
     setIsSignupOpen(!isSignupOpen);
   };
 
-  const handleAccountClick = () => {
+  const handleAccountClick = (event: React.MouseEvent) => {
     setIsMenuOpen(false);
+    event.stopPropagation();
   };
 
   const checkAuthStatus = async () => {
@@ -123,12 +125,14 @@ const Menu: React.FC<MenuProps> = ({
     }
   };
 
-  const handlePrisingClick = () => {
+  const handlePrisingClick = (event: React.MouseEvent) => {
     setIsMenuOpen(false);
+    event.stopPropagation();
   };
 
-  const handleHowClick = () => {
+  const handleHowClick = (event: React.MouseEvent) => {
     setIsMenuOpen(false);
+    event.stopPropagation();
   };
 
   if (loading) {
@@ -164,7 +168,7 @@ const Menu: React.FC<MenuProps> = ({
             )}
           </Navbar>
 
-          <Content onClick={handleInnerClick}>
+          <Content>
             <Row>
               <StyledLink to="/about" onClick={handleLinkClick}>
                 <span>About us</span>

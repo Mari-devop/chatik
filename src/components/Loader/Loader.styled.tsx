@@ -4,7 +4,7 @@ export const LoaderContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: calc(100vh - 80px);
   width: 100%;
   background-color: transparent;
   backdrop-filter: blur(40px);

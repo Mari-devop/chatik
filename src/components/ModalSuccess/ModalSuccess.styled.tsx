@@ -94,10 +94,10 @@ export const Social = styled.img`
 
 export const CloseIcon = styled.div`
   position: absolute;
-  top: 15px;
-  right: 20px;
-  width: 30px;
-  height: 30px;
+  top: 24px;
+  right: 36px;
+  width: 54px;
+  height: 54px;
   cursor: pointer;
   border: 1px solid var(--border-color);
   border-radius: 4px;

@@ -64,6 +64,7 @@ const AccountDetails = () => {
   const [isFormChanged, setIsFormChanged] = useState(false);
   const [initialEmail, setInitialEmail] = useState("");
   const [isEmailLoaded, setIsEmailLoaded] = useState(false);
+  const [emailHint, setEmailHint] = useState<string>("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [passwordHint, setPasswordHint] = useState("");
   const [isPaymentUpdated, setIsPaymentUpdated] = useState(false);
@@ -74,6 +75,8 @@ const AccountDetails = () => {
   const [modalMessage, setModalMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [emailError, setEmailError] = useState(false);
+  const [emailEmpty, setEmailEmpty] = useState<boolean>(false);
+  const [emailUnverified, setEmailUnverified] = useState<boolean>(false);
   const [phoneError, setPhoneError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);
@@ -97,6 +100,30 @@ const AccountDetails = () => {
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newEmail = e.target.value;
+
+    if (!newEmail) {
+      setEmailEmpty(true);
+      setEmailHint("Email is required");
+      setEmailError(true);
+    } else {
+      setEmailEmpty(false);
+
+      if (!validateEmail(newEmail)) {
+        setEmailHint("Please enter a valid email address");
+        setEmailError(true);
+      } else {
+        setEmailError(false);
+        setEmailHint(""); 
+
+        if (newEmail !== initialEmail) {
+          setEmailUnverified(true);
+          setEmailHint("Unverified email");
+        } else {
+          setEmailUnverified(false);
+          setEmailHint(""); 
+        }
+      }
+    }
 
     setUserData((prev) => ({
       ...prev,
@@ -142,7 +169,6 @@ const AccountDetails = () => {
       userData.email !== localStorage.getItem("newEmailInput");
 
     const hasChanged =
-      // userData.email !== initialUserData.email ||
       hasEmailChanged ||
       (userData.name || "") !== (initialUserData.name || "") ||
       (userData.phone || "") !== (initialUserData.phone || "") ||
@@ -154,7 +180,6 @@ const AccountDetails = () => {
   useEffect(() => {
     checkFormChanged();
   }, [userData]);
-
 
   const validateForm = () => {
     const isEmailValid = validateEmail(userData.email);
@@ -353,19 +378,18 @@ const AccountDetails = () => {
 
       const { email, name, phone } = response.data;
 
-        setInitialUserData({
-          email: email,
-          name: name,
-          phone: phone,
-          password: "",
-        });
-        setIsFormChanged(false);
+      setInitialUserData({
+        email: email,
+        name: name,
+        phone: phone,
+        password: "",
+      });
+      setIsFormChanged(false);
 
       if (response.status === 200) {
-        
         setUserData((prev) => ({
           ...prev,
-          password: "", 
+          password: "",
         }));
 
         setInitialEmail(userData.email);
@@ -694,21 +718,23 @@ const AccountDetails = () => {
                       : faCheckCircle
                   }
                   style={{
+                    width: "15px",
+                    height: "15px",
                     color:
                       userData.email !== initialUserData.email
                         ? "red"
                         : "green",
                   }}
                 />
-                {userData.email !== initialUserData.email && (
+                {emailHint && (
                   <span
                     style={{
-                      color: "red",
-                      marginLeft: "8px",
+                      color: emailError || emailUnverified ? "red" : "green",
                       fontSize: "12px",
+                      marginLeft: "5px",
                     }}
                   >
-                    Unverified email
+                    {emailHint}
                   </span>
                 )}
               </VerificationIcon>
@@ -845,13 +871,53 @@ const AccountDetails = () => {
                   )}
                 </CardInputContainer>
               )
-            ) : userData.hasSubscription && userData.isSubscriptionCanceled ? (
+            ) : (
               <>
-                <ButtonUpdate onClick={handleResumeSubscription}>
-                  RESUME SUBSCRIPTION
-                </ButtonUpdate>
+                {userData.isSubscriptionCanceled && !showCardInput && (
+                  <>
+                    <ButtonUpdate onClick={handleSubmit}>UPDATE PAYMENT</ButtonUpdate>
+                    <ButtonUpdate onClick={handleResumeSubscription}>
+                      RESUME SUBSCRIPTION
+                    </ButtonUpdate>
+                  </>
+                )}
+                {userData.isSubscriptionCanceled && showCardInput && (
+                  <CardInputContainer>
+                    <CardDetails>
+                      <div
+                        style={{
+                          marginBottom: "0px",
+                          width: "100%",
+                          overflow: "hidden",
+                        }}
+                      >
+                        <CardElement options={cardElementOptions} />
+                      </div>
+                    </CardDetails>
+                    {isLoading ? (
+                      <div style={{ display: "flex", justifyContent: "center" }}>
+                        <ColorRing
+                          visible={true}
+                          height="80"
+                          width="80"
+                          ariaLabel="color-ring-loading"
+                          wrapperClass="color-ring-wrapper"
+                          colors={[
+                            "#f82d98",
+                            "#f82d98",
+                            "#F82D98",
+                            "#5833ef",
+                            "#5833ef",
+                          ]}
+                        />
+                      </div>
+                    ) : (
+                      <SaveButtonPay onClick={handleUpdatePayment}>SAVE</SaveButtonPay>
+                    )}
+                  </CardInputContainer>
+                )}
               </>
-            ) : null}
+            )}
           </SecondBox>
         )}
         <ImageDown src={down} />

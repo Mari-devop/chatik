@@ -21,6 +21,10 @@ const ModalSuccess: React.FC<ModalSuccessProps> = ({
   children,
 }) => {
 
+  const handleClick = () => {
+    onClose();
+  };
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -42,9 +46,9 @@ const ModalSuccess: React.FC<ModalSuccessProps> = ({
   if (!isVisible) return null;
 
   return (
-    <ModalBackdrop>
+    <ModalBackdrop onClick={handleClick}>
+      <CloseIcon onClick={onClose} />
       <ModalContainer type={modalType}>
-        <CloseIcon onClick={onClose} />
         {modalType === "share" ? (
           <>
             <p>{message}</p>
