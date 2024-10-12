@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import FocusTrap from "focus-trap-react";
 import axios from "axios";
-import { useGoogleLogin } from "@react-oauth/google";
+import { useGoogleAuth } from "../../hooks/useGoogleAuth";
 import { ColorRing } from "react-loader-spinner";
 import { login } from "../../auth/auth";
 import { dbInstance } from "../../db";
@@ -24,11 +24,7 @@ import {
   AvenirTitle,
   Divider,
 } from "./Login.styled";
-import {
-  ImageContainer,
-  Image,
-  CloseIcon,
-} from "../../components/navbar/Navbar.styled";
+import { ImageContainer, Image, CloseIcon } from "../../assets/css/Global.styled";
 import { Navbar } from "../../components/menu/Menu.styled";
 import ModalSuccess from "../../components/ModalSuccess/ModalSuccess";
 import googleIcon from "../../assets/images/Group.png";
@@ -51,6 +47,15 @@ const Login: React.FC<LoginProps> = ({
   const [modalMessage, setModalMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
+  const { googleSignInOrSignUp } = useGoogleAuth({
+    setModalType,
+    setModalMessage,
+    setIsModalVisible,
+    setIsAuthenticated,
+    setIsOpen: setIsLoginOpen,
+    isLogin: true,  
+  });
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -166,57 +171,57 @@ const Login: React.FC<LoginProps> = ({
     }
   };
 
-  const googleLogin = useGoogleLogin({
-    flow: "implicit",
-    scope: "openid email profile",
-    onSuccess: async (tokenResponse) => {
-      try {
-        const googleAccessToken = tokenResponse.access_token;
+  // const googleLogin = useGoogleLogin({
+  //   flow: "implicit",
+  //   scope: "openid email profile",
+  //   onSuccess: async (tokenResponse) => {
+  //     try {
+  //       const googleAccessToken = tokenResponse.access_token;
 
-        const profileResponse = await axios.get(
-          `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${googleAccessToken}`
-        );
+  //       const profileResponse = await axios.get(
+  //         `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${googleAccessToken}`
+  //       );
 
-        const userProfile = profileResponse.data;
-        const userEmail = userProfile.email;
-        const userName = userProfile.name;
-        const userImage = userProfile.picture;
+  //       const userProfile = profileResponse.data;
+  //       const userEmail = userProfile.email;
+  //       const userName = userProfile.name;
+  //       const userImage = userProfile.picture;
 
-        const res = await axios.post("https://eternalai.fly.dev/user/login", {
-          googleToken: googleAccessToken,
-          email: userEmail,
-          password,
-          name: userName,
-        });
+  //       const res = await axios.post("https://eternalai.fly.dev/user/login", {
+  //         googleToken: googleAccessToken,
+  //         email: userEmail,
+  //         password,
+  //         name: userName,
+  //       });
 
-        const token = res.data.token;
+  //       const token = res.data.token;
 
-        if (token) {
-          await dbInstance.addData("users", {
-            email: userEmail,
-            token,
-            name: userName,
-            image: userImage,
-          });
-          setModalType("success");
-          setModalMessage("Google Login Successful!");
-          setIsAuthenticated(true);
-          setIsModalVisible(true);
-          setIsLoginOpen(false);
-          navigate("/");
-        }
-      } catch (error) {
-        setModalType("failure");
-        setModalMessage("Google Login Failed. Please try again.");
-        setIsModalVisible(true);
-      }
-    },
-    onError: (error) => {
-      setModalType("failure");
-      setModalMessage("Google Login Failed. Please try again.");
-      setIsModalVisible(true);
-    },
-  });
+  //       if (token) {
+  //         await dbInstance.addData("users", {
+  //           email: userEmail,
+  //           token,
+  //           name: userName,
+  //           image: userImage,
+  //         });
+  //         setModalType("success");
+  //         setModalMessage("Google Login Successful!");
+  //         setIsAuthenticated(true);
+  //         setIsModalVisible(true);
+  //         setIsLoginOpen(false);
+  //         navigate("/");
+  //       }
+  //     } catch (error) {
+  //       setModalType("failure");
+  //       setModalMessage("Google Login Failed. Please try again.");
+  //       setIsModalVisible(true);
+  //     }
+  //   },
+  //   onError: (error) => {
+  //     setModalType("failure");
+  //     setModalMessage("Google Login Failed. Please try again.");
+  //     setIsModalVisible(true);
+  //   },
+  // });
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -325,7 +330,7 @@ const Login: React.FC<LoginProps> = ({
               </ButtonSecondary>
             </Row>
             <ButtonContainer>
-              <CustomGoogleButton onClick={() => googleLogin()} tabIndex={0}>
+              <CustomGoogleButton onClick={() => googleSignInOrSignUp()} tabIndex={0}>
                 <img src={googleIcon} alt="google" />
                 SIGN IN WITH GOOGLE
               </CustomGoogleButton>

@@ -37,7 +37,7 @@ import {
   AvenirH4,
   ArquitectaH5,
 } from "../../assets/css/Global.styled";
-import Footer from "../../components/footer/Footer";
+import Footer from "../../components/Footer/Footer";
 import ModalSuccess from "../../components/ModalSuccess/ModalSuccess";
 import ModalCancel from "../../components/ModalCancel/ModalCancel";
 import down from "../../assets/images/accountDetails/down.png";
@@ -113,14 +113,14 @@ const AccountDetails = () => {
         setEmailError(true);
       } else {
         setEmailError(false);
-        setEmailHint(""); 
+        setEmailHint("");
 
         if (newEmail !== initialEmail) {
           setEmailUnverified(true);
           setEmailHint("Unverified email");
         } else {
           setEmailUnverified(false);
-          setEmailHint(""); 
+          setEmailHint("");
         }
       }
     }
@@ -875,7 +875,9 @@ const AccountDetails = () => {
               <>
                 {userData.isSubscriptionCanceled && !showCardInput && (
                   <>
-                    <ButtonUpdate onClick={handleSubmit}>UPDATE PAYMENT</ButtonUpdate>
+                    <ButtonUpdate onClick={handleSubmit}>
+                      UPDATE PAYMENT
+                    </ButtonUpdate>
                     <ButtonUpdate onClick={handleResumeSubscription}>
                       RESUME SUBSCRIPTION
                     </ButtonUpdate>
@@ -895,7 +897,9 @@ const AccountDetails = () => {
                       </div>
                     </CardDetails>
                     {isLoading ? (
-                      <div style={{ display: "flex", justifyContent: "center" }}>
+                      <div
+                        style={{ display: "flex", justifyContent: "center" }}
+                      >
                         <ColorRing
                           visible={true}
                           height="80"
@@ -912,7 +916,9 @@ const AccountDetails = () => {
                         />
                       </div>
                     ) : (
-                      <SaveButtonPay onClick={handleUpdatePayment}>SAVE</SaveButtonPay>
+                      <SaveButtonPay onClick={handleUpdatePayment}>
+                        SAVE
+                      </SaveButtonPay>
                     )}
                   </CardInputContainer>
                 )}

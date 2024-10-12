@@ -1,6 +1,7 @@
 :root {
     --primary-gradient: linear-gradient(45deg, #5833EF 0%, #F82D98 100%);
     --primary-gradient-hover: linear-gradient(45deg, #5833EF  0%, #F82D98 80%);
+    --footer-bg-color: #1D1D24;
     --pink-color: #F82D98;
     --purple-color: #5833EF;
     --kiwi-color: #B5E42E;

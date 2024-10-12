@@ -7,7 +7,7 @@ export const FooterContainer = styled.div`
   padding: 0 32px; 
   width: calc(100% - 64px); 
   height: 90px;
-  background-color: #1D1D24;
+  background-color: var(--footer-bg-color);
   border-radius: 32px;
   box-sizing: border-box;
   position: relative;
@@ -28,12 +28,6 @@ export const LogoContainer = styled.div`
     @media (max-width: 825px) {
         margin-top: 32px;
     }
-`;
-
-export const Image = styled.img`
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
 `;
 
 export const TinyText = styled.div`

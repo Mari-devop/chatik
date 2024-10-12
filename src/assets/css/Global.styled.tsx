@@ -1,5 +1,9 @@
 import styled from "styled-components";
 
+/////////////////////
+//////// TEXT /////////
+////////////////////
+
 export const AvenirH1 = styled.h1`
   font-family: "Avenir";
   font-weight: 800;
@@ -154,6 +158,10 @@ export const ArquitectaH6 = styled.h6`
   letter-spacing: 0.2em;
 `;
 
+///////////////////
+///// CONTAINERS /////
+///////////////////
+
 export const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -172,4 +180,94 @@ export const ContentContainer = styled.div`
   overflow: hidden;
   height: 100%;
   box-sizing: border-box;
+`;
+
+//LOGO IMAGE
+export const ImageContainer = styled.div`
+  width: 211px;
+  height: 44px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 34px;
+  cursor: pointer;
+  z-index: 1000;
+
+  @media (max-width: 900px) {
+    left: 16px;
+    transform: none;
+    width: 144px;
+  }
+
+  @media (max-width: 600px) {
+    top: 10px;
+  }
+`;
+
+export const Image = styled.img`
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+`;
+
+////////////////
+///// BUTTONS /////
+///////////////
+
+export const CloseIcon = styled.div`
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  width: 54px;
+  height: 54px;
+  cursor: pointer;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    border-image: linear-gradient(90deg, #f82d98, #5833ef) 1;
+  }
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    width: 30%;
+    height: 1px;
+    background-color: var(--white-color);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+
+  &::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
+  }
+
+  &:hover::before,
+  &:hover::after {
+    background-color: unset;
+    background-image: linear-gradient(90deg, #f82d98, #5833ef);
+  }
+
+  @media (max-width: 500px) {
+    width: 48px;
+    height: 48px;
+  }
+
+  @media (max-width: 900px) {
+    width: 43px;
+    height: 43px;
+  }
+
+  @media (max-width: 600px) {
+    top: 15px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+  }
 `;

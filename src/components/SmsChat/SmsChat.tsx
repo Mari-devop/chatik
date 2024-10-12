@@ -4,7 +4,7 @@ import FocusTrap from "focus-trap-react";
 import { SmsChatProps } from "./types";
 import Code from "../Code/Code";
 import { UserContainer } from "../../pages/Login/Login.styled";
-import { ImageContainer, Image, CloseIcon } from "../navbar/Navbar.styled";
+import { ImageContainer, Image, CloseIcon } from "../../assets/css/Global.styled";
 import { Row } from "../../pages/SignUp/SignUp.styled";
 import { BoxContainer, Button } from "./SmsChat.styled";
 import { Navbar } from "../../components/menu/Menu.styled";

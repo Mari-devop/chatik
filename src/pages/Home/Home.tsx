@@ -36,7 +36,7 @@ import {
   GridText,
   Person,
 } from "./Home.styled";
-import Footer from "../../components/footer/Footer";
+import Footer from "../../components/Footer/Footer";
 import ModalSuccess from "../../components/ModalSuccess/ModalSuccess";
 import Loader from "../../components/Loader/Loader";
 import mask from "../../assets/images/main-page/left2.png";
@@ -296,34 +296,34 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
   const handleIndividualClick = async (individualId: number) => {
     if (isAuthenticated) {
       setDataLoaded(true);
-    try {
-      const fullImage = await fetchFullImage(individualId);
+      try {
+        const fullImage = await fetchFullImage(individualId);
 
-      if (fullImage) {
-        const storedIndividuals = await dbInstance.getData("individuals");
-        const individual: any = storedIndividuals.find(
-          (ind: any) => ind.id === individualId
-        );
+        if (fullImage) {
+          const storedIndividuals = await dbInstance.getData("individuals");
+          const individual: any = storedIndividuals.find(
+            (ind: any) => ind.id === individualId
+          );
 
-        if (individual) {
-          const selectedIndividual = {
-            ...individual,
-            fullImage,
-          };
+          if (individual) {
+            const selectedIndividual = {
+              ...individual,
+              fullImage,
+            };
 
-          navigate("/chatindividuals", {
-            state: { ...selectedIndividual, individualId },
-          });
-        } else {
-          console.error("Individual not found in stored data");
+            navigate("/chatindividuals", {
+              state: { ...selectedIndividual, individualId },
+            });
+          } else {
+            console.error("Individual not found in stored data");
+          }
         }
+      } catch (error) {
+        console.error("Error fetching individual data:", error);
+      } finally {
+        setDataLoaded(false);
       }
-    } catch (error) {
-      console.error("Error fetching individual data:", error);
-    } finally {
-      setDataLoaded(false); 
-    }
-   } else {
+    } else {
       setModalType("failure");
       setModalMessage("Please, log in to chat with individuals");
       setIsModalVisible(true);
@@ -344,16 +344,15 @@ const Main: React.FC<MainProps> = ({ isAuthenticated }) => {
     const loadData = async () => {
       setDataLoaded(true);
       await Promise.all([fetchQuestions(), fetchIndividuals()]);
-      setDataLoaded(false); 
+      setDataLoaded(false);
     };
     loadData();
   }, []);
-  
 
   if (dataLoaded) {
     return <Loader />;
   }
-  
+
   return (
     <>
       <ModalSuccess

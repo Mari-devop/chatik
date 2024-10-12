@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import FocusTrap from "focus-trap-react";
 import { useNavigate } from "react-router-dom";
 import { dbInstance } from "../../db";
+import { socialMenuLinks } from "../../constants/socialIcons";
 import { MenuProps, User } from "./types";
 import {
   MenuContainer,
@@ -18,12 +19,8 @@ import {
   RightContainer,
   StyledLink,
 } from "./Menu.styled";
-import facebook from "../../assets/images/menu/facebook.png";
-import instagram from "../../assets/images/menu/instagram.png";
-import discord from "../../assets/images/menu/discord-mark-white 1.png";
-import twitter from "../../assets/images/menu/x-twitter-brands-solid.svg";
 import logo from "../../assets/images/logo.png";
-import { ImageContainer, Image } from "../navbar/Navbar.styled";
+import { ImageContainer, Image } from "../../assets/css/Global.styled";
 import Login from "../../pages/Login/Login";
 import SignUp from "../../pages/SignUp/SignUp";
 
@@ -41,7 +38,7 @@ const Menu: React.FC<MenuProps> = ({
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        handleCloseClick();
+        handleClick();
       }
     };
 
@@ -68,11 +65,7 @@ const Menu: React.FC<MenuProps> = ({
     event.stopPropagation();
   };
 
-  const handleCloseClick = () => {
-    setIsMenuOpen(false);
-  };
-
-  const handleLogoClick = () => {
+  const handleClick = () => {
     setIsMenuOpen(false);
   };
 
@@ -87,11 +80,6 @@ const Menu: React.FC<MenuProps> = ({
 
   const handleSignupClick = () => {
     setIsSignupOpen(!isSignupOpen);
-  };
-
-  const handleAccountClick = (event: React.MouseEvent) => {
-    setIsMenuOpen(false);
-    event.stopPropagation();
   };
 
   const checkAuthStatus = async () => {
@@ -125,16 +113,6 @@ const Menu: React.FC<MenuProps> = ({
     }
   };
 
-  const handlePrisingClick = (event: React.MouseEvent) => {
-    setIsMenuOpen(false);
-    event.stopPropagation();
-  };
-
-  const handleHowClick = (event: React.MouseEvent) => {
-    setIsMenuOpen(false);
-    event.stopPropagation();
-  };
-
   if (loading) {
     return <div style={{ visibility: "hidden" }}>Loading...</div>;
   }
@@ -146,17 +124,17 @@ const Menu: React.FC<MenuProps> = ({
           <Navbar onClick={handleInnerClick}>
             {isAuthenticated ? (
               <>
-                <CloseIcon onClick={handleCloseClick} />
+                <CloseIcon onClick={handleClick} />
                 <ImageContainer>
-                  <Image src={logo} alt="logo" onClick={handleLogoClick} />
+                  <Image src={logo} alt="logo" onClick={handleClick} />
                 </ImageContainer>
                 <ButtonSignOut onClick={handleSignOut}>SIGN OUT</ButtonSignOut>
               </>
             ) : (
               <>
-                <CloseIcon onClick={handleCloseClick} />
+                <CloseIcon onClick={handleClick} />
                 <ImageContainer>
-                  <Image src={logo} alt="logo" onClick={handleLogoClick} />
+                  <Image src={logo} alt="logo" onClick={handleClick} />
                 </ImageContainer>
                 <RightContainer>
                   <ButtonLogin onClick={handleLoginClick}>LOGIN</ButtonLogin>
@@ -175,18 +153,18 @@ const Menu: React.FC<MenuProps> = ({
               </StyledLink>
             </Row>
             <Row>
-              <StyledLink to="/paywall" onClick={handlePrisingClick}>
+              <StyledLink to="/paywall" onClick={handleLinkClick}>
                 <span>Pricing</span>
               </StyledLink>
             </Row>
             <Row>
-              <StyledLink to="/how" onClick={handleHowClick}>
+              <StyledLink to="/how" onClick={handleLinkClick}>
                 <span>How it works</span>
               </StyledLink>
             </Row>
             <Row>
               {isAuthenticated ? (
-                <StyledLink to="/accountDetails" onClick={handleAccountClick}>
+                <StyledLink to="/accountDetails" onClick={handleLinkClick}>
                   <span>My account</span>
                 </StyledLink>
               ) : (
@@ -195,10 +173,9 @@ const Menu: React.FC<MenuProps> = ({
             </Row>
             <Divider />
             <SocialContainer>
-              <Social src={facebook} alt="facebook" />
-              <Social src={instagram} alt="instagram" />
-              <Social src={twitter} alt="twitter" />
-              <Social src={discord} alt="discord" />
+              {socialMenuLinks.map(({ src, alt }, index) => (
+                <Social src={src} alt={alt} />
+              ))}
             </SocialContainer>
           </Content>
         </MenuContainer>

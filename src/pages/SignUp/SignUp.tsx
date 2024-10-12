@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import FocusTrap from "focus-trap-react";
 import axios from "axios";
-import { useGoogleLogin } from "@react-oauth/google";
+// import { useGoogleLogin } from "@react-oauth/google";
+import { useGoogleAuth } from "../../hooks/useGoogleAuth";
 import { register } from "../../auth/auth";
 import { dbInstance } from "../../db";
 import { SignupProps } from "./types";
@@ -16,12 +17,7 @@ import {
   TextCenter,
   StyledIcon,
 } from "./SignUp.styled";
-import {
-  ImageContainer,
-  Image,
-  CloseIcon,
-} from "../../components/navbar/Navbar.styled";
-import { AvenirH2, TextMedium } from "../../assets/css/Global.styled";
+import { AvenirH2, TextMedium, ImageContainer, Image, CloseIcon } from "../../assets/css/Global.styled";
 import { UserContainer, CustomGoogleButton } from "../Login/Login.styled";
 import { Navbar } from "../../components/menu/Menu.styled";
 import ModalSuccess from "../../components/ModalSuccess/ModalSuccess";
@@ -44,6 +40,14 @@ const SignUp: React.FC<SignupProps> = ({
   const [modalType, setModalType] = useState<"success" | "failure">("success");
   const [modalMessage, setModalMessage] = useState("");
   const navigate = useNavigate();
+  const { googleSignInOrSignUp } = useGoogleAuth({
+    setModalType,
+    setModalMessage,
+    setIsModalVisible,
+    setIsAuthenticated,
+    setIsOpen: setIsSignupOpen,
+    isLogin: false,
+  });
 
   const handleCloseClick = () => {
     setIsSignupOpen(false);
@@ -126,68 +130,68 @@ const SignUp: React.FC<SignupProps> = ({
     }
   };
 
-  const googleSignUp = useGoogleLogin({
-    flow: "implicit",
-    scope: "openid email profile",
-    onSuccess: async (tokenResponse) => {
-      try {
-        const googleAccessToken = tokenResponse.access_token;
+  // const googleSignUp = useGoogleLogin({
+  //   flow: "implicit",
+  //   scope: "openid email profile",
+  //   onSuccess: async (tokenResponse) => {
+  //     try {
+  //       const googleAccessToken = tokenResponse.access_token;
 
-        const profileResponse = await axios.get(
-          `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${googleAccessToken}`
-        );
+  //       const profileResponse = await axios.get(
+  //         `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${googleAccessToken}`
+  //       );
 
-        const userProfile = profileResponse.data;
-        const userEmail = userProfile.email;
-        const userName = userProfile.name;
-        const userImage = userProfile.picture;
+  //       const userProfile = profileResponse.data;
+  //       const userEmail = userProfile.email;
+  //       const userName = userProfile.name;
+  //       const userImage = userProfile.picture;
 
-        const users = await dbInstance.getData("users");
-        const shareToken = users?.[0]?.shareToken;
+  //       const users = await dbInstance.getData("users");
+  //       const shareToken = users?.[0]?.shareToken;
 
-        const res = await axios.post(
-          "https://eternalai.fly.dev/user/register",
-          {
-            googleToken: googleAccessToken,
-            email: userEmail,
-            name: userName,
-            shareToken,
-          }
-        );
-        const token = res.data.token;
+  //       const res = await axios.post(
+  //         "https://eternalai.fly.dev/user/register",
+  //         {
+  //           googleToken: googleAccessToken,
+  //           email: userEmail,
+  //           name: userName,
+  //           shareToken,
+  //         }
+  //       );
+  //       const token = res.data.token;
 
-        if (token) {
-          await dbInstance.addData("users", {
-            email: userEmail,
-            token,
-            name: userName,
-            image: userImage,
-          });
-          setModalType("success");
-          setModalMessage(
-            "Google Registration Successful! Please, check your email box to verify email!"
-          );
-          setIsModalVisible(true);
-          setIsAuthenticated(true);
-          setIsSignupOpen(false);
+  //       if (token) {
+  //         await dbInstance.addData("users", {
+  //           email: userEmail,
+  //           token,
+  //           name: userName,
+  //           image: userImage,
+  //         });
+  //         setModalType("success");
+  //         setModalMessage(
+  //           "Google Registration Successful! Please, check your email box to verify email!"
+  //         );
+  //         setIsModalVisible(true);
+  //         setIsAuthenticated(true);
+  //         setIsSignupOpen(false);
           
-          setTimeout(() => {
-            setIsModalVisible(false);
-            navigate("/about"); 
-          }, 3000); 
-        }
-      } catch (error) {
-        setModalType("failure");
-        setModalMessage("Google Registration Failed. Please try again.");
-        setIsModalVisible(true);
-      }
-    },
-    onError: (error) => {
-      setModalType("failure");
-      setModalMessage("Google Registration Failed. Please try again.");
-      setIsModalVisible(true);
-    },
-  });
+  //         setTimeout(() => {
+  //           setIsModalVisible(false);
+  //           navigate("/about"); 
+  //         }, 3000); 
+  //       }
+  //     } catch (error) {
+  //       setModalType("failure");
+  //       setModalMessage("Google Registration Failed. Please try again.");
+  //       setIsModalVisible(true);
+  //     }
+  //   },
+  //   onError: (error) => {
+  //     setModalType("failure");
+  //     setModalMessage("Google Registration Failed. Please try again.");
+  //     setIsModalVisible(true);
+  //   },
+  // });
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -265,7 +269,7 @@ const SignUp: React.FC<SignupProps> = ({
               />
             </Row>
             <ButtonContainer>
-              <CustomGoogleButton onClick={() => googleSignUp()}>
+              <CustomGoogleButton onClick={() => googleSignInOrSignUp()}>
                 <img src={googleIcon} alt="google" />
                 SIGN UP WITH GOOGLE
               </CustomGoogleButton>

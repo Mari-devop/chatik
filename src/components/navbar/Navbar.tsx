@@ -4,8 +4,6 @@ import { dbInstance } from "../../db";
 import { NavbarProps } from "./types";
 import {
   NavbarContainer,
-  ImageContainer,
-  Image,
   ButtonMenu,
   ButtonLogin,
   ButtonStart,
@@ -13,10 +11,10 @@ import {
   RightContainer,
   ButtonShare,
   IconShare,
-  CloseIcon,
   Line,
   LineShort,
 } from "./Navbar.styled";
+import { ImageContainer, Image, CloseIcon } from "../../assets/css/Global.styled";
 import Menu from "../menu/Menu";
 import Login from "../../pages/Login/Login";
 import SignUp from "../../pages/SignUp/SignUp";
